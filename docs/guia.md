@@ -66,9 +66,12 @@ Para garantizar la escalabilidad y mantenibilidad, se han aplicado 5 patrones cl
 
 | Capa | Tecnología |
 |------|-----------|
-| Frontend/Backend | Next.js 15 con App Router y Server Actions |
+| Frontend/Backend | Next.js 16 con App Router, Server Actions y Turbopack |
+| ORM | Drizzle ORM (TypeScript-first) con driver `postgres` |
 | Persistencia y Real-time | Supabase (PostgreSQL) para datos y eventos de baja latencia |
-| Autenticación | Supabase Auth nativo, restringido **únicamente para personal** (Chef/Mesero/Admin) mediante roles definidos |
+| Estado Cliente | Zustand (carrito con persistencia en localStorage) |
+| Autenticación | Supabase Auth nativo vía SSR, restringido **únicamente para personal** (Cocinero/Mesero/Admin) mediante roles definidos |
+| Testing | Vitest + Testing Library + jsdom |
 | Gestión de Assets | Cloudinary (imágenes de platos) |
 | Notificaciones | Brevo (email transaccional) |
 | Pagos | PayPal (pasarela de pagos) |
@@ -111,7 +114,6 @@ El ciclo de vida del pedido se gestiona bajo el **Patrón State**:
 ## 9. Riesgos y Validación
 
 - **Riesgo:** Consistencia de datos en condiciones de red inestable.  
-  **Mitigación:** Uso de *Optimistic Updates* en el frontend para una experiencia fluida y validaciones estrictas en el servidor mediante Drizzle ORM.
+  **Mitigación:** Uso de *Optimistic Updates* en el frontend para una experiencia fluida, validaciones estrictas en el servidor mediante Drizzle ORM, y tests automatizados con Vitest + Testing Library.
 
-- **Validación:** Pruebas de carga para el bus de eventos y pruebas de integración para el flujo completo:  
-  `CRUD Plato → Visibilidad Cliente → Compra → Notificación Cocina`
+- **Validación:** Pruebas unitarias (Vitest, 19 casos), pruebas de integración (12 casos para flujo completo) y pruebas de carga (k6/Artillery, 5 escenarios). Ver detalle en [`docs/06-pruebas/`](06-pruebas/).
