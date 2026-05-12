@@ -7,6 +7,9 @@
 | **Framework** | Next.js | 16.2.6 | App Router + Server Actions unifican frontend y backend. Turbopack para builds rápidos. |
 | **UI** | React | 19.2.4 | Server Components para renderizado híbrido. |
 | **Estilos** | Tailwind CSS | 4.x | Utilidades atómicas, zero-runtime con `@tailwindcss/postcss`. |
+| **UI Components** | shadcn/ui | latest | Componentes accesibles copiados al código fuente. Basado en Radix UI + Tailwind. | `components.json`, `src/components/ui/` |
+| **Íconos** | Lucide React | ^0.14 | Biblioteca de íconos usada por shadcn/ui. |
+| **Utilidades CSS** | clsx + tailwind-merge | ^2 + ^3 | Fusión inteligente de clases Tailwind (`cn()` en `src/lib/utils.ts`). |
 | **Base de datos** | Supabase (PostgreSQL) | — | PostgreSQL gestionado + Realtime + Auth + RLS. Un solo servicio para datos, eventos y autenticación. |
 | **ORM** | Drizzle ORM | 0.45.2 | TypeScript-first, schemas declarativos, migraciones con `drizzle-kit`. Sin code generation. |
 | **Driver DB** | postgres | 3.4.9 | Cliente PostgreSQL mínimo para Node.js, compatible con Supabase. |

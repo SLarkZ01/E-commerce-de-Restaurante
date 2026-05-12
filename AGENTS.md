@@ -31,9 +31,12 @@ Toda la documentación está en `docs/`. El punto de entrada es `docs/indice.md`
 ```
 src/
 ├── app/            → App Router (páginas y layouts)
+├── components/
+│   └── ui/         → Componentes shadcn/ui (button, card, etc.)
 ├── lib/
 │   ├── db/         → Drizzle ORM (schema + conexión)
-│   └── supabase/   → Clientes Supabase (server + browser)
+│   ├── supabase/   → Clientes Supabase (server + browser)
+│   └── utils.ts    → Utilidad cn() (clsx + tailwind-merge)
 ├── stores/         → Zustand (carrito)
 ├── types/          → Interfaces TypeScript del dominio
 └── proxy.ts        → Auth + protección de rutas
@@ -52,6 +55,7 @@ src/
 |---|---|
 | Next.js | 16.2.6 |
 | React | 19.2.4 |
+| shadcn/ui | latest |
 | Drizzle ORM | 0.45.2 |
 | Supabase SSR | 0.10.3 |
 | Zustand | 5.0.13 |
