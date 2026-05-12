@@ -22,6 +22,7 @@
 | **Testing UI** | Testing Library | React 16.3.2 | Enfoque en comportamiento del usuario, no en implementación. |
 | **DOM** | jsdom | 29.1.1 | Simulación de navegador para tests de componentes. |
 | **UUID** | uuid | 14.0.0 | Generación de códigos QR únicos para mesas. |
+| **Moneda** | COP | — | Peso colombiano sin centavos. `decimal(10,0)` en DB. Formateo con `Intl.NumberFormat("es-CO")`. |
 
 ## ¿Por qué Supabase como núcleo?
 

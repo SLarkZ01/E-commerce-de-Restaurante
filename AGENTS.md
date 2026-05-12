@@ -62,6 +62,11 @@ src/
 | Vitest | 4.1.6 |
 | Tailwind CSS | 4.x |
 
+### Formato de moneda
+- Moneda: **COP** (peso colombiano), sin centavos
+- Base de datos: `decimal(10,0)` para `precio`, `total`, `precioUnitario`
+- Frontend: usar `formatearPrecio()` de `src/lib/formato.ts` — `Intl.NumberFormat("es-CO")`
+
 ### Reglas importantes
 1. NUNCA uses `middleware.ts` — Next.js 16 usa `proxy.ts`
 2. NUNCA modifiques `src/lib/db/schema.ts` sin actualizar `src/types/index.ts`

@@ -45,6 +45,7 @@ Archivo de referencia: `src/lib/db/schema.ts` (tablas `platos`, `pedidos`, `item
 - Solo lectura de `platos` donde `disponible = true` (RLS)
 - Escritura: crear `pedido` + `itemsPedido` al completar pago
 - Suscripción Realtime al estado del pedido creado
+- Precios en COP sin centavos, formateados con `formatearPrecio()` (`src/lib/formato.ts`)
 
 ### Módulo Cocina (`/cocina`)
 Archivo de referencia: `src/lib/db/schema.ts` (tablas `platos`, `pedidos`, `categorias`)

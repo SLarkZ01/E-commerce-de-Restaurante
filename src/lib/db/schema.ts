@@ -45,7 +45,7 @@ export const platos = pgTable("platos", {
   id: uuid("id").primaryKey().defaultRandom(),
   nombre: text("nombre").notNull(),
   descripcion: text("descripcion"),
-  precio: decimal("precio", { precision: 10, scale: 2 }).notNull(),
+  precio: decimal("precio", { precision: 10, scale: 0 }).notNull(),
   imagenUrl: text("imagen_url"),
   tipoPlato: tipoPlatoEnum("tipo_plato").notNull().default("plato_fuerte"),
   categoriaId: uuid("categoria_id").references(() => categorias.id),
@@ -69,7 +69,7 @@ export const pedidos = pgTable("pedidos", {
   tipoDespacho: tipoDespachoEnum("tipo_despacho").notNull().default("mesa"),
   estado: estadoPedidoEnum("estado").notNull().default("pendiente"),
   correoCliente: text("correo_cliente"),
-  total: decimal("total", { precision: 10, scale: 2 }).notNull(),
+  total: decimal("total", { precision: 10, scale: 0 }).notNull(),
   paypalPedidoId: text("paypal_pedido_id"),
   cocineroId: uuid("cocinero_id").references(() => perfiles.id),
   creadoEn: timestamp("creado_en").defaultNow().notNull(),
@@ -85,5 +85,5 @@ export const itemsPedido = pgTable("items_pedido", {
     .references(() => platos.id)
     .notNull(),
   cantidad: integer("cantidad").notNull().default(1),
-  precioUnitario: decimal("precio_unitario", { precision: 10, scale: 2 }).notNull(),
+  precioUnitario: decimal("precio_unitario", { precision: 10, scale: 0 }).notNull(),
 });

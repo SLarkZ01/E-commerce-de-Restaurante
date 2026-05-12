@@ -1,3 +1,6 @@
+// Moneda: todos los precios son en COP (peso colombiano), sin centavos.
+// Formatear con formatearPrecio() de src/lib/formato.ts
+
 export type Rol = "cocinero" | "mesero" | "admin";
 
 export type EstadoPedido = "pendiente" | "preparando" | "listo" | "entregado";
