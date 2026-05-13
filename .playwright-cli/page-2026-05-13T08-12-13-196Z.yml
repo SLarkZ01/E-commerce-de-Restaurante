@@ -1,0 +1,77 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "E-Kitchen" [ref=e359] [cursor=pointer]:
+        - /url: /cocina
+        - img [ref=e7]
+        - generic [ref=e9]: E-Kitchen
+      - separator [ref=e10]
+      - navigation [ref=e11]:
+        - link "Pedidos" [ref=e360] [cursor=pointer]:
+          - /url: /cocina
+          - img [ref=e13]
+          - text: Pedidos
+        - link "Gestión de Menú" [ref=e361] [cursor=pointer]:
+          - /url: /cocina/platos
+          - img [ref=e17]
+          - text: Gestión de Menú
+        - link "Platos Listos" [ref=e362] [cursor=pointer]:
+          - /url: /logistica
+          - img [ref=e23]
+          - text: Platos Listos
+        - generic [ref=e28]:
+          - button "Admin" [ref=e363]:
+            - img [ref=e30]
+            - generic [ref=e35]: Admin
+            - img [ref=e36]
+          - generic [ref=e38]:
+            - link "Inicio" [ref=e364] [cursor=pointer]:
+              - /url: /admin
+              - img [ref=e40]
+              - text: Inicio
+            - link "Personal" [ref=e365] [cursor=pointer]:
+              - /url: /admin/personal
+              - img [ref=e46]
+              - text: Personal
+            - link "Mesas" [ref=e366] [cursor=pointer]:
+              - /url: /admin/mesas
+              - img [ref=e52]
+              - text: Mesas
+      - separator [ref=e55]
+      - generic [ref=e56]:
+        - generic [ref=e57]:
+          - generic [ref=e59]: A
+          - generic [ref=e60]:
+            - paragraph [ref=e61]: Usuario
+            - paragraph [ref=e62]: admin@ekitchen.com
+        - button "Cerrar Sesión" [ref=e367]:
+          - img [ref=e65]
+          - text: Cerrar Sesión
+        - button "Comprimir" [ref=e368]:
+          - img [ref=e69]
+          - text: Comprimir
+    - generic [ref=e72]:
+      - banner [ref=e73]:
+        - generic [ref=e74]:
+          - button "Abrir menú" [active] [ref=e369]:
+            - img [ref=e256]
+          - generic [ref=e79]:
+            - heading "Gestión de Menú" [level=1] [ref=e370]
+            - paragraph [ref=e81]: Administra platos y categorías
+        - button "A" [ref=e371]:
+          - generic [ref=e88]: A
+      - generic [ref=e89]:
+        - generic [ref=e90]:
+          - button "Nuevo Plato" [ref=e372]:
+            - img [ref=e92]
+            - text: Nuevo Plato
+          - button "Categorías" [ref=e373]:
+            - img [ref=e94]
+            - text: Categorías
+        - generic [ref=e99]:
+          - img [ref=e101]
+          - paragraph [ref=e104]: No hay platos en el catálogo
+          - paragraph [ref=e105]: Agrega tu primer plato
+  - button "Open Next.js Dev Tools" [ref=e111] [cursor=pointer]:
+    - img [ref=e112]
+  - alert [ref=e115]

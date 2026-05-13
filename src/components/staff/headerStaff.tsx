@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import { Menu, PanelLeft, PanelLeftClose } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -10,18 +10,20 @@ import { SidebarStaff } from "./sidebarStaff";
 
 interface HeaderStaffProps {
   userEmail: string;
+  collapsed: boolean;
+  onToggle: () => void;
 }
 
-const TITULOS: Record<string, string> = {
-  "/cocina": "Pedidos",
-  "/cocina/platos": "Gestión de Menú",
-  "/logistica": "Platos Listos",
-  "/admin": "Dashboard",
-  "/admin/personal": "Gestión de Personal",
-  "/admin/mesas": "Gestión de Mesas",
+const SECCIONES: Record<string, { titulo: string; descripcion: string; padre?: string }> = {
+  "/cocina": { titulo: "Pedidos", descripcion: "Panel de pedidos en tiempo real" },
+  "/cocina/platos": { titulo: "Gestión de Menú", descripcion: "Administra platos y categorías", padre: "Cocina" },
+  "/logistica": { titulo: "Platos Listos", descripcion: "Panel de entregas pendientes" },
+  "/admin": { titulo: "Dashboard", descripcion: "Vista general del negocio de E-Kitchen" },
+  "/admin/personal": { titulo: "Gestión de Personal", descripcion: "Administra el equipo del restaurante", padre: "Admin" },
+  "/admin/mesas": { titulo: "Gestión de Mesas", descripcion: "Administra mesas y códigos QR", padre: "Admin" },
 };
 
-export function HeaderStaff({ userEmail }: HeaderStaffProps) {
+export function HeaderStaff({ userEmail, collapsed, onToggle }: HeaderStaffProps) {
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
   const [hora, setHora] = useState(() => new Date());
@@ -36,36 +38,54 @@ export function HeaderStaff({ userEmail }: HeaderStaffProps) {
     ? hora.toLocaleTimeString("es-CO", {
         hour: "2-digit",
         minute: "2-digit",
-        second: "2-digit",
       })
-    : "--:--:--";
+    : "--:--";
 
   const getIniciales = (email: string) => {
     return email.charAt(0).toUpperCase();
   };
 
-  const titulo = TITULOS[pathname] ?? "E-Kitchen";
+  const seccion = SECCIONES[pathname] ?? { titulo: "E-Kitchen", descripcion: "" };
 
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between px-4 md:px-6 h-14 bg-fondo/95 backdrop-blur-sm border-b border-borde/60">
-      <div className="flex items-center gap-3">
+    <header className="sticky top-0 z-30 flex items-center justify-between px-6 h-16 bg-fondo/95 backdrop-blur-sm border-b border-borde/60">
+      <div className="flex items-center gap-4">
+        <button
+          onClick={onToggle}
+          className="hidden md:flex p-2 rounded-lg text-texto-secundario hover:bg-fondo-oscuro hover:text-texto transition-colors"
+          aria-label={collapsed ? "Expandir menú" : "Comprimir menú"}
+        >
+          {collapsed ? (
+            <PanelLeft className="w-5 h-5" />
+          ) : (
+            <PanelLeftClose className="w-5 h-5" />
+          )}
+        </button>
+
         <Sheet>
           <SheetTrigger className="md:hidden p-2 rounded-lg text-texto-secundario hover:bg-fondo-oscuro hover:text-texto transition-colors" aria-label="Abrir menú">
             <Menu className="w-5 h-5" />
           </SheetTrigger>
-          <SheetContent side="left" className="w-[280px] p-0 gap-0">
+          <SheetContent side="left" className="w-[300px] p-0 gap-0">
             <SidebarStaff userEmail={userEmail} mobile />
           </SheetContent>
         </Sheet>
 
-        <h1 className="font-playfair text-lg font-bold text-texto tracking-tight">
-          {titulo}
-        </h1>
+        <div>
+          <h1 className="font-playfair text-xl font-bold text-texto tracking-tight">
+            {seccion.titulo}
+          </h1>
+          {seccion.descripcion && (
+            <p className="text-sm text-texto-secundario mt-0.5">
+              {seccion.descripcion}
+            </p>
+          )}
+        </div>
       </div>
 
-      <div className="flex items-center gap-3 md:gap-4">
-        <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-fondo-oscuro rounded-lg">
-          <span className="text-xs font-mono font-medium text-texto-secundario tabular-nums">
+      <div className="flex items-center gap-4">
+        <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-fondo-oscuro rounded-lg">
+          <span className="text-sm font-mono font-medium text-texto-secundario tabular-nums">
             {horaFormateada}
           </span>
         </div>
@@ -73,8 +93,8 @@ export function HeaderStaff({ userEmail }: HeaderStaffProps) {
         <Tooltip>
           <TooltipTrigger>
             <div className="flex items-center gap-2 cursor-default">
-              <Avatar className="w-8 h-8">
-                <AvatarFallback className="bg-primario/10 text-primario text-xs font-bold">
+              <Avatar className="w-9 h-9">
+                <AvatarFallback className="bg-primario/10 text-primario text-sm font-bold">
                   {getIniciales(userEmail)}
                 </AvatarFallback>
               </Avatar>

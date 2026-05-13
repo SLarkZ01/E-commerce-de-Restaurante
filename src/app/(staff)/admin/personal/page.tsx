@@ -6,10 +6,8 @@ export default async function PaginaPersonal() {
   const perfiles = await obtenerPerfiles();
 
   return (
-    <div className="flex-1 overflow-y-auto">
-      <Suspense fallback={<SkeletonGestionPersonal />}>
-        <GestionPersonal perfilesIniciales={perfiles} />
-      </Suspense>
-    </div>
+    <Suspense fallback={<SkeletonGestionPersonal />}>
+      <GestionPersonal perfilesIniciales={perfiles} />
+    </Suspense>
   );
 }

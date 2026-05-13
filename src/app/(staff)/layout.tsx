@@ -1,6 +1,5 @@
 import { crearCliente } from "@/lib/supabase/server";
-import { SidebarStaff } from "@/components/staff/sidebarStaff";
-import { HeaderStaff } from "@/components/staff/headerStaff";
+import { StaffLayoutClient } from "@/components/staff/layoutClient";
 import { redirect } from "next/navigation";
 
 export default async function LayoutStaff({
@@ -16,14 +15,8 @@ export default async function LayoutStaff({
   if (!user) redirect("/login");
 
   return (
-    <div className="flex min-h-dvh bg-fondo">
-      <div className="hidden md:block">
-        <SidebarStaff userEmail={user.email ?? ""} />
-      </div>
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <HeaderStaff userEmail={user.email ?? ""} />
-        {children}
-      </div>
-    </div>
+    <StaffLayoutClient userEmail={user.email ?? ""}>
+      {children}
+    </StaffLayoutClient>
   );
 }

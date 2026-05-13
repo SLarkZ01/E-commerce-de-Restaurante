@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Plus, Utensils, Trash2, Coffee, Sandwich, Tags, X } from "lucide-react";
+import React, { useState, useMemo, useDeferredValue, useCallback } from "react";
+import { Plus, Utensils, Trash2, Coffee, Sandwich, Tags, X, Search } from "lucide-react";
 import {
   crearPlato,
   actualizarPlato,
@@ -21,6 +21,15 @@ import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -33,6 +42,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  SheetClose,
 } from "@/components/ui/sheet";
 
 const TIPOS_PLATO: { valor: "plato_fuerte" | "bebida" | "combo"; etiqueta: string; icono: React.ReactNode }[] = [
@@ -144,12 +154,7 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
             <Tags className="w-4 h-4" />
             Categorías
           </SheetTrigger>
-          <SheetContent className="sm:max-w-sm flex flex-col">
-            <SheetHeader className="px-1">
-              <SheetTitle className="font-playfair text-lg font-bold text-texto">
-                Gestionar Categorías
-              </SheetTitle>
-            </SheetHeader>
+          <SheetContent className="sm:max-w-sm p-0 flex flex-col h-[calc(100dvh-2rem)]" showCloseButton={false}>
             <GestionCategorias
               categorias={categorias}
               alCrear={handleCrearCategoria}
@@ -422,6 +427,40 @@ function FormularioPlato({
   );
 }
 
+const FilasSkeleton = () => (
+  <>
+    {[1, 2, 3, 4].map((i) => (
+      <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-fondo-oscuro">
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="h-4 w-4 rounded" />
+      </div>
+    ))}
+  </>
+);
+
+const FilaCategoria = React.memo(function FilaCategoria({
+  categoria,
+  onEliminar,
+}: {
+  categoria: Categoria;
+  onEliminar: (id: string) => void;
+}) {
+  return (
+    <div className="flex items-center justify-between p-4 rounded-xl bg-fondo-oscuro transition-all">
+      <p className="text-sm font-medium text-texto truncate mr-3">
+        {categoria.nombre}
+      </p>
+      <button
+        onClick={() => onEliminar(categoria.id)}
+        className="text-texto-terciario hover:text-error transition-colors p-2 rounded-lg hover:bg-error/10 shrink-0"
+        aria-label={`Eliminar ${categoria.nombre}`}
+      >
+        <Trash2 className="w-4 h-4" />
+      </button>
+    </div>
+  );
+});
+
 function GestionCategorias({
   categorias,
   alCrear,
@@ -432,86 +471,198 @@ function GestionCategorias({
   alEliminar: (id: string) => void;
 }) {
   const [nombre, setNombre] = useState("");
+  const [busqueda, setBusqueda] = useState("");
+  const [pagina, setPagina] = useState(1);
+  const porPagina = 6;
 
-  const generarSlug = (texto: string) => {
+  const busquedaDiferida = useDeferredValue(busqueda);
+
+  const generarSlug = useCallback((texto: string) => {
     return texto
       .toLowerCase()
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "");
-  };
+  }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     if (nombre.trim()) {
       alCrear(nombre.trim(), generarSlug(nombre.trim()));
       setNombre("");
     }
-  };
+  }, [nombre, alCrear, generarSlug]);
 
   const puedeEnviar = nombre.trim().length > 0;
 
+  const categoriasFiltradas = useMemo(
+    () =>
+      categorias.filter((cat) =>
+        cat.nombre.toLowerCase().includes(busquedaDiferida.toLowerCase())
+      ),
+    [categorias, busquedaDiferida]
+  );
+
+  const totalPaginas = Math.ceil(categoriasFiltradas.length / porPagina);
+  const inicio = (pagina - 1) * porPagina;
+  const categoriasPaginadas = useMemo(
+    () => categoriasFiltradas.slice(inicio, inicio + porPagina),
+    [categoriasFiltradas, inicio, porPagina]
+  );
+
+  const handleBusqueda = useCallback((valor: string) => {
+    setBusqueda(valor);
+    setPagina(1);
+  }, []);
+
+  const irPaginaAnterior = useCallback(() => {
+    setPagina((p) => Math.max(1, p - 1));
+  }, []);
+
+  const irPaginaSiguiente = useCallback(() => {
+    setPagina((p) => Math.min(totalPaginas, p + 1));
+  }, [totalPaginas]);
+
+  const mostrarBusqueda = categorias.length > 5;
+
   return (
-    <div className="flex flex-col h-full">
-      <form onSubmit={handleSubmit} className="space-y-4 px-1">
-        <div className="space-y-3">
-          <div>
-            <label className="block text-xs font-medium text-texto-secundario mb-2">
-              Nombre de la categoría
-            </label>
-            <Input
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
-              required
-              placeholder="Ej: Platos Fuertes"
-              className="h-10"
-            />
-          </div>
-          <Button
-            type="submit"
-            disabled={!puedeEnviar}
-            className="w-full h-10 bg-primario hover:bg-primario-hover text-primario-texto text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed rounded-lg"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Agregar Categoría
-          </Button>
+    <div className="flex flex-col flex-1 min-h-0">
+      <div className="px-5 py-4 border-b border-borde/60 shrink-0">
+        <h3 className="text-sm font-semibold text-texto">Nueva categoría</h3>
+        <p className="text-xs text-texto-secundario mt-1">
+          Agrega categorías para organizar tu menú
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="px-5 py-4 space-y-3 border-b border-borde/60 shrink-0">
+        <div>
+          <label className="block text-xs font-medium text-texto-secundario mb-2">
+            Nombre
+          </label>
+          <Input
+            value={nombre}
+            onChange={(e) => setNombre(e.target.value)}
+            required
+            placeholder="Ej: Platos Fuertes"
+            className="h-10"
+          />
         </div>
+        <Button
+          type="submit"
+          disabled={!puedeEnviar}
+          className="w-full h-10 bg-primario hover:bg-primario-hover text-primario-texto text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed rounded-lg"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Agregar
+        </Button>
       </form>
 
-      <Separator className="my-5" />
+      <div className="flex-1 flex flex-col min-h-0 px-5 py-4 overflow-hidden">
+        <div className="flex items-center justify-between mb-3 shrink-0">
+          <h3 className="text-sm font-semibold text-texto">
+            Todas las categorías
+          </h3>
+          <span className="text-xs text-texto-terciario bg-fondo-oscuro px-2 py-0.5 rounded-full">
+            {categoriasFiltradas.length}
+          </span>
+        </div>
 
-      <div className="flex-1 overflow-y-auto px-1">
+        {mostrarBusqueda && (
+          <div className="relative mb-4 shrink-0">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-texto-terciario" />
+            <Input
+              value={busqueda}
+              onChange={(e) => handleBusqueda(e.target.value)}
+              placeholder="Buscar categoría..."
+              className="h-9 pl-9 text-sm"
+            />
+          </div>
+        )}
+
         {categorias.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12">
+          <div className="flex-1 flex flex-col items-center justify-center">
+            <FilasSkeleton />
+          </div>
+        ) : categoriasFiltradas.length === 0 ? (
+          <div className="flex-1 flex flex-col items-center justify-center py-8">
             <div className="w-14 h-14 rounded-2xl bg-fondo-oscuro flex items-center justify-center mb-3">
               <Tags className="w-6 h-6 text-texto-terciario" />
             </div>
-            <p className="text-sm font-medium text-texto-secundario">Sin categorías</p>
+            <p className="text-sm font-medium text-texto-secundario">
+              {busquedaDiferida ? "Sin resultados" : "Sin categorías"}
+            </p>
             <p className="text-xs text-texto-terciario mt-1">
-              Crea tu primera categoría arriba
+              {busquedaDiferida ? "Intenta con otro término" : "Crea tu primera categoría arriba"}
             </p>
           </div>
         ) : (
-          <div className="space-y-2">
-            {categorias.map((cat) => (
-              <div
-                key={cat.id}
-                className="flex items-center justify-between p-4 rounded-xl bg-fondo-oscuro transition-all"
-              >
-                <p className="text-sm font-medium text-texto truncate mr-3">
-                  {cat.nombre}
+          <>
+            <div className="flex-1 overflow-y-auto space-y-2 min-h-0 pr-1">
+              {categoriasPaginadas.map((cat) => (
+                <FilaCategoria
+                  key={cat.id}
+                  categoria={cat}
+                  onEliminar={alEliminar}
+                />
+              ))}
+            </div>
+
+            {totalPaginas > 1 && (
+              <Pagination className="mt-4 pt-4 border-t border-borde/40 justify-between shrink-0">
+                <p className="text-xs text-texto-terciario self-center">
+                  Página {pagina} de {totalPaginas}
                 </p>
-                <button
-                  onClick={() => alEliminar(cat.id)}
-                  className="text-texto-terciario hover:text-error transition-colors p-2 rounded-lg hover:bg-error/10 shrink-0"
-                  aria-label={`Eliminar ${cat.nombre}`}
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            ))}
-          </div>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={irPaginaAnterior}
+                      disabled={pagina === 1}
+                      className="disabled:opacity-30 disabled:cursor-not-allowed"
+                    />
+                  </PaginationItem>
+                  {Array.from({ length: totalPaginas }, (_, i) => i + 1)
+                    .filter((num) => {
+                      if (totalPaginas <= 5) return true;
+                      if (num === 1 || num === totalPaginas) return true;
+                      if (Math.abs(num - pagina) <= 1) return true;
+                      return false;
+                    })
+                    .reduce<(number | "ellipsis")[]>((acc, num, idx, arr) => {
+                      if (idx > 0 && num - (arr[idx - 1] as number) > 1) {
+                        acc.push("ellipsis");
+                      }
+                      acc.push(num);
+                      return acc;
+                    }, [])
+                    .map((item, idx) =>
+                      item === "ellipsis" ? (
+                        <PaginationItem key={`ellipsis-${idx}`}>
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      ) : (
+                        <PaginationItem key={item}>
+                          <PaginationLink
+                            onClick={() => setPagina(item)}
+                            isActive={item === pagina}
+                            size="sm"
+                          >
+                            {item}
+                          </PaginationLink>
+                        </PaginationItem>
+                      )
+                    )}
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={irPaginaSiguiente}
+                      disabled={pagina === totalPaginas}
+                      className="disabled:opacity-30 disabled:cursor-not-allowed"
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            )}
+          </>
         )}
       </div>
     </div>

@@ -1,0 +1,125 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "E-Kitchen" [ref=e156] [cursor=pointer]:
+        - /url: /cocina
+        - img [ref=e7]
+        - generic [ref=e157]: E-Kitchen
+      - separator [ref=e9]
+      - navigation [ref=e10]:
+        - link "Pedidos" [ref=e158] [cursor=pointer]:
+          - /url: /cocina
+          - img [ref=e159]
+          - text: Pedidos
+        - link "Gestión de Menú" [ref=e162] [cursor=pointer]:
+          - /url: /cocina/platos
+          - img [ref=e163]
+          - text: Gestión de Menú
+        - link "Platos Listos" [ref=e168] [cursor=pointer]:
+          - /url: /logistica
+          - img [ref=e169]
+          - text: Platos Listos
+        - generic [ref=e27]:
+          - button "Admin" [ref=e174]:
+            - img [ref=e175]
+            - generic [ref=e180]: Admin
+            - img [ref=e181]
+          - generic [ref=e183]:
+            - link "Inicio" [ref=e184] [cursor=pointer]:
+              - /url: /admin
+              - img [ref=e185]
+              - text: Inicio
+            - link "Personal" [ref=e190] [cursor=pointer]:
+              - /url: /admin/personal
+              - img [ref=e191]
+              - text: Personal
+            - link "Mesas" [ref=e196] [cursor=pointer]:
+              - /url: /admin/mesas
+              - img [ref=e197]
+              - text: Mesas
+      - separator [ref=e34]
+      - generic [ref=e35]:
+        - generic [ref=e200]:
+          - generic [ref=e202]: A
+          - generic [ref=e203]:
+            - paragraph [ref=e204]: Usuario
+            - paragraph [ref=e205]: admin@ekitchen.com
+        - button "Cerrar Sesión" [ref=e207]:
+          - img [ref=e208]
+          - text: Cerrar Sesión
+        - button "Comprimir" [ref=e211]:
+          - img [ref=e212]
+          - text: Comprimir
+    - generic [ref=e39]:
+      - banner [ref=e40]:
+        - generic [ref=e41]:
+          - button "Comprimir menú" [active] [ref=e215]:
+            - img [ref=e216]
+          - generic [ref=e45]:
+            - heading "Pedidos" [level=1] [ref=e46]
+            - paragraph [ref=e47]: Panel de pedidos en tiempo real
+        - generic [ref=e48]:
+          - generic [ref=e50]: 02:14 a. m.
+          - button "A" [ref=e51]:
+            - generic [ref=e54]: A
+      - generic [ref=e56]:
+        - generic [ref=e57]:
+          - img [ref=e59]
+          - generic [ref=e62]:
+            - paragraph [ref=e63]: Pendientes
+            - paragraph [ref=e64]: "0"
+        - generic [ref=e65]:
+          - img [ref=e67]
+          - generic [ref=e69]:
+            - paragraph [ref=e70]: Preparando
+            - paragraph [ref=e71]: "0"
+        - generic [ref=e72]:
+          - img [ref=e74]
+          - generic [ref=e77]:
+            - paragraph [ref=e78]: Listos
+            - paragraph [ref=e79]: "0"
+        - generic [ref=e80]:
+          - img [ref=e82]
+          - generic [ref=e85]:
+            - paragraph [ref=e86]: Tiempo promedio
+            - paragraph [ref=e87]: —
+      - generic [ref=e89]:
+        - generic [ref=e90]:
+          - generic [ref=e91]:
+            - generic [ref=e92]:
+              - generic [ref=e93]:
+                - img [ref=e95]
+                - generic [ref=e98]: Pendiente
+              - generic [ref=e99]: "0"
+            - generic [ref=e100]: 0 pedidos en cola
+          - generic [ref=e103]:
+            - img [ref=e105]
+            - paragraph [ref=e108]: Sin pedidos
+            - paragraph [ref=e109]: Los pedidos aparecerán aquí
+        - generic [ref=e110]:
+          - generic [ref=e111]:
+            - generic [ref=e112]:
+              - generic [ref=e113]:
+                - img [ref=e115]
+                - generic [ref=e117]: Preparando
+              - generic [ref=e118]: "0"
+            - generic [ref=e119]: 0 en preparación
+          - generic [ref=e122]:
+            - img [ref=e124]
+            - paragraph [ref=e126]: Sin pedidos
+            - paragraph [ref=e127]: Los pedidos aparecerán aquí
+        - generic [ref=e128]:
+          - generic [ref=e129]:
+            - generic [ref=e130]:
+              - generic [ref=e131]:
+                - img [ref=e133]
+                - generic [ref=e135]: Listo
+              - generic [ref=e136]: "0"
+            - generic [ref=e137]: 0 listo para entregar
+          - generic [ref=e140]:
+            - img [ref=e142]
+            - paragraph [ref=e144]: Sin pedidos
+            - paragraph [ref=e145]: Los pedidos aparecerán aquí
+  - button "Open Next.js Dev Tools" [ref=e151] [cursor=pointer]:
+    - img [ref=e152]
+  - alert [ref=e155]

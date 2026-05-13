@@ -1,0 +1,54 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e4]:
+      - link [ref=e6] [cursor=pointer]:
+        - /url: /cocina
+        - img [ref=e8]
+      - separator [ref=e10]
+      - navigation [ref=e11]:
+        - button [ref=e12]:
+          - link [ref=e13] [cursor=pointer]:
+            - /url: /cocina
+            - img [ref=e14]
+        - button [ref=e17]:
+          - link [ref=e18] [cursor=pointer]:
+            - /url: /cocina/platos
+            - img [ref=e19]
+        - button [ref=e24]:
+          - link [ref=e25] [cursor=pointer]:
+            - /url: /logistica
+            - img [ref=e26]
+        - button [ref=e32]:
+          - button [ref=e33] [cursor=pointer]:
+            - img [ref=e34]
+      - separator [ref=e39]
+      - button [ref=e41]:
+        - button [ref=e42] [cursor=pointer]:
+          - img [ref=e43]
+    - generic [ref=e45]:
+      - banner [ref=e46]:
+        - generic [ref=e47]:
+          - button "Expandir menú" [ref=e48]:
+            - img [ref=e49]
+          - generic [ref=e51]:
+            - heading "Gestión de Menú" [level=1] [ref=e52]
+            - paragraph [ref=e53]: Administra platos y categorías
+        - generic [ref=e54]:
+          - generic [ref=e56]: 03:31 a. m.
+          - button "A" [ref=e57]:
+            - generic [ref=e60]: A
+      - generic [ref=e61]:
+        - generic [ref=e62]:
+          - button "Nuevo Plato" [ref=e63]:
+            - img [ref=e64]
+            - text: Nuevo Plato
+          - button "Categorías" [ref=e65]:
+            - img [ref=e66]
+            - text: Categorías
+        - generic [ref=e71]:
+          - img [ref=e73]
+          - paragraph [ref=e76]: No hay platos en el catálogo
+          - paragraph [ref=e77]: Agrega tu primer plato
+  - button "Open Next.js Dev Tools" [ref=e83] [cursor=pointer]:
+    - img [ref=e84]
+  - alert [ref=e87]

@@ -1,0 +1,134 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e33] [cursor=pointer]:
+    - button "Open Next.js Dev Tools" [ref=e34]:
+      - img [ref=e35]
+    - generic [ref=e39]:
+      - button "Open issues overlay" [ref=e40]:
+        - generic [ref=e41]:
+          - generic [ref=e42]: "0"
+          - generic [ref=e43]: "1"
+        - generic [ref=e44]: Issue
+      - button "Collapse issues badge" [ref=e45]:
+        - img [ref=e46]
+  - alert [ref=e38]
+  - generic [ref=e48]:
+    - complementary [ref=e49]:
+      - link "E-Kitchen" [ref=e51] [cursor=pointer]:
+        - /url: /cocina
+        - img [ref=e53]
+        - generic [ref=e55]: E-Kitchen
+      - separator [ref=e56]
+      - navigation [ref=e57]:
+        - link "Pedidos" [ref=e58] [cursor=pointer]:
+          - /url: /cocina
+          - img [ref=e59]
+          - text: Pedidos
+        - link "Gestión de Menú" [ref=e62] [cursor=pointer]:
+          - /url: /cocina/platos
+          - img [ref=e63]
+          - text: Gestión de Menú
+        - link "Platos Listos" [ref=e68] [cursor=pointer]:
+          - /url: /logistica
+          - img [ref=e69]
+          - text: Platos Listos
+        - generic [ref=e74]:
+          - button "Admin" [ref=e75]:
+            - img [ref=e76]
+            - generic [ref=e81]: Admin
+            - img [ref=e82]
+          - generic [ref=e84]:
+            - link "Inicio" [ref=e85] [cursor=pointer]:
+              - /url: /admin
+              - img [ref=e86]
+              - text: Inicio
+            - link "Personal" [ref=e91] [cursor=pointer]:
+              - /url: /admin/personal
+              - img [ref=e92]
+              - text: Personal
+            - link "Mesas" [ref=e97] [cursor=pointer]:
+              - /url: /admin/mesas
+              - img [ref=e98]
+              - text: Mesas
+      - separator [ref=e101]
+      - generic [ref=e102]:
+        - generic [ref=e103]:
+          - generic [ref=e105]: A
+          - generic [ref=e106]:
+            - paragraph [ref=e107]: Usuario
+            - paragraph [ref=e108]: admin@ekitchen.com
+        - button "Cerrar Sesión" [ref=e110]:
+          - img [ref=e111]
+          - text: Cerrar Sesión
+        - button "Comprimir" [ref=e114]:
+          - img [ref=e115]
+          - text: Comprimir
+    - generic [ref=e118]:
+      - banner [ref=e119]:
+        - generic [ref=e120]:
+          - button "Comprimir menú" [ref=e121]:
+            - img [ref=e122]
+          - generic [ref=e125]:
+            - heading "Pedidos" [level=1] [ref=e126]
+            - paragraph [ref=e127]: Panel de pedidos en tiempo real
+        - generic [ref=e128]:
+          - generic [ref=e130]: 02:08 a. m.
+          - button "A" [ref=e131]:
+            - generic [ref=e134]: A
+      - generic [ref=e136]:
+        - generic [ref=e137]:
+          - img [ref=e139]
+          - generic [ref=e142]:
+            - paragraph [ref=e143]: Pendientes
+            - paragraph [ref=e144]: "0"
+        - generic [ref=e145]:
+          - img [ref=e147]
+          - generic [ref=e149]:
+            - paragraph [ref=e150]: Preparando
+            - paragraph [ref=e151]: "0"
+        - generic [ref=e152]:
+          - img [ref=e154]
+          - generic [ref=e157]:
+            - paragraph [ref=e158]: Listos
+            - paragraph [ref=e159]: "0"
+        - generic [ref=e160]:
+          - img [ref=e162]
+          - generic [ref=e165]:
+            - paragraph [ref=e166]: Tiempo promedio
+            - paragraph [ref=e167]: —
+      - generic [ref=e169]:
+        - generic [ref=e170]:
+          - generic [ref=e171]:
+            - generic [ref=e172]:
+              - generic [ref=e173]:
+                - img [ref=e175]
+                - generic [ref=e178]: Pendiente
+              - generic [ref=e179]: "0"
+            - generic [ref=e180]: 0 pedidos en cola
+          - generic [ref=e183]:
+            - img [ref=e185]
+            - paragraph [ref=e188]: Sin pedidos
+            - paragraph [ref=e189]: Los pedidos aparecerán aquí
+        - generic [ref=e190]:
+          - generic [ref=e191]:
+            - generic [ref=e192]:
+              - generic [ref=e193]:
+                - img [ref=e195]
+                - generic [ref=e197]: Preparando
+              - generic [ref=e198]: "0"
+            - generic [ref=e199]: 0 en preparación
+          - generic [ref=e202]:
+            - img [ref=e204]
+            - paragraph [ref=e206]: Sin pedidos
+            - paragraph [ref=e207]: Los pedidos aparecerán aquí
+        - generic [ref=e208]:
+          - generic [ref=e209]:
+            - generic [ref=e210]:
+              - generic [ref=e211]:
+                - img [ref=e213]
+                - generic [ref=e215]: Listo
+              - generic [ref=e216]: "0"
+            - generic [ref=e217]: 0 listo para entregar
+          - generic [ref=e220]:
+            - img [ref=e222]
+            - paragraph [ref=e224]: Sin pedidos
+            - paragraph [ref=e225]: Los pedidos aparecerán aquí

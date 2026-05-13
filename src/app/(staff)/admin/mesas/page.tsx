@@ -6,10 +6,8 @@ export default async function PaginaMesas() {
   const mesas = await obtenerMesas();
 
   return (
-    <div className="flex-1 overflow-y-auto">
-      <Suspense fallback={<SkeletonGestionMesas />}>
-        <GestionMesas mesasIniciales={mesas} />
-      </Suspense>
-    </div>
+    <Suspense fallback={<SkeletonGestionMesas />}>
+      <GestionMesas mesasIniciales={mesas} />
+    </Suspense>
   );
 }

@@ -1,0 +1,100 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e4]:
+      - link [ref=e6] [cursor=pointer]:
+        - /url: /cocina
+        - img [ref=e8]
+      - separator [ref=e10]
+      - navigation [ref=e11]:
+        - button [ref=e12]:
+          - link [active] [ref=e13] [cursor=pointer]:
+            - /url: /cocina
+            - img [ref=e14]
+        - button [ref=e17]:
+          - link [ref=e18] [cursor=pointer]:
+            - /url: /cocina/platos
+            - img [ref=e19]
+        - button [ref=e24]:
+          - link [ref=e25] [cursor=pointer]:
+            - /url: /logistica
+            - img [ref=e26]
+        - button [ref=e32]:
+          - button [ref=e33] [cursor=pointer]:
+            - img [ref=e34]
+      - separator [ref=e39]
+      - button [ref=e41]:
+        - button [ref=e42] [cursor=pointer]:
+          - img [ref=e43]
+    - generic [ref=e45]:
+      - banner [ref=e46]:
+        - generic [ref=e47]:
+          - button "Expandir menú" [ref=e48]:
+            - img [ref=e49]
+          - generic [ref=e51]:
+            - heading "Pedidos" [level=1] [ref=e88]
+            - paragraph [ref=e53]: Panel de pedidos en tiempo real
+        - generic [ref=e54]:
+          - generic [ref=e56]: 03:31 a. m.
+          - button "A" [ref=e57]:
+            - generic [ref=e60]: A
+      - generic [ref=e90]:
+        - generic [ref=e91]:
+          - img [ref=e93]
+          - generic [ref=e96]:
+            - paragraph [ref=e97]: Pendientes
+            - paragraph [ref=e98]: "0"
+        - generic [ref=e99]:
+          - img [ref=e101]
+          - generic [ref=e103]:
+            - paragraph [ref=e104]: Preparando
+            - paragraph [ref=e105]: "0"
+        - generic [ref=e106]:
+          - img [ref=e108]
+          - generic [ref=e111]:
+            - paragraph [ref=e112]: Listos
+            - paragraph [ref=e113]: "0"
+        - generic [ref=e114]:
+          - img [ref=e116]
+          - generic [ref=e119]:
+            - paragraph [ref=e120]: Tiempo promedio
+            - paragraph [ref=e121]: —
+      - generic [ref=e123]:
+        - generic [ref=e124]:
+          - generic [ref=e125]:
+            - generic [ref=e126]:
+              - generic [ref=e127]:
+                - img [ref=e129]
+                - generic [ref=e132]: Pendiente
+              - generic [ref=e133]: "0"
+            - generic [ref=e134]: 0 pedidos en cola
+          - generic [ref=e137]:
+            - img [ref=e139]
+            - paragraph [ref=e142]: Sin pedidos
+            - paragraph [ref=e143]: Los pedidos aparecerán aquí
+        - generic [ref=e144]:
+          - generic [ref=e145]:
+            - generic [ref=e146]:
+              - generic [ref=e147]:
+                - img [ref=e149]
+                - generic [ref=e151]: Preparando
+              - generic [ref=e152]: "0"
+            - generic [ref=e153]: 0 en preparación
+          - generic [ref=e156]:
+            - img [ref=e158]
+            - paragraph [ref=e160]: Sin pedidos
+            - paragraph [ref=e161]: Los pedidos aparecerán aquí
+        - generic [ref=e162]:
+          - generic [ref=e163]:
+            - generic [ref=e164]:
+              - generic [ref=e165]:
+                - img [ref=e167]
+                - generic [ref=e169]: Listo
+              - generic [ref=e170]: "0"
+            - generic [ref=e171]: 0 listo para entregar
+          - generic [ref=e174]:
+            - img [ref=e176]
+            - paragraph [ref=e178]: Sin pedidos
+            - paragraph [ref=e179]: Los pedidos aparecerán aquí
+  - button "Open Next.js Dev Tools" [ref=e83] [cursor=pointer]:
+    - img [ref=e84]
+  - alert [ref=e87]

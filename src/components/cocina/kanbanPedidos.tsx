@@ -35,7 +35,7 @@ const CONFIG_ESTADO: Record<string, {
     bgHeader: "bg-info/5",
     border: "border-l-info",
     label: "Pendiente",
-    icon: <Clock className="w-4 h-4" />,
+    icon: <Clock className="w-5 h-5" />,
     desc: "pedidos en cola",
   },
   preparando: {
@@ -44,7 +44,7 @@ const CONFIG_ESTADO: Record<string, {
     bgHeader: "bg-advertencia/5",
     border: "border-l-advertencia",
     label: "Preparando",
-    icon: <AlertTriangle className="w-4 h-4" />,
+    icon: <AlertTriangle className="w-5 h-5" />,
     desc: "en preparación",
   },
   listo: {
@@ -53,7 +53,7 @@ const CONFIG_ESTADO: Record<string, {
     bgHeader: "bg-exito/5",
     border: "border-l-exito",
     label: "Listo",
-    icon: <Check className="w-4 h-4" />,
+    icon: <Check className="w-5 h-5" />,
     desc: "listo para entregar",
   },
 };
@@ -112,64 +112,64 @@ export function KanbanPedidos({ pedidosIniciales }: KanbanPedidosProps) {
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       {mensaje && (
-        <div className="mx-4 md:mx-6 mt-3 px-4 py-2.5 bg-error/10 text-error text-sm rounded-xl flex items-center gap-2">
+        <div className="mx-6 mt-4 px-5 py-3 bg-error/10 text-error text-sm rounded-xl flex items-center gap-2">
           <AlertTriangle className="w-4 h-4 shrink-0" />
           {mensaje}
         </div>
       )}
 
-      <div className="flex-1 flex flex-col md:flex-row gap-4 p-4 md:p-6 overflow-auto">
+      <div className="flex-1 flex flex-col md:flex-row gap-5 p-6 overflow-auto">
         {ESTADOS.map((estado) => {
           const config = CONFIG_ESTADO[estado];
           const pedidosEstado = pedidosPorEstado(estado);
           return (
-            <Card key={estado} className="flex-1 min-w-0 md:min-w-[320px] md:max-w-[420px] flex flex-col border-borde/60 shadow-[0_1px_3px_rgba(45,42,38,0.04)]">
-              <CardHeader className={`pb-3 ${config.bgHeader} rounded-t-xl`}>
+            <Card key={estado} className="flex-1 min-w-0 md:min-w-[340px] md:max-w-[440px] flex flex-col border-borde/60 shadow-[0_1px_3px_rgba(45,42,38,0.04)] rounded-2xl">
+              <CardHeader className={`pb-4 ${config.bgHeader} rounded-t-2xl`}>
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2.5">
                     <span className={config.color}>{config.icon}</span>
                     <CardTitle className="text-sm font-semibold uppercase tracking-wide text-texto-secundario">
                       {config.label}
                     </CardTitle>
                   </div>
-                  <Badge variant="secondary" className={`${config.bg} ${config.color} text-xs font-bold`}>
+                  <Badge variant="secondary" className={`${config.bg} ${config.color} text-xs font-bold px-2.5 py-1`}>
                     {pedidosEstado.length}
                   </Badge>
                 </div>
-                <CardDescription className="text-xs">
+                <CardDescription className="text-xs mt-1">
                   {pedidosEstado.length} {config.desc}
                 </CardDescription>
               </CardHeader>
 
-              <CardContent className="flex-1 p-3">
-                <ScrollArea className="pr-2" style={{ maxHeight: "calc(100dvh - 320px)" }}>
+              <CardContent className="flex-1 p-4">
+                <ScrollArea className="pr-2" style={{ maxHeight: "calc(100dvh - 340px)" }}>
                   {pedidosEstado.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-12 text-texto-terciario">
-                      <div className="w-14 h-14 rounded-full bg-fondo-oscuro flex items-center justify-center mb-3">
+                    <div className="flex flex-col items-center justify-center py-16 text-texto-terciario">
+                      <div className="w-16 h-16 rounded-full bg-fondo-oscuro flex items-center justify-center mb-4">
                         {config.icon}
                       </div>
                       <p className="text-sm font-medium text-texto-secundario">Sin pedidos</p>
-                      <p className="text-xs mt-0.5">Los pedidos aparecerán aquí</p>
+                      <p className="text-xs mt-1">Los pedidos aparecerán aquí</p>
                     </div>
                   ) : (
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                       {pedidosEstado.map((pedido) => {
                         const minutos = Math.floor((ahora - new Date(pedido.creado_en).getTime()) / 60000);
                         const esUrgente = minutos > 10;
                         return (
-                          <Card key={pedido.id} className={`border-borde/60 border-l-4 ${config.border} shadow-[0_1px_3px_rgba(45,42,38,0.04)] hover:shadow-[0_4px_12px_rgba(45,42,38,0.08)] transition-all`}>
-                            <CardHeader className="pb-2">
+                          <Card key={pedido.id} className={`border-borde/60 border-l-4 ${config.border} shadow-[0_1px_3px_rgba(45,42,38,0.04)] hover:shadow-[0_4px_12px_rgba(45,42,38,0.08)] transition-all rounded-xl`}>
+                            <CardHeader className="pb-3">
                               <div className="flex items-center justify-between">
-                                <CardTitle className="font-playfair text-lg md:text-xl font-bold text-texto">
+                                <CardTitle className="font-playfair text-xl font-bold text-texto">
                                   Mesa {pedido.mesa_id ? `#${pedido.mesa_id.slice(0, 4)}` : "?"}
                                 </CardTitle>
                                 <Badge variant="secondary" className={`${config.bg} ${config.color} text-[10px] font-semibold`}>
                                   {config.label}
                                 </Badge>
                               </div>
-                              <div className="flex items-center gap-1.5">
-                                <Timer className={`w-3.5 h-3.5 ${esUrgente ? "text-advertencia animate-pulse" : "text-texto-terciario"}`} />
-                                <span className={`text-xs ${esUrgente ? "text-advertencia font-semibold" : "text-texto-terciario"}`}>
+                              <div className="flex items-center gap-2">
+                                <Timer className={`w-4 h-4 ${esUrgente ? "text-advertencia animate-pulse" : "text-texto-terciario"}`} />
+                                <span className={`text-sm ${esUrgente ? "text-advertencia font-semibold" : "text-texto-terciario"}`}>
                                   {tiempoTranscurrido(pedido.creado_en)}
                                 </span>
                                 {esUrgente && (
@@ -180,44 +180,44 @@ export function KanbanPedidos({ pedidosIniciales }: KanbanPedidosProps) {
                               </div>
                             </CardHeader>
 
-                            <CardContent className="pb-2">
-                              <div className="space-y-1.5 mb-3">
+                            <CardContent className="pb-3">
+                              <div className="space-y-2 mb-4">
                                 {pedido.items.map((item, i) => (
                                   <div key={i} className="flex items-center justify-between text-sm">
                                     <span className="text-texto font-medium">
-                                      <span className="text-primario font-bold mr-1.5">{item.cantidad}x</span>
+                                      <span className="text-primario font-bold mr-2">{item.cantidad}x</span>
                                       {item.plato_nombre}
                                     </span>
                                   </div>
                                 ))}
                               </div>
                               <Separator />
-                              <div className="flex items-center justify-between mt-3">
-                                <span className="text-xs text-texto-secundario">Total</span>
-                                <span className="font-playfair text-base font-bold text-primario tabular-nums">
+                              <div className="flex items-center justify-between mt-4">
+                                <span className="text-sm text-texto-secundario">Total</span>
+                                <span className="font-playfair text-lg font-bold text-primario tabular-nums">
                                   {formatearPrecio(pedido.total)}
                                 </span>
                               </div>
                             </CardContent>
 
-                            <CardFooter className="pt-2">
+                            <CardFooter className="pt-3">
                               {estado === "pendiente" && (
                                 <Button
                                   onClick={() => handleCambiarEstado(pedido.id, "preparando")}
                                   size="sm"
-                                  className="w-full bg-primario hover:bg-primario-hover text-primario-texto text-xs font-semibold active:scale-[0.98]"
+                                  className="w-full bg-primario hover:bg-primario-hover text-primario-texto text-sm font-semibold active:scale-[0.98] h-10"
                                 >
                                   Iniciar Preparación
-                                  <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                                  <ArrowRight className="w-4 h-4 ml-1.5" />
                                 </Button>
                               )}
                               {estado === "preparando" && (
                                 <Button
                                   onClick={() => handleCambiarEstado(pedido.id, "listo")}
                                   size="sm"
-                                  className="w-full bg-exito hover:bg-exito/90 text-white text-xs font-semibold active:scale-[0.98]"
+                                  className="w-full bg-exito hover:bg-exito/90 text-white text-sm font-semibold active:scale-[0.98] h-10"
                                 >
-                                  <Check className="w-3.5 h-3.5 mr-1" />
+                                  <Check className="w-4 h-4 mr-1.5" />
                                   Marcar Listo
                                 </Button>
                               )}
@@ -226,9 +226,9 @@ export function KanbanPedidos({ pedidosIniciales }: KanbanPedidosProps) {
                                   onClick={() => handleCambiarEstado(pedido.id, "entregado")}
                                   size="sm"
                                   variant="outline"
-                                  className="w-full text-xs font-semibold active:scale-[0.98]"
+                                  className="w-full text-sm font-semibold active:scale-[0.98] h-10"
                                 >
-                                  <PackageCheck className="w-3.5 h-3.5 mr-1" />
+                                  <PackageCheck className="w-4 h-4 mr-1.5" />
                                   Entregar
                                 </Button>
                               )}
@@ -250,41 +250,41 @@ export function KanbanPedidos({ pedidosIniciales }: KanbanPedidosProps) {
 
 export function SkeletonKanban() {
   return (
-    <div className="flex-1 flex flex-col md:flex-row gap-4 p-4 md:p-6 overflow-auto">
+    <div className="flex-1 flex flex-col md:flex-row gap-5 p-6 overflow-auto">
       {["Pendiente", "Preparando", "Listo"].map((estado) => (
-        <Card key={estado} className="flex-1 min-w-0 md:min-w-[320px] md:max-w-[420px] flex flex-col border-borde/60">
-          <CardHeader className="pb-3 bg-fondo-oscuro rounded-t-xl">
+        <Card key={estado} className="flex-1 min-w-0 md:min-w-[340px] md:max-w-[440px] flex flex-col border-borde/60 rounded-2xl">
+          <CardHeader className="pb-4 bg-fondo-oscuro rounded-t-2xl">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Skeleton className="w-4 h-4 rounded" />
+              <div className="flex items-center gap-2.5">
+                <Skeleton className="w-5 h-5 rounded" />
                 <Skeleton className="w-20 h-4" />
               </div>
               <Skeleton className="w-6 h-5 rounded-full" />
             </div>
-            <Skeleton className="w-24 h-3" />
+            <Skeleton className="w-24 h-3 mt-1" />
           </CardHeader>
-          <CardContent className="flex-1 p-3">
-            <div className="space-y-3">
+          <CardContent className="flex-1 p-4">
+            <div className="space-y-4">
               {[1, 2].map((i) => (
-                <Card key={i} className="border-borde/60 border-l-4 border-l-fondo-oscuro">
-                  <CardHeader className="pb-2">
+                <Card key={i} className="border-borde/60 border-l-4 border-l-fondo-oscuro rounded-xl">
+                  <CardHeader className="pb-3">
                     <div className="flex justify-between">
-                      <Skeleton className="w-16 h-6" />
+                      <Skeleton className="w-20 h-6" />
                       <Skeleton className="w-14 h-5 rounded-full" />
                     </div>
-                    <Skeleton className="w-16 h-3" />
+                    <Skeleton className="w-16 h-4 mt-1" />
                   </CardHeader>
-                  <CardContent className="pb-2 space-y-2">
-                    <Skeleton className="w-3/4 h-4" />
-                    <Skeleton className="w-1/2 h-4" />
+                  <CardContent className="pb-3 space-y-2">
+                    <Skeleton className="w-3/4 h-5" />
+                    <Skeleton className="w-1/2 h-5" />
                     <Skeleton className="w-full h-px" />
-                    <div className="flex justify-between">
-                      <Skeleton className="w-8 h-3" />
-                      <Skeleton className="w-16 h-4" />
+                    <div className="flex justify-between mt-4">
+                      <Skeleton className="w-10 h-4" />
+                      <Skeleton className="w-20 h-5" />
                     </div>
                   </CardContent>
-                  <CardFooter className="pt-2">
-                    <Skeleton className="w-full h-8 rounded-lg" />
+                  <CardFooter className="pt-3">
+                    <Skeleton className="w-full h-10 rounded-lg" />
                   </CardFooter>
                 </Card>
               ))}
