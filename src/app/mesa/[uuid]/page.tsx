@@ -1,9 +1,10 @@
 import { obtenerPlatosDisponibles } from "@/lib/acciones/platos";
 import { obtenerMesaPorUuid } from "@/lib/acciones/pago";
-import { CatalogoPlatos } from "@/components/cliente/catalogoPlatos";
+import { CatalogoPlatos, SkeletonCatalogo } from "@/components/cliente/catalogoPlatos";
 import { BarraMesa } from "@/components/cliente/barraMesa";
 import { CarritoSheet } from "@/components/cliente/carritoSheet";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 export default async function PaginaMesa({
   params,
@@ -21,13 +22,15 @@ export default async function PaginaMesa({
   }
 
   return (
-    <div className="flex flex-col min-h-dvh bg-[#FEFAF6]">
+    <div className="flex flex-col min-h-dvh bg-fondo">
       <BarraMesa numeroMesa={mesa.numero} />
-      <CatalogoPlatos
-        platos={datosCatalogo.platos}
-        categorias={datosCatalogo.categorias}
-        mesaUuid={uuid}
-      />
+      <Suspense fallback={<SkeletonCatalogo />}>
+        <CatalogoPlatos
+          platos={datosCatalogo.platos}
+          categorias={datosCatalogo.categorias}
+          mesaUuid={uuid}
+        />
+      </Suspense>
       <CarritoSheet mesaUuid={uuid} />
     </div>
   );

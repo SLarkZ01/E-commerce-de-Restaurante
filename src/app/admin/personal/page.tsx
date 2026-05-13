@@ -1,7 +1,9 @@
-import { obtenerPerfiles, crearPerfil, eliminarPerfil } from "@/lib/acciones/admin";
+import { obtenerPerfiles } from "@/lib/acciones/admin";
 import { crearCliente } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { GestionPersonal } from "@/components/admin/gestionPersonal";
+import { GestionPersonal, SkeletonGestionPersonal } from "@/components/admin/gestionPersonal";
+import { LayoutDashboard, Users, Armchair } from "lucide-react";
+import { Suspense } from "react";
 
 export default async function PaginaPersonal() {
   const supabase = await crearCliente();
@@ -13,19 +15,32 @@ export default async function PaginaPersonal() {
   const perfiles = await obtenerPerfiles();
 
   return (
-    <div className="min-h-dvh bg-[#FEFAF6] flex">
-      <aside className="w-[200px] bg-[#FEFAF6] border-r border-[#E7E0D8] p-4 flex flex-col gap-1 shrink-0">
-        <div className="mb-4">
-          <span className="text-lg">🍽️</span>
-          <span className="ml-1 font-[Playfair_Display] text-sm font-semibold text-[#2D2A26]">
+    <div className="min-h-dvh bg-fondo flex">
+      <aside className="w-[220px] bg-fondo border-r border-borde/60 p-4 flex flex-col gap-1 shrink-0">
+        <div className="flex items-center gap-2.5 mb-6 px-2">
+          <div className="w-8 h-8 rounded-lg bg-primario/10 flex items-center justify-center">
+            <LayoutDashboard className="w-4 h-4 text-primario" />
+          </div>
+          <span className="font-playfair text-sm font-bold text-texto">
             Admin
           </span>
         </div>
-        <a href="/admin" className="px-3 py-2 rounded-lg text-sm text-[#78716C] hover:bg-[#F5F0EB] transition-colors">🏠 Inicio</a>
-        <a href="/admin/personal" className="px-3 py-2 rounded-lg text-sm font-medium bg-[#F5F0EB] text-[#C44536] border-l-[3px] border-[#C44536]">👥 Personal</a>
-        <a href="/admin/mesas" className="px-3 py-2 rounded-lg text-sm text-[#78716C] hover:bg-[#F5F0EB] transition-colors">🪑 Mesas</a>
+        <a href="/admin" className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-texto-secundario hover:bg-fondo-oscuro hover:text-texto transition-colors">
+          <LayoutDashboard className="w-4 h-4" />
+          Inicio
+        </a>
+        <a href="/admin/personal" className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium bg-primario/10 text-primario border-l-[3px] border-primario transition-all">
+          <Users className="w-4 h-4" />
+          Personal
+        </a>
+        <a href="/admin/mesas" className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-texto-secundario hover:bg-fondo-oscuro hover:text-texto transition-colors">
+          <Armchair className="w-4 h-4" />
+          Mesas
+        </a>
       </aside>
-      <GestionPersonal perfilesIniciales={perfiles} />
+      <Suspense fallback={<SkeletonGestionPersonal />}>
+        <GestionPersonal perfilesIniciales={perfiles} />
+      </Suspense>
     </div>
   );
 }

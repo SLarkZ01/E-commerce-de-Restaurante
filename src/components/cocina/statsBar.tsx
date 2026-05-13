@@ -1,0 +1,92 @@
+import { Clock, AlertTriangle, CheckCircle2, Timer } from "lucide-react";
+import type { StatsCocina } from "@/lib/acciones/cocina";
+import { Skeleton } from "@/components/ui/skeleton";
+
+interface StatsBarProps {
+  stats: StatsCocina;
+}
+
+export function StatsBar({ stats }: StatsBarProps) {
+  return (
+    <div className="sticky top-14 z-20 bg-fondo/95 backdrop-blur-sm border-b border-borde/60 px-6 py-3">
+      <div className="grid grid-cols-4 gap-3">
+        <StatItem
+          icon={<Clock className="w-4 h-4" />}
+          iconBg="bg-info/10"
+          iconColor="text-info"
+          label="Pendientes"
+          valor={stats.pendientes.toString()}
+        />
+        <StatItem
+          icon={<AlertTriangle className="w-4 h-4" />}
+          iconBg="bg-advertencia/10"
+          iconColor="text-advertencia"
+          label="Preparando"
+          valor={stats.preparando.toString()}
+        />
+        <StatItem
+          icon={<CheckCircle2 className="w-4 h-4" />}
+          iconBg="bg-exito/10"
+          iconColor="text-exito"
+          label="Listos"
+          valor={stats.listos.toString()}
+        />
+        <StatItem
+          icon={<Timer className="w-4 h-4" />}
+          iconBg="bg-primario/10"
+          iconColor="text-primario"
+          label="Tiempo promedio"
+          valor={stats.tiempoPromedioMin > 0 ? `${stats.tiempoPromedioMin} min` : "—"}
+        />
+      </div>
+    </div>
+  );
+}
+
+function StatItem({
+  icon,
+  iconBg,
+  iconColor,
+  label,
+  valor,
+}: {
+  icon: React.ReactNode;
+  iconBg: string;
+  iconColor: string;
+  label: string;
+  valor: string;
+}) {
+  return (
+    <div className="flex items-center gap-3 bg-fondo-card rounded-xl border border-borde/60 px-4 py-3 shadow-[0_1px_2px_rgba(45,42,38,0.03)]">
+      <div className={`w-9 h-9 rounded-lg ${iconBg} flex items-center justify-center ${iconColor} shrink-0`}>
+        {icon}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-[10px] font-medium text-texto-terciario uppercase tracking-wide">
+          {label}
+        </p>
+        <p className="font-playfair text-lg font-bold text-texto tabular-nums leading-tight">
+          {valor}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+export function SkeletonStatsBar() {
+  return (
+    <div className="sticky top-14 z-20 bg-fondo/95 backdrop-blur-sm border-b border-borde/60 px-6 py-3">
+      <div className="grid grid-cols-4 gap-3">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="flex items-center gap-3 bg-fondo-card rounded-xl border border-borde/60 px-4 py-3">
+            <Skeleton className="w-9 h-9 rounded-lg" />
+            <div className="flex-1 space-y-1.5">
+              <Skeleton className="w-16 h-2.5" />
+              <Skeleton className="w-12 h-5" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}

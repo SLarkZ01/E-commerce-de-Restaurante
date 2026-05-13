@@ -1,9 +1,11 @@
 import { obtenerTodosPlatos } from "@/lib/acciones/catalogo";
 import { obtenerPlatosDisponibles } from "@/lib/acciones/platos";
-import { TablaPlatos } from "@/components/cocina/tablaPlatos";
+import { TablaPlatos, SkeletonTablaPlatos } from "@/components/cocina/tablaPlatos";
+import { SidebarCocina } from "@/components/cocina/sidebarCocina";
+import { HeaderCocina } from "@/components/cocina/headerCocina";
 import { crearCliente } from "@/lib/supabase/server";
-import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 export default async function PaginaPlatos() {
   const supabase = await crearCliente();
@@ -18,19 +20,16 @@ export default async function PaginaPlatos() {
   ]);
 
   return (
-    <div className="min-h-dvh bg-[#FEFAF6] flex flex-col">
-      <header className="sticky top-0 z-30 flex items-center justify-between px-4 h-14 bg-[#FEFAF6] border-b border-[#E7E0D8] shadow-sm">
-        <div className="flex items-center gap-3">
-          <Link href="/cocina" className="text-[#C44536] text-sm font-medium">
-            ← Volver
-          </Link>
-          <span className="font-[Playfair_Display] text-lg font-semibold text-[#2D2A26]">
-            Gestión de Platos
-          </span>
-        </div>
-      </header>
+    <div className="flex min-h-dvh bg-fondo">
+      <SidebarCocina userEmail={user.email ?? ""} />
 
-      <TablaPlatos platosIniciales={platos} categorias={categorias} />
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <HeaderCocina titulo="Gestión de Menú" userEmail={user.email ?? ""} />
+
+        <Suspense fallback={<SkeletonTablaPlatos />}>
+          <TablaPlatos platosIniciales={platos} categorias={categorias} />
+        </Suspense>
+      </div>
     </div>
   );
 }

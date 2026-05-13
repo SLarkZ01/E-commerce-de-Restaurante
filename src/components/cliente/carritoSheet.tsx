@@ -1,9 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import { Minus, Plus, Trash2, ShoppingBag, Check, AlertCircle } from "lucide-react";
 import { usarCarrito } from "@/stores/cart";
 import { crearPedido } from "@/lib/acciones/pago";
 import { formatearPrecio } from "@/lib/formato";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 interface CarritoSheetProps {
   mesaUuid: string | null;
@@ -48,145 +57,163 @@ export function CarritoSheet({ mesaUuid }: CarritoSheetProps) {
 
   return (
     <>
-      <footer className="sticky bottom-0 z-30 bg-white border-t border-[#E7E0D8] px-4 py-3">
+      <footer className="sticky bottom-0 z-30 bg-fondo-card/95 backdrop-blur-sm border-t border-borde/60 px-4 py-3">
         <button
           onClick={() => setAbierto(true)}
           disabled={items.length === 0}
-          className="w-full flex items-center justify-between bg-[#C44536] text-white rounded-xl px-5 py-3 font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#A8382C] transition-colors active:scale-[0.98]"
+          className="w-full flex items-center justify-between bg-primario text-primario-texto rounded-xl px-5 py-3.5 font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primario-hover transition-all active:scale-[0.98] shadow-lg shadow-primario/20"
         >
-          <span>
-            🛒 {cantidadTotal} {cantidadTotal === 1 ? "plato" : "platos"}
+          <span className="flex items-center gap-2">
+            <ShoppingBag className="w-4 h-4" />
+            {cantidadTotal} {cantidadTotal === 1 ? "plato" : "platos"}
           </span>
-          <span className="font-semibold">{formatearPrecio(total())}</span>
+          <span className="font-playfair font-bold text-lg">
+            {formatearPrecio(total())}
+          </span>
         </button>
       </footer>
 
-      {abierto && (
-        <div className="fixed inset-0 z-50 flex flex-col justify-end">
-          <div
-            className="absolute inset-0 bg-black/40"
-            onClick={() => setAbierto(false)}
-          />
-          <div className="relative bg-white rounded-t-2xl max-h-[80vh] flex flex-col animate-in slide-in-from-bottom duration-300">
-            <div className="flex justify-center pt-3 pb-1">
-              <div className="w-9 h-1 rounded-full bg-[#E7E0D8]" />
-            </div>
-
-            <div className="px-4 pb-2 border-b border-[#E7E0D8]">
-              <h2 className="font-[Playfair_Display] text-lg font-semibold text-[#2D2A26]">
+      <Sheet open={abierto} onOpenChange={setAbierto}>
+        <SheetContent className="flex flex-col p-0 gap-0 sm:max-w-md">
+          <div className="bg-gradient-to-r from-primario to-primario-hover px-5 py-4">
+            <SheetHeader>
+              <SheetTitle className="font-playfair text-lg font-bold text-primario-texto">
                 Tu Pedido
-              </h2>
-            </div>
+              </SheetTitle>
+            </SheetHeader>
+          </div>
 
-            <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
-              {items.length === 0 ? (
-                <p className="text-center text-[#A8A29E] py-10 text-sm">
-                  El carrito está vacío
-                </p>
-              ) : (
-                items.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex items-center gap-3 bg-[#FEFAF6] rounded-xl p-3"
-                  >
-                    <div className="w-12 h-12 rounded-lg bg-[#F5F0EB] flex items-center justify-center text-xl shrink-0">
-                      🍽️
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-[#2D2A26] truncate">
-                        {item.nombre}
-                      </p>
-                      <p className="text-xs text-[#78716C]">
-                        {formatearPrecio(item.precio)} c/u
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() =>
-                          actualizarCantidad(item.id, item.cantidad - 1)
-                        }
-                        className="w-7 h-7 rounded-md bg-[#F5F0EB] text-[#2D2A26] flex items-center justify-center text-sm hover:bg-[#E7E0D8] transition-colors"
-                      >
-                        -
-                      </button>
-                      <span className="text-sm font-medium w-5 text-center">
-                        {item.cantidad}
-                      </span>
-                      <button
-                        onClick={() =>
-                          actualizarCantidad(item.id, item.cantidad + 1)
-                        }
-                        className="w-7 h-7 rounded-md bg-[#F5F0EB] text-[#2D2A26] flex items-center justify-center text-sm hover:bg-[#E7E0D8] transition-colors"
-                      >
-                        +
-                      </button>
-                    </div>
+          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
+            {items.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 text-texto-terciario">
+                <div className="w-16 h-16 rounded-full bg-fondo-oscuro flex items-center justify-center mb-4">
+                  <ShoppingBag className="w-7 h-7" />
+                </div>
+                <p className="text-sm font-medium text-texto-secundario">El carrito está vacío</p>
+                <p className="text-xs mt-1">Agrega platos del menú</p>
+              </div>
+            ) : (
+              items.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center gap-3 bg-fondo rounded-xl p-3 border border-borde/40"
+                >
+                  <div className="w-12 h-12 rounded-lg bg-fondo-oscuro flex items-center justify-center text-texto-terciario shrink-0">
+                    {item.imagenUrl ? (
+                      <img src={item.imagenUrl} alt={item.nombre} className="w-full h-full object-cover rounded-lg" />
+                    ) : (
+                      <ShoppingBag className="w-5 h-5" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-texto truncate">
+                      {item.nombre}
+                    </p>
+                    <p className="text-xs text-texto-secundario">
+                      {formatearPrecio(item.precio)} c/u
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1.5">
                     <button
-                      onClick={() => eliminarItem(item.id)}
-                      className="text-[#A8A29E] hover:text-[#DC2626] transition-colors text-xs px-1"
-                      aria-label={`Eliminar ${item.nombre}`}
+                      onClick={() =>
+                        actualizarCantidad(item.id, item.cantidad - 1)
+                      }
+                      className="w-7 h-7 rounded-md bg-fondo-oscuro text-texto flex items-center justify-center hover:bg-borde transition-colors"
                     >
-                      🗑️
+                      <Minus className="w-3.5 h-3.5" />
+                    </button>
+                    <span className="text-sm font-semibold w-5 text-center tabular-nums">
+                      {item.cantidad}
+                    </span>
+                    <button
+                      onClick={() =>
+                        actualizarCantidad(item.id, item.cantidad + 1)
+                      }
+                      className="w-7 h-7 rounded-md bg-fondo-oscuro text-texto flex items-center justify-center hover:bg-borde transition-colors"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
                     </button>
                   </div>
-                ))
+                  <button
+                    onClick={() => eliminarItem(item.id)}
+                    className="text-texto-terciario hover:text-error transition-colors p-1"
+                    aria-label={`Eliminar ${item.nombre}`}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+
+          {confirmacion && (
+            <div
+              className={`mx-5 mb-2 px-4 py-3 rounded-xl text-sm text-center flex items-center justify-center gap-2 ${
+                confirmacion.includes("Error")
+                  ? "bg-error/10 text-error"
+                  : "bg-exito/10 text-exito"
+              }`}
+            >
+              {confirmacion.includes("Error") ? (
+                <AlertCircle className="w-4 h-4 shrink-0" />
+              ) : (
+                <Check className="w-4 h-4 shrink-0" />
               )}
+              {confirmacion}
+            </div>
+          )}
+
+          <div className="px-5 py-4 border-t border-borde/60 space-y-3 bg-fondo-card">
+            <div className="flex justify-between text-sm">
+              <span className="text-texto-secundario">Subtotal</span>
+              <span className="font-medium text-texto tabular-nums">
+                {formatearPrecio(total())}
+              </span>
+            </div>
+            <Separator />
+            <div className="flex justify-between">
+              <span className="font-playfair text-base font-bold text-texto">Total</span>
+              <span className="font-playfair text-xl font-bold text-primario tabular-nums">
+                {formatearPrecio(total())}
+              </span>
             </div>
 
-            {confirmacion && (
-              <div
-                className={`mx-4 mb-2 px-4 py-2 rounded-lg text-sm text-center ${
-                  confirmacion.includes("Error")
-                    ? "bg-red-50 text-red-700"
-                    : "bg-green-50 text-green-700"
-                }`}
-              >
-                {confirmacion}
+            {tieneMesa ? (
+              <>
+                <Button
+                  onClick={handlePago}
+                  disabled={items.length === 0 || pagando}
+                  className="w-full h-12 bg-primario hover:bg-primario-hover text-primario-texto rounded-xl font-semibold text-sm shadow-lg shadow-primario/20 active:scale-[0.98]"
+                >
+                  {pagando ? (
+                    "Procesando..."
+                  ) : (
+                    <>
+                      <Check className="w-4 h-4 mr-2" />
+                      Confirmar Pedido
+                    </>
+                  )}
+                </Button>
+                <p className="text-center text-xs text-texto-terciario">
+                  PayPal próximamente
+                </p>
+              </>
+            ) : (
+              <div className="bg-fondo-oscuro rounded-xl p-5 text-center space-y-2">
+                <div className="w-12 h-12 rounded-full bg-borde/50 flex items-center justify-center mx-auto">
+                  <ShoppingBag className="w-6 h-6 text-texto-secundario" />
+                </div>
+                <p className="text-sm font-medium text-texto">
+                  Escanea el QR de tu mesa
+                </p>
+                <p className="text-xs text-texto-secundario">
+                  Necesitas escanear el código QR de tu mesa para completar el pedido
+                </p>
               </div>
             )}
-
-            <div className="px-4 py-3 border-t border-[#E7E0D8] space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-[#78716C]">Subtotal</span>
-                <span className="font-medium text-[#2D2A26]">
-                  {formatearPrecio(total())}
-                </span>
-              </div>
-              <div className="flex justify-between text-base font-semibold">
-                <span className="text-[#2D2A26]">Total</span>
-                <span className="text-[#C44536]">
-                  {formatearPrecio(total())}
-                </span>
-              </div>
-
-              {tieneMesa ? (
-                <>
-                  <button
-                    onClick={handlePago}
-                    disabled={items.length === 0 || pagando}
-                    className="w-full py-3 bg-[#C44536] text-white rounded-xl font-medium text-sm hover:bg-[#A8382C] disabled:opacity-40 transition-colors active:scale-[0.98]"
-                  >
-                    {pagando ? "Procesando..." : "Confirmar Pedido"}
-                  </button>
-                  <p className="text-center text-xs text-[#A8A29E]">
-                    PayPal próximamente
-                  </p>
-                </>
-              ) : (
-                <div className="bg-[#F5F0EB] rounded-xl p-4 text-center space-y-2">
-                  <span className="text-2xl">📱</span>
-                  <p className="text-sm font-medium text-[#2D2A26]">
-                    Escanea el QR de tu mesa
-                  </p>
-                  <p className="text-xs text-[#78716C]">
-                    Necesitas escanear el código QR de tu mesa para completar el pedido
-                  </p>
-                </div>
-              )}
-            </div>
           </div>
-        </div>
-      )}
+        </SheetContent>
+      </Sheet>
     </>
   );
 }

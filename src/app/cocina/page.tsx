@@ -1,8 +1,11 @@
-import { obtenerTodosPedidos } from "@/lib/acciones/cocina";
+import { obtenerPedidosConItems, obtenerStatsCocina } from "@/lib/acciones/cocina";
 import { crearCliente } from "@/lib/supabase/server";
-import { KanbanPedidos } from "@/components/cocina/kanbanPedidos";
-import Link from "next/link";
+import { KanbanPedidos, SkeletonKanban } from "@/components/cocina/kanbanPedidos";
+import { SidebarCocina } from "@/components/cocina/sidebarCocina";
+import { HeaderCocina } from "@/components/cocina/headerCocina";
+import { StatsBar, SkeletonStatsBar } from "@/components/cocina/statsBar";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 export default async function PaginaCocina() {
   const supabase = await crearCliente();
@@ -12,31 +15,26 @@ export default async function PaginaCocina() {
 
   if (!user) redirect("/login");
 
-  const pedidos = await obtenerTodosPedidos();
+  const [pedidos, stats] = await Promise.all([
+    obtenerPedidosConItems(),
+    obtenerStatsCocina(),
+  ]);
 
   return (
-    <div className="min-h-dvh bg-[#FEFAF6] flex flex-col">
-      <header className="sticky top-0 z-30 flex items-center justify-between px-4 h-14 bg-[#FEFAF6] border-b border-[#E7E0D8] shadow-sm">
-        <div className="flex items-center gap-2">
-          <span className="text-xl">🔥</span>
-          <span className="font-[Playfair_Display] text-lg font-semibold text-[#2D2A26]">
-            E-Kitchen Cocina
-          </span>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link
-            href="/cocina/platos"
-            className="text-sm font-medium text-[#C44536] hover:underline"
-          >
-            Gestionar Menú
-          </Link>
-          <span className="text-xs text-[#78716C]">
-            {user.email}
-          </span>
-        </div>
-      </header>
+    <div className="flex min-h-dvh bg-fondo">
+      <SidebarCocina userEmail={user.email ?? ""} />
 
-      <KanbanPedidos pedidosIniciales={pedidos} />
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <HeaderCocina titulo="Pedidos" userEmail={user.email ?? ""} />
+
+        <Suspense fallback={<SkeletonStatsBar />}>
+          <StatsBar stats={stats} />
+        </Suspense>
+
+        <Suspense fallback={<SkeletonKanban />}>
+          <KanbanPedidos pedidosIniciales={pedidos} />
+        </Suspense>
+      </div>
     </div>
   );
 }

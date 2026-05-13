@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { UtensilsCrossed, Mail, Lock, Loader2 } from "lucide-react";
 import { crearCliente } from "@/lib/supabase/browser";
 import { useRouter } from "next/navigation";
 
@@ -33,50 +34,59 @@ export default function PaginaLogin() {
   };
 
   return (
-    <div className="min-h-dvh flex items-center justify-center bg-[#FEFAF6] px-4">
-      <div className="w-full max-w-sm">
+    <div className="min-h-dvh flex items-center justify-center bg-gradient-to-br from-fondo via-fondo to-fondo-oscuro px-4">
+      <div className="w-full max-w-sm animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="text-center mb-8">
-          <span className="text-4xl">🍽️</span>
-          <h1 className="font-[Playfair_Display] text-2xl font-bold text-[#2D2A26] mt-3">
+          <div className="w-16 h-16 rounded-2xl bg-primario/10 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-primario/10">
+            <UtensilsCrossed className="w-8 h-8 text-primario" />
+          </div>
+          <h1 className="font-playfair text-3xl font-bold text-texto tracking-tight">
             E-Kitchen
           </h1>
-          <p className="text-sm text-[#78716C] mt-1">Panel de Staff</p>
+          <p className="text-sm text-texto-secundario mt-1">Panel de Staff</p>
         </div>
 
         <form
           onSubmit={handleLogin}
-          className="bg-white rounded-2xl shadow-[0_4px_24px_rgba(45,42,38,0.10)] p-6 space-y-4"
+          className="bg-fondo-card rounded-2xl shadow-[0_8px_32px_rgba(45,42,38,0.08)] border border-borde/60 p-6 space-y-4"
         >
           <div>
-            <label className="block text-sm font-medium text-[#2D2A26] mb-1.5">
+            <label className="block text-sm font-medium text-texto mb-1.5">
               Correo electrónico
             </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full h-11 px-3 text-sm rounded-lg border border-[#E7E0D8] bg-white text-[#2D2A26] placeholder-[#A8A29E] focus:outline-none focus:ring-2 focus:ring-[#C44536]/30 focus:border-[#C44536]"
-              placeholder="chef@ekitchen.com"
-            />
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-texto-terciario" />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full h-11 pl-10 pr-4 text-sm rounded-xl border border-borde bg-fondo text-texto placeholder-texto-terciario focus:outline-none focus:ring-2 focus:ring-primario/30 focus:border-primario transition-all"
+                placeholder="chef@ekitchen.com"
+              />
+            </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#2D2A26] mb-1.5">
+            <label className="block text-sm font-medium text-texto mb-1.5">
               Contraseña
             </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full h-11 px-3 text-sm rounded-lg border border-[#E7E0D8] bg-white text-[#2D2A26] placeholder-[#A8A29E] focus:outline-none focus:ring-2 focus:ring-[#C44536]/30 focus:border-[#C44536]"
-              placeholder="••••••"
-            />
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-texto-terciario" />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full h-11 pl-10 pr-4 text-sm rounded-xl border border-borde bg-fondo text-texto placeholder-texto-terciario focus:outline-none focus:ring-2 focus:ring-primario/30 focus:border-primario transition-all"
+                placeholder="••••••"
+              />
+            </div>
           </div>
 
           {error && (
-            <div className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">
+            <div className="text-sm text-error bg-error/10 px-4 py-3 rounded-xl flex items-center gap-2">
+              <Lock className="w-4 h-4 shrink-0" />
               {error}
             </div>
           )}
@@ -84,9 +94,16 @@ export default function PaginaLogin() {
           <button
             type="submit"
             disabled={cargando}
-            className="w-full h-11 bg-[#C44536] text-white rounded-xl font-medium text-sm hover:bg-[#A8382C] disabled:opacity-50 transition-colors active:scale-[0.98]"
+            className="w-full h-11 bg-primario text-primario-texto rounded-xl font-semibold text-sm hover:bg-primario-hover disabled:opacity-50 transition-all active:scale-[0.98] shadow-lg shadow-primario/20 flex items-center justify-center gap-2"
           >
-            {cargando ? "Iniciando sesión..." : "Iniciar Sesión"}
+            {cargando ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Iniciando sesión...
+              </>
+            ) : (
+              "Iniciar Sesión"
+            )}
           </button>
         </form>
       </div>

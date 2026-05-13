@@ -1,18 +1,23 @@
 "use client";
 
+import { UtensilsCrossed, Lock } from "lucide-react";
+
 export function BarraSuperior() {
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between px-4 h-14 bg-[#FEFAF6] border-b border-[#E7E0D8] shadow-sm">
-      <div className="flex items-center gap-2">
-        <span className="text-xl">🍽️</span>
-        <span className="font-[Playfair_Display] text-lg font-semibold text-[#2D2A26]">
+    <header className="sticky top-0 z-30 flex items-center justify-between px-4 h-14 bg-fondo/95 backdrop-blur-sm border-b border-borde/60">
+      <div className="flex items-center gap-2.5">
+        <div className="w-8 h-8 rounded-lg bg-primario/10 flex items-center justify-center">
+          <UtensilsCrossed className="w-4 h-4 text-primario" />
+        </div>
+        <span className="font-playfair text-lg font-bold text-texto tracking-tight">
           E-Kitchen
         </span>
       </div>
       <a
         href="/login"
-        className="text-xs font-medium text-[#78716C] hover:text-[#C44536] transition-colors"
+        className="flex items-center gap-1.5 text-xs font-medium text-texto-secundario hover:text-primario transition-colors px-3 py-1.5 rounded-lg hover:bg-primario/5"
       >
+        <Lock className="w-3.5 h-3.5" />
         Staff
       </a>
     </header>
