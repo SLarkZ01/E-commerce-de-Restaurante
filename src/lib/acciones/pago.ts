@@ -1,10 +1,8 @@
 "use server";
 
-import { db } from "@/lib/db";
-import { pedidos, itemsPedido, mesas } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { crearCliente } from "@/lib/supabase/server";
 import type { ItemCarrito } from "@/stores/cart";
-import type { Pedido, Mesa } from "@/types";
+import type { Mesa } from "@/types";
 
 export async function crearPedido(
   mesaUuid: string,
@@ -12,36 +10,41 @@ export async function crearPedido(
   total: number,
   correoCliente?: string
 ): Promise<{ pedidoId: string; error?: string }> {
-  const mesa = await db
-    .select()
-    .from(mesas)
-    .where(eq(mesas.codigoQr, mesaUuid))
-    .limit(1);
+  const supabase = await crearCliente();
 
-  if (!mesa.length) {
+  const { data: mesa } = await supabase
+    .from("mesas")
+    .select("*")
+    .eq("codigo_qr", mesaUuid)
+    .single();
+
+  if (!mesa) {
     return { pedidoId: "", error: "Mesa no encontrada" };
   }
 
-  const mesaId = mesa[0].id;
-
-  const [nuevoPedido] = await db
-    .insert(pedidos)
-    .values({
-      mesaId,
+  const { data: nuevoPedido, error: errPedido } = await supabase
+    .from("pedidos")
+    .insert({
+      mesa_id: mesa.id,
       estado: "pendiente",
-      total: total.toString(),
-      correoCliente: correoCliente ?? null,
+      total: total,
+      correo_cliente: correoCliente ?? null,
     })
-    .returning({ id: pedidos.id });
+    .select("id")
+    .single();
+
+  if (errPedido || !nuevoPedido) {
+    return { pedidoId: "", error: "Error al crear el pedido" };
+  }
 
   const itemsInsert = items.map((item) => ({
-    pedidoId: nuevoPedido.id,
-    platoId: item.id,
+    pedido_id: nuevoPedido.id,
+    plato_id: item.id,
     cantidad: item.cantidad,
-    precioUnitario: item.precio.toString(),
+    precio_unitario: item.precio,
   }));
 
-  await db.insert(itemsPedido).values(itemsInsert);
+  await supabase.from("items_pedido").insert(itemsInsert);
 
   return { pedidoId: nuevoPedido.id };
 }
@@ -49,11 +52,12 @@ export async function crearPedido(
 export async function obtenerMesaPorUuid(
   uuid: string
 ): Promise<Mesa | null> {
-  const result = await db
-    .select()
-    .from(mesas)
-    .where(eq(mesas.codigoQr, uuid))
-    .limit(1);
+  const supabase = await crearCliente();
+  const { data } = await supabase
+    .from("mesas")
+    .select("*")
+    .eq("codigo_qr", uuid)
+    .single();
 
-  return (result[0] as Mesa) ?? null;
+  return (data as Mesa) ?? null;
 }

@@ -16,12 +16,11 @@ La latencia en la comunicación entre salón y cocina en restaurantes. E-Kitchen
 
 ## 2. ¿Qué riesgo evita?
 
-| Riesgo evitado | Cómo |
-|---|---|
-| Venta de platos agotados | El menú se actualiza en tiempo real cuando el chef deshabilita un plato |
-| Pedidos duplicados | Idempotencia vía `paypalPedidoId` único |
-| Acceso no autorizado | RLS en Supabase + autenticación solo para staff |
-| Pérdida de pedidos | Persistencia inmediata en PostgreSQL al completar pago |
+Ver análisis completo en [`docs/07-riesgos/analisis.md`](07-riesgos/analisis.md). Principales riesgos mitigados:
+
+- **Venta de platos agotados:** menú en tiempo real (Observer Pattern)
+- **Pedidos duplicados:** idempotencia vía `paypal_pedido_id`
+- **Acceso no autorizado:** RLS + autenticación solo para staff
 
 ---
 

@@ -20,12 +20,12 @@ export function CatalogoPlatos({
   const agregarItem = usarCarrito((s) => s.agregarItem);
 
   const categoriasUnicas = categorias.filter((c) =>
-    platosIniciales.some((p) => p.categoriaId === c.id)
+    platosIniciales.some((p) => p.categoria_id === c.id)
   );
 
   const platosFiltrados = platosIniciales.filter((p) => {
     const coincideCategoria =
-      !categoriaActiva || p.categoriaId === categoriaActiva;
+      !categoriaActiva || p.categoria_id === categoriaActiva;
     const coincideBusqueda =
       !busqueda ||
       p.nombre.toLowerCase().includes(busqueda.toLowerCase());
@@ -36,8 +36,8 @@ export function CatalogoPlatos({
     const item: Omit<ItemCarrito, "cantidad"> = {
       id: plato.id,
       nombre: plato.nombre,
-      precio: Number(plato.precio),
-      imagenUrl: plato.imagenUrl,
+      precio: plato.precio,
+      imagenUrl: plato.imagen_url,
     };
     agregarItem(item);
   };
@@ -117,14 +117,14 @@ function TarjetaPlato({
   return (
     <div className="flex gap-3 bg-white rounded-xl p-3 shadow-[0_2px_8px_rgba(45,42,38,0.06)] border border-[#E7E0D8]">
       <div className="w-24 h-24 rounded-lg bg-[#F5F0EB] flex items-center justify-center text-3xl shrink-0">
-        {plato.imagenUrl ? (
+        {plato.imagen_url ? (
           <img
-            src={plato.imagenUrl}
+            src={plato.imagen_url}
             alt={plato.nombre}
             className="w-full h-full object-cover rounded-lg"
           />
         ) : (
-          <span>{plato.tipoPlato === "bebida" ? "🥤" : "🍝"}</span>
+          <span>{plato.tipo_plato === "bebida" ? "🥤" : "🍝"}</span>
         )}
       </div>
 
@@ -138,7 +138,7 @@ function TarjetaPlato({
           </p>
         )}
         <p className="text-sm font-semibold text-[#2D2A26] mt-1.5">
-          {formatearPrecio(Number(plato.precio))}
+          {formatearPrecio(plato.precio)}
         </p>
       </div>
 

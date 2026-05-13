@@ -14,55 +14,55 @@ export interface Perfil {
   email: string;
   rol: Rol;
   nombre: string;
-  creadoEn: Date;
+  creado_en: string;
 }
 
 export interface Categoria {
   id: string;
   nombre: string;
   slug: string;
-  creadoEn: Date;
+  creado_en: string;
 }
 
 export interface Plato {
   id: string;
   nombre: string;
   descripcion: string | null;
-  precio: string;
-  imagenUrl: string | null;
-  tipoPlato: TipoPlato;
-  categoriaId: string | null;
+  precio: number;
+  imagen_url: string | null;
+  tipo_plato: TipoPlato;
+  categoria_id: string | null;
   disponible: boolean;
   ingredientes: string[] | null;
-  creadoPor: string | null;
-  creadoEn: Date;
-  actualizadoEn: Date;
+  creado_por: string | null;
+  creado_en: string;
+  actualizado_en: string;
 }
 
 export interface Mesa {
   id: string;
-  codigoQr: string;
+  codigo_qr: string;
   numero: number;
-  creadoEn: Date;
+  creado_en: string;
 }
 
 export interface Pedido {
   id: string;
-  mesaId: string | null;
-  tipoDespacho: TipoDespacho;
+  mesa_id: string | null;
+  tipo_despacho: TipoDespacho;
   estado: EstadoPedido;
-  correoCliente: string | null;
-  total: string;
-  paypalPedidoId: string | null;
-  cocineroId: string | null;
-  creadoEn: Date;
-  actualizadoEn: Date;
+  correo_cliente: string | null;
+  total: number;
+  paypal_pedido_id: string | null;
+  cocinero_id: string | null;
+  creado_en: string;
+  actualizado_en: string;
 }
 
 export interface ItemPedido {
   id: string;
-  pedidoId: string;
-  platoId: string;
+  pedido_id: string;
+  plato_id: string;
   cantidad: number;
-  precioUnitario: string;
+  precio_unitario: number;
 }

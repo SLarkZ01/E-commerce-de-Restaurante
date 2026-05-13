@@ -11,8 +11,8 @@
 | **Íconos** | Lucide React | ^0.14 | Biblioteca de íconos usada por shadcn/ui. |
 | **Utilidades CSS** | clsx + tailwind-merge | ^2 + ^3 | Fusión inteligente de clases Tailwind (`cn()` en `src/lib/utils.ts`). |
 | **Base de datos** | Supabase (PostgreSQL) | — | PostgreSQL gestionado + Realtime + Auth + RLS. Un solo servicio para datos, eventos y autenticación. |
-| **ORM** | Drizzle ORM | 0.45.2 | TypeScript-first, schemas declarativos, migraciones con `drizzle-kit`. Sin code generation. |
-| **Driver DB** | postgres | 3.4.9 | Cliente PostgreSQL mínimo para Node.js, compatible con Supabase. |
+| **Cliente DB** | Supabase JS Client (`@supabase/supabase-js`) | ^2.105 | Cliente HTTP para todas las queries en runtime. Respeta RLS nativamente. Usado desde Server Actions y Client Components. |
+| **Schema / Migraciones** | Drizzle ORM + drizzle-kit | 0.45.2 | Solo para definir el schema (`src/lib/db/schema.ts`) y ejecutar migraciones. NO se usa en runtime. |
 | **Auth** | Supabase Auth | SSR 0.10.3 | PKCE flow seguro, roles nativos, integración con RLS. Solo para staff (no clientes). |
 | **Estado cliente** | Zustand | 5.0.13 | Mínimo (~1KB), sin boilerplate, persistencia en localStorage para el carrito. |
 | **Imágenes** | Cloudinary | (SDK a integrar) | Optimización automática, transformaciones on-the-fly, CDN global. |
@@ -34,12 +34,13 @@ Supabase concentra **3 responsabilidades** que normalmente requerirían servicio
 
 Esto elimina la necesidad de Redis (pub/sub), RabbitMQ (colas) o Auth0 (autenticación externa), simplificando la arquitectura y reduciendo costos operativos.
 
-## ¿Por qué Drizzle y no Prisma?
+---
 
-| Factor | Drizzle ORM | Prisma |
-|---|---|---|
-| Peso | ~7.4KB | ~12MB (engine binary) |
-| Esquema | TypeScript nativo | Archivo `.prisma` (lenguaje propio) |
-| Migraciones | `drizzle-kit push` | `prisma migrate` |
-| Serverless | Nativo, sin binary | Requiere engine binary |
-| Tipos | Inferidos del schema | Generados por CLI |
+## ¿Por qué Supabase Client para queries?
+
+Aunque Drizzle ORM se usó inicialmente para el schema, todas las queries en runtime se hacen con el cliente JS de Supabase (`@supabase/supabase-js`). Esto permite:
+
+1. **RLS nativo**: las políticas de Row Level Security se aplican automáticamente
+2. **Sin conexión directa a PostgreSQL**: el cliente usa la API HTTP de Supabase (puerto 443)
+3. **Realtime integrado**: las suscripciones WebSocket comparten el mismo cliente
+4. **Menos dependencias en runtime**: no requiere driver `postgres` ni conexiones TCP directas

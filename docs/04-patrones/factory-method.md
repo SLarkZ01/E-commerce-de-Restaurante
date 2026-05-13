@@ -12,9 +12,9 @@ En el panel de Cocina, el chef puede crear 3 tipos de plato: **Plato Fuerte**, *
 
 | Tipo de Plato | Atributos específicos |
 |---|---|
-| Plato Fuerte | Ingredientes obligatorios |
-| Bebida | Tamaño (opcional) |
-| Combo | Lista de platos incluidos + descuento |
+| Plato Fuerte | Ingredientes obligatorios (mínimo 2) |
+| Bebida | Sin ingredientes |
+| Combo | Sin ingredientes |
 
 ### Cómo funciona
 
@@ -46,12 +46,9 @@ classDiagram
     }
 
     class Bebida {
-        +tamano: string
     }
 
     class Combo {
-        +platosIncluidos: string[]
-        +descuento: number
     }
 
     class PlatoFactory {

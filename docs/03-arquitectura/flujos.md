@@ -50,6 +50,8 @@ stateDiagram-v2
     Entregado --> [*]
 ```
 
+Ver reglas completas de transiciones (válidas e inválidas) en [`docs/04-patrones/state.md`](../04-patrones/state.md).
+
 ## Flujo 3: Actualización del catálogo (Observer Pattern)
 
 ```mermaid

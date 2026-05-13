@@ -64,10 +64,13 @@ Para garantizar la escalabilidad y mantenibilidad, se han aplicado 5 patrones cl
 
 ## 5. Stack Tecnológico
 
+Ver detalle completo de versiones y justificación en [`docs/05-tecnologico/stack.md`](05-tecnologico/stack.md).
+
 | Capa | Tecnología |
 |------|-----------|
 | Frontend/Backend | Next.js 16 con App Router, Server Actions y Turbopack |
-| ORM | Drizzle ORM (TypeScript-first) con driver `postgres` |
+| ORM / Schema | Drizzle ORM (solo schema y migraciones) |
+| Cliente DB | Supabase JS Client para todas las queries en runtime |
 | Persistencia y Real-time | Supabase (PostgreSQL) para datos y eventos de baja latencia |
 | Estado Cliente | Zustand (carrito con persistencia en localStorage) |
 | Autenticación | Supabase Auth nativo vía SSR, restringido **únicamente para personal** (Cocinero/Mesero/Admin) mediante roles definidos |
@@ -92,14 +95,7 @@ El Chef tiene control total sobre el menú a través de un CRUD dinámico:
 
 ## 7. Máquina de Estados y Flujo Real-time
 
-El ciclo de vida del pedido se gestiona bajo el **Patrón State**:
-
-| Estado | Disparador | Descripción |
-|--------|-----------|-------------|
-| **Pendiente** | Automático (Webhook PayPal) | Aparece en la cola de producción multi-chef |
-| **Preparando** | Manual (Chef) | El chef selecciona un pedido. Se valida que la orden estaba en estado *Pendiente* |
-| **Listo** | Manual (Chef) | El chef termina el plato. Se notifica instantáneamente al panel del Mesero |
-| **Entregado** | Manual (Mesero) | El mesero confirma la entrega física, marcando el fin de la sesión para esa mesa |
+El ciclo de vida del pedido se gestiona bajo el **Patrón State**. Ver detalle completo en [`docs/04-patrones/state.md`](04-patrones/state.md) y [`docs/03-arquitectura/flujos.md`](03-arquitectura/flujos.md).
 
 ---
 
@@ -113,7 +109,4 @@ El ciclo de vida del pedido se gestiona bajo el **Patrón State**:
 
 ## 9. Riesgos y Validación
 
-- **Riesgo:** Consistencia de datos en condiciones de red inestable.  
-  **Mitigación:** Uso de *Optimistic Updates* en el frontend para una experiencia fluida, validaciones estrictas en el servidor mediante Drizzle ORM, y tests automatizados con Vitest + Testing Library.
-
-- **Validación:** Pruebas unitarias (Vitest, 19 casos), pruebas de integración (12 casos para flujo completo) y pruebas de carga (k6/Artillery, 5 escenarios). Ver detalle en [`docs/06-pruebas/`](06-pruebas/).
+Ver análisis completo de riesgos en [`docs/07-riesgos/analisis.md`](07-riesgos/analisis.md).

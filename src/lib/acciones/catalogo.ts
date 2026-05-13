@@ -1,36 +1,15 @@
 "use server";
 
-import { db } from "@/lib/db";
-import { platos, categorias } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
 import { crearCliente } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
-function validarRol(rol: string | null): rol is "cocinero" | "admin" {
-  return rol === "cocinero" || rol === "admin";
-}
-
-async function verificarPermiso() {
-  const supabase = await crearCliente();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("No autenticado");
-
-  const perfil = await db.query.perfiles.findFirst({
-    where: eq(perfiles.id, user.id),
-  });
-  if (!perfil || !validarRol(perfil.rol)) {
-    throw new Error("No autorizado: solo cocinero o admin");
-  }
-  return perfil;
-}
-
-import { perfiles } from "@/lib/db/schema";
-
 export async function obtenerTodosPlatos() {
-  const data = await db.select().from(platos);
-  return data;
+  const supabase = await crearCliente();
+  const { data } = await supabase
+    .from("platos")
+    .select("*")
+    .order("creado_en", { ascending: false });
+  return data ?? [];
 }
 
 export async function crearPlato(datos: {
@@ -42,24 +21,25 @@ export async function crearPlato(datos: {
   ingredientes?: string[];
   imagenUrl?: string;
 }) {
-  const perfil = await verificarPermiso();
+  const supabase = await crearCliente();
 
-  const [nuevo] = await db
-    .insert(platos)
-    .values({
+  const { data, error } = await supabase
+    .from("platos")
+    .insert({
       nombre: datos.nombre,
       descripcion: datos.descripcion ?? null,
-      precio: datos.precio.toString(),
-      tipoPlato: datos.tipoPlato as "plato_fuerte" | "bebida" | "combo",
-      categoriaId: datos.categoriaId ?? null,
+      precio: datos.precio,
+      tipo_plato: datos.tipoPlato,
+      categoria_id: datos.categoriaId ?? null,
       ingredientes: datos.ingredientes ?? null,
-      imagenUrl: datos.imagenUrl ?? null,
-      creadoPor: perfil.id,
+      imagen_url: datos.imagenUrl ?? null,
     })
-    .returning();
+    .select()
+    .single();
 
+  if (error) throw new Error(error.message);
   revalidatePath("/cocina/platos");
-  return nuevo;
+  return data;
 }
 
 export async function actualizarPlato(
@@ -75,33 +55,39 @@ export async function actualizarPlato(
     imagenUrl?: string;
   }
 ) {
-  await verificarPermiso();
+  const supabase = await crearCliente();
 
   const actualizacion: Record<string, unknown> = {
-    actualizadoEn: new Date(),
+    actualizado_en: new Date().toISOString(),
   };
   if (datos.nombre !== undefined) actualizacion.nombre = datos.nombre;
   if (datos.descripcion !== undefined)
     actualizacion.descripcion = datos.descripcion;
-  if (datos.precio !== undefined)
-    actualizacion.precio = datos.precio.toString();
+  if (datos.precio !== undefined) actualizacion.precio = datos.precio;
   if (datos.disponible !== undefined)
     actualizacion.disponible = datos.disponible;
   if (datos.tipoPlato !== undefined)
-    actualizacion.tipoPlato = datos.tipoPlato;
+    actualizacion.tipo_plato = datos.tipoPlato;
   if (datos.categoriaId !== undefined)
-    actualizacion.categoriaId = datos.categoriaId;
+    actualizacion.categoria_id = datos.categoriaId;
   if (datos.ingredientes !== undefined)
     actualizacion.ingredientes = datos.ingredientes;
   if (datos.imagenUrl !== undefined)
-    actualizacion.imagenUrl = datos.imagenUrl;
+    actualizacion.imagen_url = datos.imagenUrl;
 
-  await db.update(platos).set(actualizacion).where(eq(platos.id, id));
+  const { error } = await supabase
+    .from("platos")
+    .update(actualizacion)
+    .eq("id", id);
+
+  if (error) throw new Error(error.message);
   revalidatePath("/cocina/platos");
 }
 
 export async function eliminarPlato(id: string) {
-  await verificarPermiso();
-  await db.delete(platos).where(eq(platos.id, id));
+  const supabase = await crearCliente();
+  const { error } = await supabase.from("platos").delete().eq("id", id);
+
+  if (error) throw new Error(error.message);
   revalidatePath("/cocina/platos");
 }

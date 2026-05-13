@@ -1,8 +1,6 @@
 "use server";
 
-import { db } from "@/lib/db";
-import { pedidos } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { crearCliente } from "@/lib/supabase/server";
 import type { EstadoPedido, Pedido } from "@/types";
 
 const TRANSICIONES_VALIDAS: Record<EstadoPedido, EstadoPedido[]> = {
@@ -21,17 +19,18 @@ export async function cambiarEstadoPedido(
     return { exito: false, error: "No tienes permiso para cambiar el estado" };
   }
 
-  const pedidoActual = await db
-    .select()
-    .from(pedidos)
-    .where(eq(pedidos.id, pedidoId))
-    .limit(1);
+  const supabase = await crearCliente();
+  const { data: pedidoActual } = await supabase
+    .from("pedidos")
+    .select("*")
+    .eq("id", pedidoId)
+    .single();
 
-  if (!pedidoActual.length) {
+  if (!pedidoActual) {
     return { exito: false, error: "Pedido no encontrado" };
   }
 
-  const estadoActual = pedidoActual[0].estado as EstadoPedido;
+  const estadoActual = pedidoActual.estado as EstadoPedido;
   const validas = TRANSICIONES_VALIDAS[estadoActual];
 
   if (!validas.includes(nuevoEstado)) {
@@ -48,10 +47,10 @@ export async function cambiarEstadoPedido(
     };
   }
 
-  await db
-    .update(pedidos)
-    .set({ estado: nuevoEstado, actualizadoEn: new Date() })
-    .where(eq(pedidos.id, pedidoId));
+  await supabase
+    .from("pedidos")
+    .update({ estado: nuevoEstado, actualizado_en: new Date().toISOString() })
+    .eq("id", pedidoId);
 
   return { exito: true };
 }
@@ -59,12 +58,22 @@ export async function cambiarEstadoPedido(
 export async function obtenerPedidosPorEstado(
   estado: EstadoPedido
 ): Promise<Pedido[]> {
-  return (await db
-    .select()
-    .from(pedidos)
-    .where(eq(pedidos.estado, estado))) as Pedido[];
+  const supabase = await crearCliente();
+  const { data } = await supabase
+    .from("pedidos")
+    .select("*")
+    .eq("estado", estado)
+    .order("creado_en", { ascending: true });
+
+  return (data ?? []) as Pedido[];
 }
 
 export async function obtenerTodosPedidos(): Promise<Pedido[]> {
-  return (await db.select().from(pedidos)) as Pedido[];
+  const supabase = await crearCliente();
+  const { data } = await supabase
+    .from("pedidos")
+    .select("*")
+    .order("creado_en", { ascending: false });
+
+  return (data ?? []) as Pedido[];
 }

@@ -27,7 +27,7 @@ export const tipoPlatoEnum = pgEnum("tipo_plato", [
 export const tipoDespachoEnum = pgEnum("tipo_despacho", ["mesa", "para_llevar"]);
 
 export const perfiles = pgTable("perfiles", {
-  id: uuid("id").primaryKey(),
+  id: uuid("id").primaryKey().defaultRandom(),
   email: text("email").notNull().unique(),
   rol: rolEnum("rol").notNull().default("mesero"),
   nombre: text("nombre").notNull(),

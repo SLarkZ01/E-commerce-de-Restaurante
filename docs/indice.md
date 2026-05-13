@@ -10,13 +10,13 @@
 |---|---|
 | [`01-problema/`](01-problema/contexto.md) | Descripción del problema y contexto del sector gastronómico |
 | [`02-alcance/`](02-alcance/) | Alcance funcional por rol e historias de usuario formales |
-| [`03-arquitectura/`](03-arquitectura/) | Decisión arquitectónica, diagramas, módulos y flujos de datos |
+| [`03-arquitectura/`](03-arquitectura/) | Decisión arquitectónica, diagramas, módulos, esquema BD, API y flujos de datos |
 | [`04-patrones/`](04-patrones/) | 5 patrones de diseño: Observer, State, Factory Method, Strategy, Facade |
 | [`05-tecnologico/`](05-tecnologico/stack.md) | Stack tecnológico con versiones y justificación |
 | [`06-pruebas/`](06-pruebas/) | Estrategia de testing, casos unitarios, integración y carga |
 | [`07-riesgos/`](07-riesgos/analisis.md) | Análisis de riesgos y mitigaciones |
 | [`08-evaluacion/`](08-evaluacion/criterios.md) | Evaluación frente a criterios del trabajo académico |
-| [`diseno/`](diseno/) | Sistema de diseño y prompts para generación de interfaces |
+| [`diseno/DESIGN.md`](diseno/DESIGN.md) | Paleta de colores del proyecto |
 
 ## Archivos raíz
 

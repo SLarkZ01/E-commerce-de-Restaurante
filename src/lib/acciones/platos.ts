@@ -1,31 +1,33 @@
 "use server";
 
-import { db } from "@/lib/db";
-import { platos, categorias } from "@/lib/db/schema";
-import { eq, and } from "drizzle-orm";
+import { crearCliente } from "@/lib/supabase/server";
 import type { Plato, Categoria } from "@/types";
 
 export async function obtenerPlatosDisponibles(): Promise<{
   platos: Plato[];
   categorias: Categoria[];
 }> {
-  const [platosData, categoriasData] = await Promise.all([
-    db.select().from(platos).where(eq(platos.disponible, true)),
-    db.select().from(categorias),
+  const supabase = await crearCliente();
+
+  const [platosRes, catRes] = await Promise.all([
+    supabase.from("platos").select("*").eq("disponible", true),
+    supabase.from("categorias").select("*"),
   ]);
 
   return {
-    platos: platosData as Plato[],
-    categorias: categoriasData as Categoria[],
+    platos: (platosRes.data ?? []) as Plato[],
+    categorias: (catRes.data ?? []) as Categoria[],
   };
 }
 
 export async function obtenerPlatoPorId(id: string): Promise<Plato | null> {
-  const result = await db
-    .select()
-    .from(platos)
-    .where(and(eq(platos.id, id), eq(platos.disponible, true)))
-    .limit(1);
+  const supabase = await crearCliente();
+  const { data } = await supabase
+    .from("platos")
+    .select("*")
+    .eq("id", id)
+    .eq("disponible", true)
+    .single();
 
-  return (result[0] as Plato) ?? null;
+  return (data as Plato) ?? null;
 }
