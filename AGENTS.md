@@ -86,3 +86,4 @@ src/
 5. Los Server Components no pueden usar hooks de Zustand — solo Client Components
 6. Supabase Auth es SOLO para staff (cocinero, mesero, admin). Los clientes son anónimos.
 7. Los tests usan Vitest con globals habilitados (`describe`, `it`, `expect` sin importar)
+8. Siempre en lo posible usar componentes de shadcn/ui cuando se pueda. 
