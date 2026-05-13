@@ -6,9 +6,9 @@ Cada módulo del monolito se implementa como un conjunto de archivos dentro de `
 
 | Ruta | Pantalla | ¿Quién entra? | ¿Qué se ve? | ¿Qué puede hacer? |
 |---|---|---|---|---|
-| `/` | Landing | **Público** | Logo, nombre del restaurante, enlaces a login y paneles | Navegar a login o paneles de staff |
-| `/login` | Inicio de sesión | **Público** (solo redirige staff) | Formulario email + contraseña, logo | Iniciar sesión con Supabase Auth. Redirige según rol |
-| `/mesa/[uuid]` | Menú digital | **Cliente anónimo** | Header con nº mesa, buscador, filtros por categoría, cards de platos (imagen, nombre, descripción, precio), footer sticky con total y botón carrito | Ver catálogo, filtrar, buscar, agregar/quitar platos del carrito, abrir carrito, confirmar pedido |
+| `/` | Menú digital | **Cliente anónimo** | Header con logo y enlace Staff. Buscador, filtros por categoría, cards de platos, footer con carrito. Al abrir el carrito: pide escanear QR de mesa para comprar | Explorar catálogo, filtrar, buscar, agregar/quitar platos del carrito. Para comprar debe escanear QR → `/mesa/[uuid]` |
+| `/login` | Inicio de sesión | **Público** | Formulario email + contraseña, logo | Iniciar sesión con Supabase Auth. Redirige según rol |
+| `/mesa/[uuid]` | Menú con mesa | **Cliente anónimo** | Header con nº mesa, buscador, filtros por categoría, cards de platos, carrito con botón de compra | Ver catálogo, filtrar, buscar, agregar/quitar del carrito, confirmar pedido |
 | `/cocina` | Panel Kanban | **Cocinero, Admin** | 3 columnas: Pendiente / Preparando / Listo. Cards con nº mesa, tiempo, platos, total. Botón "Gestionar Menú" | Ver pedidos nuevos en tiempo real, cambiar estado (Iniciar → Listo), ir a CRUD de platos |
 | `/cocina/platos` | CRUD de platos | **Cocinero, Admin** | Tabla de platos con nombre, tipo, precio, estado (activo/inactivo). Botón "+ Nuevo Plato". Modal formulario | Crear, editar, activar/desactivar, eliminar platos. Subir imagen. Asignar categoría, tipo, ingredientes, precio |
 | `/logistica` | Panel de entregas | **Mesero, Admin** | Lista de pedidos en estado "Listo" con nº mesa grande, tiempo transcurrido, platos, total | Ver pedidos listos, confirmar entrega física (marca "Entregado") |

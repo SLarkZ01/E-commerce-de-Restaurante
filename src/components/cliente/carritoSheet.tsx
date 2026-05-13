@@ -6,10 +6,11 @@ import { crearPedido } from "@/lib/acciones/pago";
 import { formatearPrecio } from "@/lib/formato";
 
 interface CarritoSheetProps {
-  mesaUuid: string;
+  mesaUuid: string | null;
 }
 
 export function CarritoSheet({ mesaUuid }: CarritoSheetProps) {
+  const tieneMesa = mesaUuid !== null;
   const [abierto, setAbierto] = useState(false);
   const [pagando, setPagando] = useState(false);
   const [confirmacion, setConfirmacion] = useState<string | null>(null);
@@ -22,9 +23,10 @@ export function CarritoSheet({ mesaUuid }: CarritoSheetProps) {
   const cantidadTotal = items.reduce((sum, i) => sum + i.cantidad, 0);
 
   const handlePago = async () => {
+    if (!tieneMesa) return;
     setPagando(true);
     try {
-      const resultado = await crearPedido(mesaUuid, items, total());
+      const resultado = await crearPedido(mesaUuid!, items, total());
       if (resultado.error) {
         setConfirmacion(resultado.error);
         return;
@@ -156,16 +158,31 @@ export function CarritoSheet({ mesaUuid }: CarritoSheetProps) {
                   {formatearPrecio(total())}
                 </span>
               </div>
-              <button
-                onClick={handlePago}
-                disabled={items.length === 0 || pagando}
-                className="w-full py-3 bg-[#C44536] text-white rounded-xl font-medium text-sm hover:bg-[#A8382C] disabled:opacity-40 transition-colors active:scale-[0.98]"
-              >
-                {pagando ? "Procesando..." : "Confirmar Pedido"}
-              </button>
-              <p className="text-center text-xs text-[#A8A29E]">
-                PayPal próximamente
-              </p>
+
+              {tieneMesa ? (
+                <>
+                  <button
+                    onClick={handlePago}
+                    disabled={items.length === 0 || pagando}
+                    className="w-full py-3 bg-[#C44536] text-white rounded-xl font-medium text-sm hover:bg-[#A8382C] disabled:opacity-40 transition-colors active:scale-[0.98]"
+                  >
+                    {pagando ? "Procesando..." : "Confirmar Pedido"}
+                  </button>
+                  <p className="text-center text-xs text-[#A8A29E]">
+                    PayPal próximamente
+                  </p>
+                </>
+              ) : (
+                <div className="bg-[#F5F0EB] rounded-xl p-4 text-center space-y-2">
+                  <span className="text-2xl">📱</span>
+                  <p className="text-sm font-medium text-[#2D2A26]">
+                    Escanea el QR de tu mesa
+                  </p>
+                  <p className="text-xs text-[#78716C]">
+                    Necesitas escanear el código QR de tu mesa para completar el pedido
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>

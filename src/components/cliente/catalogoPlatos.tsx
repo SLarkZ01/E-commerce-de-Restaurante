@@ -8,7 +8,7 @@ import type { Plato, Categoria } from "@/types";
 interface CatalogoPlatosProps {
   platos: Plato[];
   categorias: Categoria[];
-  mesaUuid: string;
+  mesaUuid: string | null;
 }
 
 export function CatalogoPlatos({

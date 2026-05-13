@@ -3,11 +3,13 @@
 ## Roles del sistema
 
 ### Cliente (Guest Checkout)
-- Acceso anónimo al catálogo dinámico vía código QR
+- Acceso anónimo al menú digital desde la página principal (`/`) o vía código QR (`/mesa/{uuid}`)
+- Exploración del catálogo sin necesidad de mesa asignada
 - Visualización de platos con nombre, descripción, precio, ingredientes e imagen
 - Filtro por categorías (plato fuerte, bebida, combo)
 - Carrito de compras local persistente (Zustand + localStorage)
-- Pago con PayPal (sin registro, el correo de PayPal sirve como identificador)
+- Para completar la compra debe escanear el QR de su mesa → redirige a `/mesa/{uuid}` (el carrito se mantiene)
+- Pago confirmado desde la mesa asignada
 - Recepción de comprobante por correo electrónico (Brevo)
 
 ### Cocinero (Chef)
