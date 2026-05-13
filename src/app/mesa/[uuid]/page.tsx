@@ -1,0 +1,34 @@
+import { obtenerPlatosDisponibles } from "@/lib/acciones/platos";
+import { obtenerMesaPorUuid } from "@/lib/acciones/pago";
+import { CatalogoPlatos } from "@/components/cliente/catalogoPlatos";
+import { BarraMesa } from "@/components/cliente/barraMesa";
+import { CarritoSheet } from "@/components/cliente/carritoSheet";
+import { notFound } from "next/navigation";
+
+export default async function PaginaMesa({
+  params,
+}: {
+  params: Promise<{ uuid: string }>;
+}) {
+  const { uuid } = await params;
+  const [datosCatalogo, mesa] = await Promise.all([
+    obtenerPlatosDisponibles(),
+    obtenerMesaPorUuid(uuid),
+  ]);
+
+  if (!mesa) {
+    notFound();
+  }
+
+  return (
+    <div className="flex flex-col min-h-dvh bg-[#FEFAF6]">
+      <BarraMesa numeroMesa={mesa.numero} />
+      <CatalogoPlatos
+        platos={datosCatalogo.platos}
+        categorias={datosCatalogo.categorias}
+        mesaUuid={uuid}
+      />
+      <CarritoSheet mesaUuid={uuid} />
+    </div>
+  );
+}

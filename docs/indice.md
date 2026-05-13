@@ -16,6 +16,7 @@
 | [`06-pruebas/`](06-pruebas/) | Estrategia de testing, casos unitarios, integración y carga |
 | [`07-riesgos/`](07-riesgos/analisis.md) | Análisis de riesgos y mitigaciones |
 | [`08-evaluacion/`](08-evaluacion/criterios.md) | Evaluación frente a criterios del trabajo académico |
+| [`diseno/`](diseno/) | Sistema de diseño y prompts para generación de interfaces |
 
 ## Archivos raíz
 
