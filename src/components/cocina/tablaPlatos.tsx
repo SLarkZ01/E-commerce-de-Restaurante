@@ -1,18 +1,25 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Utensils, Trash2, Coffee, Sandwich } from "lucide-react";
+import { Plus, Utensils, Trash2, Coffee, Sandwich, Tags, X } from "lucide-react";
 import {
   crearPlato,
   actualizarPlato,
   eliminarPlato,
 } from "@/lib/acciones/catalogo";
+import {
+  crearCategoria,
+  actualizarCategoria,
+  eliminarCategoria,
+} from "@/lib/acciones/categorias";
 import { formatearPrecio } from "@/lib/formato";
 import type { Plato, Categoria } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 import {
   Dialog,
   DialogContent,
@@ -20,8 +27,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 const TIPOS_PLATO: { valor: "plato_fuerte" | "bebida" | "combo"; etiqueta: string; icono: React.ReactNode }[] = [
   { valor: "plato_fuerte", etiqueta: "Plato Fuerte", icono: <Utensils className="w-3.5 h-3.5" /> },
@@ -34,8 +46,9 @@ interface TablaPlatosProps {
   categorias: Categoria[];
 }
 
-export function TablaPlatos({ platosIniciales, categorias }: TablaPlatosProps) {
+export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }: TablaPlatosProps) {
   const [platos, setPlatos] = useState(platosIniciales);
+  const [categorias, setCategorias] = useState(categoriasIniciales);
   const [mostrandoFormulario, setMostrandoFormulario] = useState(false);
   const [mensaje, setMensaje] = useState("");
 
@@ -81,6 +94,27 @@ export function TablaPlatos({ platosIniciales, categorias }: TablaPlatosProps) {
     }
   };
 
+  const handleCrearCategoria = async (nombre: string, slug: string) => {
+    try {
+      const nueva = await crearCategoria({ nombre, slug });
+      setCategorias((prev) => [...prev, nueva as Categoria]);
+      setMensaje("Categoría creada correctamente");
+    } catch {
+      setMensaje("Error al crear la categoría");
+    }
+  };
+
+  const handleEliminarCategoria = async (id: string) => {
+    if (!confirm("¿Eliminar esta categoría? Los platos asociados quedarán sin categoría.")) return;
+    try {
+      await eliminarCategoria(id);
+      setCategorias((prev) => prev.filter((c) => c.id !== id));
+      setMensaje("Categoría eliminada correctamente");
+    } catch {
+      setMensaje("Error al eliminar la categoría");
+    }
+  };
+
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       {mensaje && (
@@ -90,7 +124,7 @@ export function TablaPlatos({ platosIniciales, categorias }: TablaPlatosProps) {
         </div>
       )}
 
-      <div className="p-4">
+      <div className="flex items-center gap-2 p-4">
         <Dialog open={mostrandoFormulario} onOpenChange={setMostrandoFormulario}>
           <DialogTrigger className="inline-flex items-center justify-center gap-1.5 h-10 px-4 rounded-xl bg-primario text-primario-texto text-sm font-medium hover:bg-primario-hover transition-all shadow-sm active:scale-[0.98]">
             <Plus className="w-4 h-4" />
@@ -104,6 +138,25 @@ export function TablaPlatos({ platosIniciales, categorias }: TablaPlatosProps) {
             />
           </DialogContent>
         </Dialog>
+
+        <Sheet>
+          <SheetTrigger className="inline-flex items-center justify-center gap-1.5 h-10 px-4 rounded-xl bg-fondo-card text-texto text-sm font-medium hover:bg-borde transition-all border border-borde">
+            <Tags className="w-4 h-4" />
+            Categorías
+          </SheetTrigger>
+          <SheetContent className="sm:max-w-sm flex flex-col">
+            <SheetHeader className="px-1">
+              <SheetTitle className="font-playfair text-lg font-bold text-texto">
+                Gestionar Categorías
+              </SheetTitle>
+            </SheetHeader>
+            <GestionCategorias
+              categorias={categorias}
+              alCrear={handleCrearCategoria}
+              alEliminar={handleEliminarCategoria}
+            />
+          </SheetContent>
+        </Sheet>
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 pb-4">
@@ -366,6 +419,102 @@ function FormularioPlato({
         </Button>
       </div>
     </form>
+  );
+}
+
+function GestionCategorias({
+  categorias,
+  alCrear,
+  alEliminar,
+}: {
+  categorias: Categoria[];
+  alCrear: (nombre: string, slug: string) => void;
+  alEliminar: (id: string) => void;
+}) {
+  const [nombre, setNombre] = useState("");
+
+  const generarSlug = (texto: string) => {
+    return texto
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (nombre.trim()) {
+      alCrear(nombre.trim(), generarSlug(nombre.trim()));
+      setNombre("");
+    }
+  };
+
+  const puedeEnviar = nombre.trim().length > 0;
+
+  return (
+    <div className="flex flex-col h-full">
+      <form onSubmit={handleSubmit} className="space-y-4 px-1">
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-texto-secundario mb-2">
+              Nombre de la categoría
+            </label>
+            <Input
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+              required
+              placeholder="Ej: Platos Fuertes"
+              className="h-10"
+            />
+          </div>
+          <Button
+            type="submit"
+            disabled={!puedeEnviar}
+            className="w-full h-10 bg-primario hover:bg-primario-hover text-primario-texto text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed rounded-lg"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Agregar Categoría
+          </Button>
+        </div>
+      </form>
+
+      <Separator className="my-5" />
+
+      <div className="flex-1 overflow-y-auto px-1">
+        {categorias.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12">
+            <div className="w-14 h-14 rounded-2xl bg-fondo-oscuro flex items-center justify-center mb-3">
+              <Tags className="w-6 h-6 text-texto-terciario" />
+            </div>
+            <p className="text-sm font-medium text-texto-secundario">Sin categorías</p>
+            <p className="text-xs text-texto-terciario mt-1">
+              Crea tu primera categoría arriba
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {categorias.map((cat) => (
+              <div
+                key={cat.id}
+                className="flex items-center justify-between p-4 rounded-xl bg-fondo-oscuro transition-all"
+              >
+                <p className="text-sm font-medium text-texto truncate mr-3">
+                  {cat.nombre}
+                </p>
+                <button
+                  onClick={() => alEliminar(cat.id)}
+                  className="text-texto-terciario hover:text-error transition-colors p-2 rounded-lg hover:bg-error/10 shrink-0"
+                  aria-label={`Eliminar ${cat.nombre}`}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 

@@ -112,18 +112,18 @@ export function KanbanPedidos({ pedidosIniciales }: KanbanPedidosProps) {
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       {mensaje && (
-        <div className="mx-6 mt-3 px-4 py-2.5 bg-error/10 text-error text-sm rounded-xl flex items-center gap-2">
+        <div className="mx-4 md:mx-6 mt-3 px-4 py-2.5 bg-error/10 text-error text-sm rounded-xl flex items-center gap-2">
           <AlertTriangle className="w-4 h-4 shrink-0" />
           {mensaje}
         </div>
       )}
 
-      <div className="flex-1 flex gap-4 p-6 overflow-x-auto">
+      <div className="flex-1 flex flex-col md:flex-row gap-4 p-4 md:p-6 overflow-auto">
         {ESTADOS.map((estado) => {
           const config = CONFIG_ESTADO[estado];
           const pedidosEstado = pedidosPorEstado(estado);
           return (
-            <Card key={estado} className="flex-1 min-w-[320px] max-w-[420px] flex flex-col border-borde/60 shadow-[0_1px_3px_rgba(45,42,38,0.04)]">
+            <Card key={estado} className="flex-1 min-w-0 md:min-w-[320px] md:max-w-[420px] flex flex-col border-borde/60 shadow-[0_1px_3px_rgba(45,42,38,0.04)]">
               <CardHeader className={`pb-3 ${config.bgHeader} rounded-t-xl`}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -142,9 +142,9 @@ export function KanbanPedidos({ pedidosIniciales }: KanbanPedidosProps) {
               </CardHeader>
 
               <CardContent className="flex-1 p-3">
-                <ScrollArea className="h-full pr-2" style={{ maxHeight: "calc(100dvh - 280px)" }}>
+                <ScrollArea className="pr-2" style={{ maxHeight: "calc(100dvh - 320px)" }}>
                   {pedidosEstado.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-16 text-texto-terciario">
+                    <div className="flex flex-col items-center justify-center py-12 text-texto-terciario">
                       <div className="w-14 h-14 rounded-full bg-fondo-oscuro flex items-center justify-center mb-3">
                         {config.icon}
                       </div>
@@ -160,7 +160,7 @@ export function KanbanPedidos({ pedidosIniciales }: KanbanPedidosProps) {
                           <Card key={pedido.id} className={`border-borde/60 border-l-4 ${config.border} shadow-[0_1px_3px_rgba(45,42,38,0.04)] hover:shadow-[0_4px_12px_rgba(45,42,38,0.08)] transition-all`}>
                             <CardHeader className="pb-2">
                               <div className="flex items-center justify-between">
-                                <CardTitle className="font-playfair text-xl font-bold text-texto">
+                                <CardTitle className="font-playfair text-lg md:text-xl font-bold text-texto">
                                   Mesa {pedido.mesa_id ? `#${pedido.mesa_id.slice(0, 4)}` : "?"}
                                 </CardTitle>
                                 <Badge variant="secondary" className={`${config.bg} ${config.color} text-[10px] font-semibold`}>
@@ -250,9 +250,9 @@ export function KanbanPedidos({ pedidosIniciales }: KanbanPedidosProps) {
 
 export function SkeletonKanban() {
   return (
-    <div className="flex-1 flex gap-4 p-6 overflow-x-auto">
+    <div className="flex-1 flex flex-col md:flex-row gap-4 p-4 md:p-6 overflow-auto">
       {["Pendiente", "Preparando", "Listo"].map((estado) => (
-        <Card key={estado} className="flex-1 min-w-[320px] max-w-[420px] flex flex-col border-borde/60">
+        <Card key={estado} className="flex-1 min-w-0 md:min-w-[320px] md:max-w-[420px] flex flex-col border-borde/60">
           <CardHeader className="pb-3 bg-fondo-oscuro rounded-t-xl">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">

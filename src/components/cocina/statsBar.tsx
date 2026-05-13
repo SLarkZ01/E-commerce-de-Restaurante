@@ -8,8 +8,8 @@ interface StatsBarProps {
 
 export function StatsBar({ stats }: StatsBarProps) {
   return (
-    <div className="sticky top-14 z-20 bg-fondo/95 backdrop-blur-sm border-b border-borde/60 px-6 py-3">
-      <div className="grid grid-cols-4 gap-3">
+    <div className="sticky top-14 z-20 bg-fondo/95 backdrop-blur-sm border-b border-borde/60 px-4 md:px-6 py-3">
+      <div className="flex gap-3 overflow-x-auto no-scrollbar md:grid md:grid-cols-4">
         <StatItem
           icon={<Clock className="w-4 h-4" />}
           iconBg="bg-info/10"
@@ -57,7 +57,7 @@ function StatItem({
   valor: string;
 }) {
   return (
-    <div className="flex items-center gap-3 bg-fondo-card rounded-xl border border-borde/60 px-4 py-3 shadow-[0_1px_2px_rgba(45,42,38,0.03)]">
+    <div className="flex items-center gap-3 bg-fondo-card rounded-xl border border-borde/60 px-4 py-3 shadow-[0_1px_2px_rgba(45,42,38,0.03)] shrink-0 md:shrink md:w-full min-w-[140px]">
       <div className={`w-9 h-9 rounded-lg ${iconBg} flex items-center justify-center ${iconColor} shrink-0`}>
         {icon}
       </div>
@@ -75,10 +75,10 @@ function StatItem({
 
 export function SkeletonStatsBar() {
   return (
-    <div className="sticky top-14 z-20 bg-fondo/95 backdrop-blur-sm border-b border-borde/60 px-6 py-3">
-      <div className="grid grid-cols-4 gap-3">
+    <div className="sticky top-14 z-20 bg-fondo/95 backdrop-blur-sm border-b border-borde/60 px-4 md:px-6 py-3">
+      <div className="flex gap-3 overflow-x-auto no-scrollbar md:grid md:grid-cols-4">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="flex items-center gap-3 bg-fondo-card rounded-xl border border-borde/60 px-4 py-3">
+          <div key={i} className="flex items-center gap-3 bg-fondo-card rounded-xl border border-borde/60 px-4 py-3 shrink-0 min-w-[140px]">
             <Skeleton className="w-9 h-9 rounded-lg" />
             <div className="flex-1 space-y-1.5">
               <Skeleton className="w-16 h-2.5" />

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -8,33 +9,59 @@ import {
   UtensilsCrossed,
   PackageCheck,
   LayoutDashboard,
+  Users,
+  Armchair,
   LogOut,
+  ChevronDown,
+  ChevronRight,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { cerrarSesion } from "@/lib/acciones/auth";
 
-interface SidebarCocinaProps {
+interface SidebarStaffProps {
   userEmail: string;
-  userName?: string;
+  mobile?: boolean;
 }
 
 const NAV_ITEMS = [
   { href: "/cocina", label: "Pedidos", icon: ClipboardList },
   { href: "/cocina/platos", label: "Gestión de Menú", icon: UtensilsCrossed },
   { href: "/logistica", label: "Platos Listos", icon: PackageCheck },
-  { href: "/admin", label: "Admin", icon: LayoutDashboard },
 ];
 
-export function SidebarCocina({ userEmail, userName }: SidebarCocinaProps) {
+const ADMIN_ITEMS = [
+  { href: "/admin", label: "Inicio", icon: LayoutDashboard },
+  { href: "/admin/personal", label: "Personal", icon: Users },
+  { href: "/admin/mesas", label: "Mesas", icon: Armchair },
+];
+
+export function SidebarStaff({ userEmail, mobile }: SidebarStaffProps) {
   const pathname = usePathname();
+  const [adminOpen, setAdminOpen] = useState(true);
 
   const getIniciales = (email: string) => {
     return email.charAt(0).toUpperCase();
   };
 
+  const isActive = (href: string) => {
+    if (href === "/cocina") {
+      return pathname === "/cocina" || pathname === "/cocina/";
+    }
+    if (href === "/admin") {
+      return pathname === "/admin" || pathname === "/admin/";
+    }
+    return pathname.startsWith(href);
+  };
+
+  const isAdminSection = pathname.startsWith("/admin");
+
+  const sidebarClasses = mobile
+    ? "w-full bg-fondo flex flex-col h-full"
+    : "w-[240px] bg-fondo border-r border-borde/60 flex flex-col shrink-0 h-dvh sticky top-0";
+
   return (
-    <aside className="w-[240px] bg-fondo border-r border-borde/60 flex flex-col shrink-0 h-dvh sticky top-0">
+    <aside className={sidebarClasses}>
       <div className="p-4">
         <Link href="/cocina" className="flex items-center gap-2.5">
           <div className="w-9 h-9 rounded-xl bg-primario flex items-center justify-center shadow-sm">
@@ -48,19 +75,16 @@ export function SidebarCocina({ userEmail, userName }: SidebarCocinaProps) {
 
       <Separator className="mb-2" />
 
-      <nav className="flex-1 px-3 py-2 space-y-1">
+      <nav className="flex-1 px-3 py-2 space-y-1 overflow-y-auto">
         {NAV_ITEMS.map((item) => {
-          const isActive =
-            item.href === "/cocina"
-              ? pathname === "/cocina" || pathname === "/cocina/"
-              : pathname.startsWith(item.href);
           const Icon = item.icon;
+          const active = isActive(item.href);
           return (
             <Link
               key={item.href}
               href={item.href}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                isActive
+                active
                   ? "bg-primario/10 text-primario"
                   : "text-texto-secundario hover:bg-fondo-oscuro hover:text-texto"
               }`}
@@ -70,6 +94,48 @@ export function SidebarCocina({ userEmail, userName }: SidebarCocinaProps) {
             </Link>
           );
         })}
+
+        <div className="pt-2">
+          <button
+            onClick={() => setAdminOpen(!adminOpen)}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+              isAdminSection
+                ? "bg-primario/10 text-primario"
+                : "text-texto-secundario hover:bg-fondo-oscuro hover:text-texto"
+            }`}
+          >
+            <LayoutDashboard className="w-4 h-4 shrink-0" />
+            <span className="flex-1 text-left">Admin</span>
+            {adminOpen ? (
+              <ChevronDown className="w-3.5 h-3.5" />
+            ) : (
+              <ChevronRight className="w-3.5 h-3.5" />
+            )}
+          </button>
+
+          {adminOpen && (
+            <div className="ml-4 mt-1 space-y-1 border-l-2 border-borde/40 pl-3">
+              {ADMIN_ITEMS.map((item) => {
+                const Icon = item.icon;
+                const active = isActive(item.href);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                      active
+                        ? "bg-primario/10 text-primario"
+                        : "text-texto-secundario hover:bg-fondo-oscuro hover:text-texto"
+                    }`}
+                  >
+                    <Icon className="w-3.5 h-3.5 shrink-0" />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </nav>
 
       <Separator className="mb-2" />
@@ -83,7 +149,7 @@ export function SidebarCocina({ userEmail, userName }: SidebarCocinaProps) {
           </Avatar>
           <div className="flex-1 min-w-0">
             <p className="text-xs font-medium text-texto truncate">
-              {userName ?? "Usuario"}
+              Usuario
             </p>
             <p className="text-[10px] text-texto-terciario truncate">
               {userEmail}
