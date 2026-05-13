@@ -37,7 +37,7 @@ Todas las operaciones de lectura/escritura se hacen mediante Server Actions. Cad
 
 ### `obtenerTodosPedidos()`
 - **Archivo:** `src/lib/acciones/cocina.ts`
-- **Quién:** Cocinero, admin (requiere sesión)
+- **Quién:** Cocinero, admin, mesero (requiere sesión)
 - **Devuelve:** `Pedido[]`
 - **Qué hace:** Retorna todos los pedidos ordenados del más reciente al más antiguo
 
@@ -47,9 +47,21 @@ Todas las operaciones de lectura/escritura se hacen mediante Server Actions. Cad
 - **Devuelve:** `Pedido[]`
 - **Qué hace:** Filtra pedidos por estado, ordenados del más antiguo al más reciente
 
+### `obtenerPedidosConItems()`
+- **Archivo:** `src/lib/acciones/cocina.ts`
+- **Quién:** Cocinero, admin
+- **Devuelve:** `PedidoConItems[]` (incluye items con nombre del plato)
+- **Qué hace:** Join de pedidos + items_pedido + platos. Útil para mostrar detalle completo
+
+### `obtenerStatsCocina()`
+- **Archivo:** `src/lib/acciones/cocina.ts`
+- **Quién:** Cocinero, admin
+- **Devuelve:** `{ pendientes, preparando, listos, tiempoPromedioMin }`
+- **Qué hace:** Contadores por estado y tiempo promedio de pedidos completados hoy
+
 ### `cambiarEstadoPedido(pedidoId, nuevoEstado, rolUsuario)`
 - **Archivo:** `src/lib/acciones/cocina.ts`
-- **Quién:** Cocinero (pendiente→preparando, preparando→listo), Mesero (listo→entregado)
+- **Quién:** Cocinero o mesero (ambos pueden cambiar entre pendiente↔preparando↔listo). Solo mesero puede marcar "entregado"
 - **Devuelve:** `{ exito: boolean, error?: string }`
 - **Validaciones:**
   - Solo cocinero o mesero pueden cambiar estados
@@ -103,7 +115,6 @@ Todas las operaciones de lectura/escritura se hacen mediante Server Actions. Cad
 ### `eliminarPerfil(id)`
 - **Archivo:** `src/lib/acciones/admin.ts`
 - **Quién:** Admin
-- **Errores:** "No puedes eliminar tu propio perfil"
 
 ### `crearMesa(numero)`
 - **Archivo:** `src/lib/acciones/admin.ts`
@@ -113,6 +124,37 @@ Todas las operaciones de lectura/escritura se hacen mediante Server Actions. Cad
 ### `eliminarMesa(id)`
 - **Archivo:** `src/lib/acciones/admin.ts`
 - **Quién:** Admin
+
+---
+
+## Módulo Categorías — Gestión del menú
+
+### `obtenerCategorias()`
+- **Archivo:** `src/lib/acciones/categorias.ts`
+- **Quién:** Cualquiera (público)
+- **Devuelve:** `Categoria[]`
+
+### `crearCategoria({ nombre, slug })`
+- **Archivo:** `src/lib/acciones/categorias.ts`
+- **Quién:** Cocinero, admin
+- **Devuelve:** La categoría creada
+
+### `actualizarCategoria(id, { nombre?, slug? })`
+- **Archivo:** `src/lib/acciones/categorias.ts`
+- **Quién:** Cocinero, admin
+
+### `eliminarCategoria(id)`
+- **Archivo:** `src/lib/acciones/categorias.ts`
+- **Quién:** Cocinero, admin
+
+---
+
+## Módulo Auth — Sesión del staff
+
+### `cerrarSesion()`
+- **Archivo:** `src/lib/acciones/auth.ts`
+- **Quién:** Cualquier usuario autenticado
+- **Qué hace:** Cierra la sesión en Supabase Auth y redirige a `/login`
 
 ---
 

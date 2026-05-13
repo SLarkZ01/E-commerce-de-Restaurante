@@ -29,43 +29,59 @@ Cada módulo del monolito se implementa como un conjunto de archivos dentro de `
 ```
 src/
 ├── app/
-│   ├── mesa/[uuid]/        → Módulo Cliente
-│   │   └── page.tsx             Catálogo + carrito + botón PayPal
-│   ├── cocina/              → Módulo Cocina
-│   │   ├── page.tsx             Panel Kanban de pedidos
-│   │   └── platos/              CRUD de catálogo
-│   ├── logistica/           → Módulo Logística
-│   │   └── page.tsx             Panel de entregas pendientes
-│   ├── admin/               → Módulo Administración
-│   │   ├── page.tsx             Dashboard de ventas
-│   │   ├── personal/            Gestión de usuarios staff
-│   │   └── mesas/               Generación de QR
-│   └── login/               → Autenticación (Supabase Auth)
-│       └── page.tsx
+│   ├── page.tsx                  Página de inicio: menú público
+│   ├── layout.tsx                Layout raíz (fuentes, metadata)
+│   ├── login/                    Autenticación (Supabase Auth)
+│   │   └── page.tsx
+│   ├── mesa/[uuid]/              Módulo Cliente (con mesa asignada)
+│   │   └── page.tsx                  Catálogo + carrito + compra
+│   └── (staff)/                  Route group: rutas protegidas del staff
+│       ├── layout.tsx                Verifica sesión server-side
+│       ├── cocina/
+│       │   ├── page.tsx              Panel Kanban de pedidos
+│       │   └── platos/               CRUD de catálogo
+│       ├── logistica/
+│       │   └── page.tsx              Panel de entregas pendientes
+│       └── admin/
+│           ├── page.tsx              Dashboard de ventas
+│           ├── personal/             Gestión de usuarios staff
+│           └── mesas/                Generación de QR
+│
+├── components/
+│   ├── ui/                       Componentes shadcn/ui
+│   ├── cliente/                  Menú, catálogo, carrito, barra superior
+│   ├── cocina/                   Kanban de pedidos, tabla/formulario de platos
+│   ├── logistica/                Lista de entregas pendientes
+│   ├── admin/                    Gestión de personal, gestión de mesas
+│   └── staff/                    Sidebar y layout del panel staff
 │
 ├── lib/
 │   ├── supabase/
-│   │   ├── server.ts            Cliente SSR (Server Components y Server Actions)
-│   │   └── browser.ts           Cliente navegador (Client Components)
+│   │   ├── server.ts                Cliente SSR (Server Components y Server Actions)
+│   │   └── browser.ts               Cliente navegador (Client Components)
 │   ├── db/
-│   │   ├── schema.ts            Esquema de tablas y enums (Drizzle, solo referencia)
-│   │   └── index.ts             Conexión Drizzle (solo para migraciones)
-│   ├── acciones/                 Server Actions por módulo
-│   │   ├── platos.ts            Lectura pública de platos
-│   │   ├── pago.ts              Crear pedido desde el carrito
-│   │   ├── cocina.ts            Cambio de estado + consultas de pedidos
-│   │   ├── catalogo.ts          CRUD de platos (chef/admin)
-│   │   └── admin.ts             CRUD de personal y mesas
-│   └── servicios/
-│       └── estrategiaDespacho.ts  Strategy Pattern (mesa vs para llevar)
+│   │   ├── schema.ts                Esquema de tablas y enums (Drizzle, solo referencia)
+│   │   └── index.ts                 Conexión Drizzle (solo para migraciones)
+│   ├── acciones/                     Server Actions por módulo
+│   │   ├── platos.ts                Lectura pública de platos
+│   │   ├── pago.ts                  Crear pedido desde el carrito
+│   │   ├── cocina.ts                Cambio de estado + consultas de pedidos + stats
+│   │   ├── catalogo.ts              CRUD de platos (chef/admin)
+│   │   ├── categorias.ts            CRUD de categorías (chef/admin)
+│   │   ├── admin.ts                 CRUD de personal y mesas
+│   │   └── auth.ts                  Cerrar sesión
+│   ├── servicios/
+│   │   └── estrategiaDespacho.ts    Strategy Pattern (mesa vs para llevar)
+│   ├── formato.ts                   formatearPrecio() (COP)
+│   └── utils.ts                     cn() (clsx + tailwind-merge)
 │
 ├── stores/
-│   └── cart.ts                  Zustand: carrito del cliente
+│   └── cart.ts                      Zustand: carrito del cliente
 │
 ├── types/
-│   └── index.ts                 Interfaces del dominio
+│   └── index.ts                     Interfaces del dominio
 │
-└── proxy.ts                     Auth + protección de rutas
+└── proxy.ts                         Auth + protección de rutas
 ```
 
 ## Responsabilidades por módulo
@@ -96,4 +112,4 @@ Archivo de referencia: `src/lib/db/schema.ts` (tablas `perfiles`, `mesas`, `pedi
 
 ### Proxy (`src/proxy.ts`)
 - Protege `/cocina`, `/logistica`, `/admin` (solo usuarios autenticados)
-- `/mesa/[uuid]` y `/login` son públicos
+- `/`, `/login`, `/mesa/[uuid]` son públicos

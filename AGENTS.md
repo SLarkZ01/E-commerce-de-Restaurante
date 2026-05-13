@@ -35,7 +35,12 @@ Toda la documentación está en `docs/`. El punto de entrada es `docs/indice.md`
 src/
 ├── app/            → App Router (páginas y layouts)
 ├── components/
-│   └── ui/         → Componentes shadcn/ui (button, card, etc.)
+│   ├── ui/         → Componentes shadcn/ui (button, card, etc.)
+│   ├── cliente/    → Menú, catálogo, carrito, barra superior
+│   ├── cocina/     → Kanban de pedidos, tabla/formulario de platos
+│   ├── logistica/  → Lista de entregas pendientes
+│   ├── admin/      → Gestión de personal, gestión de mesas
+│   └── staff/      → Sidebar y layout del panel staff
 ├── lib/
 │   ├── db/         → Drizzle ORM (solo schema + migraciones, no runtime)
 │   ├── supabase/   → Clientes Supabase (server + browser)

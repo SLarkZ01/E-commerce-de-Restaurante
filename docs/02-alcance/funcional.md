@@ -6,18 +6,19 @@
 - Acceso anónimo al menú digital desde la página principal (`/`) o vía código QR (`/mesa/{uuid}`)
 - Exploración del catálogo sin necesidad de mesa asignada
 - Visualización de platos con nombre, descripción, precio, ingredientes e imagen
-- Filtro por categorías (plato fuerte, bebida, combo)
+- Filtro por tipo de plato (`plato_fuerte`, `bebida`, `combo`) y por categoría (definida por el chef)
 - Carrito de compras local persistente (Zustand + localStorage)
 - Para completar la compra debe escanear el QR de su mesa → redirige a `/mesa/{uuid}` (el carrito se mantiene)
-- Pago confirmado desde la mesa asignada
-- Recepción de comprobante por correo electrónico (Brevo)
+- Pago confirmado desde la mesa asignada (PayPal — pendiente de implementar)
+- Recepción de comprobante por correo electrónico (Brevo — pendiente de implementar)
 
 ### Cocinero (Chef)
 - Panel de pedidos en tiempo real (columna por estado)
-- Gestión CRUD del catálogo de platos
-- Creación de platos con tipo (plato fuerte, bebida, combo)
-- Subida de imágenes optimizadas (Cloudinary)
-- Cambio de estado: Pendiente → Preparando → Listo
+- Gestión CRUD del catálogo de platos y categorías
+- Creación de platos con tipo (`plato_fuerte`, `bebida`, `combo`)
+- Subida de imágenes (Cloudinary — pendiente de implementar)
+- Cambio de estado del pedido: Pendiente → Preparando → Listo
+- Stats de cocina: contadores por estado y tiempo promedio
 - Los cambios en el catálogo se reflejan instantáneamente en el menú del cliente
 
 ### Mesero
