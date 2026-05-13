@@ -35,7 +35,7 @@ interface SidebarStaffProps {
 
 const NAV_ITEMS = [
   { href: "/cocina", label: "Pedidos", icon: ClipboardList },
-  { href: "/cocina/platos", label: "Gestión de Menú", icon: UtensilsCrossed }, 
+  { href: "/cocina/platos", label: "Gestión de Menú", icon: UtensilsCrossed },
   { href: "/logistica", label: "Platos Listos", icon: PackageCheck },
 ];
 
