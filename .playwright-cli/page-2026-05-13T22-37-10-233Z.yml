@@ -1,0 +1,132 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e4]:
+      - link [ref=e117] [cursor=pointer]:
+        - /url: /cocina
+        - img [ref=e8]
+        - generic [ref=e10]: E-Kitchen
+      - separator [ref=e11]
+      - navigation [ref=e12]:
+        - link [ref=e118] [cursor=pointer]:
+          - /url: /cocina
+          - img [ref=e14]
+          - text: Pedidos
+        - link [ref=e119] [cursor=pointer]:
+          - /url: /cocina/platos
+          - img [ref=e18]
+          - text: Gestión de Menú
+        - link [ref=e120] [cursor=pointer]:
+          - /url: /logistica
+          - img [ref=e24]
+          - text: Platos Listos
+        - generic [ref=e29]:
+          - button [ref=e121]:
+            - img [ref=e31]
+            - generic [ref=e36]: Admin
+            - img [ref=e37]
+          - generic [ref=e39]:
+            - link [ref=e122] [cursor=pointer]:
+              - /url: /admin
+              - img [ref=e41]
+              - text: Inicio
+            - link [ref=e123] [cursor=pointer]:
+              - /url: /admin/personal
+              - img [ref=e47]
+              - text: Personal
+            - link [ref=e124] [cursor=pointer]:
+              - /url: /admin/mesas
+              - img [ref=e53]
+              - text: Mesas
+      - separator [ref=e56]
+      - generic [ref=e57]:
+        - generic [ref=e58]:
+          - generic [ref=e60]: A
+          - generic [ref=e61]:
+            - paragraph [ref=e62]: Usuario
+            - paragraph [ref=e63]: admin@ekitchen.com
+        - button [ref=e125]:
+          - img [ref=e66]
+          - text: Cerrar Sesión
+        - button [ref=e126]:
+          - img [ref=e70]
+          - text: Comprimir
+    - generic [ref=e73]:
+      - banner [ref=e74]:
+        - generic [ref=e75]:
+          - button [ref=e127]:
+            - img [ref=e77]
+          - generic [ref=e80]:
+            - heading [level=1] [ref=e128]: Gestión de Menú
+            - paragraph [ref=e82]: Administra platos y categorías
+        - generic [ref=e83]:
+          - generic [ref=e85]: 05:37 p. m.
+          - button [ref=e129]:
+            - generic [ref=e89]: A
+      - generic [ref=e90]:
+        - generic [ref=e91]:
+          - button [expanded] [ref=e130]:
+            - img [ref=e93]
+            - text: Nuevo Plato
+          - button [ref=e131]:
+            - img [ref=e95]
+            - text: Categorías
+        - generic [ref=e100]:
+          - img [ref=e102]
+          - paragraph [ref=e105]: No hay platos en el catálogo
+          - paragraph [ref=e106]: Agrega tu primer plato
+  - button "Open Next.js Dev Tools" [ref=e112] [cursor=pointer]:
+    - img [ref=e113]
+  - alert [ref=e116]
+  - dialog "Nuevo Plato" [ref=e135]:
+    - generic [ref=e136]:
+      - heading "Nuevo Plato" [level=2] [ref=e138]
+      - generic [ref=e139]:
+        - button "Plato Fuerte" [active] [ref=e140]:
+          - img [ref=e141]
+          - text: Plato Fuerte
+        - button "Bebida" [ref=e144]:
+          - img [ref=e145]
+          - text: Bebida
+        - button "Combo" [ref=e147]:
+          - img [ref=e148]
+          - text: Combo
+      - generic [ref=e154]:
+        - generic [ref=e155]: Nombre del plato
+        - 'textbox "Ej: Lomo Saltado" [ref=e156]'
+      - generic [ref=e157]:
+        - generic [ref=e158]: Descripción
+        - textbox "Breve descripción del plato" [ref=e159]
+      - generic [ref=e160]:
+        - generic [ref=e161]: Categoría
+        - combobox [ref=e162]:
+          - option "Sin categoría" [selected]
+          - option "Platos Fuertes"
+          - option "Bebidas"
+          - option "Combos"
+          - option "Postres"
+          - option "yrthrth"
+          - option "hsfghfgbfghty"
+          - option "hfsghsrthgfhg"
+          - option "hsfghsfghvnfghjhgjg"
+          - option "sfghfgjfjfgh"
+          - option "fghfjghjdghdfh"
+          - option "fghjfgjdjfgh"
+          - option "jdghjdghjdgh"
+          - option "aguas"
+      - generic [ref=e163]:
+        - generic [ref=e164]: Precio (COP)
+        - generic [ref=e165]:
+          - generic [ref=e166]: $
+          - spinbutton [ref=e167]
+      - generic [ref=e168]:
+        - generic [ref=e169]: Ingredientes
+        - generic [ref=e170]:
+          - 'textbox "Ej: Tomate" [ref=e171]'
+          - button [ref=e172]:
+            - img
+      - generic [ref=e173]:
+        - button "Cancelar" [ref=e174]
+        - button "Guardar Plato" [ref=e175]
+    - button "Close" [ref=e176]:
+      - img
+      - generic [ref=e177]: Close
