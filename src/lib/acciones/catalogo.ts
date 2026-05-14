@@ -21,6 +21,12 @@ export async function crearPlato(datos: {
   ingredientes?: string[];
   imagenUrl?: string;
 }) {
+  // Validación server-side
+  if (!datos.nombre?.trim()) throw new Error("El nombre del plato es requerido");
+  if (datos.precio <= 0) throw new Error("El precio debe ser mayor a 0");
+  const tiposValidos = ["plato_fuerte", "bebida", "combo"];
+  if (!tiposValidos.includes(datos.tipoPlato)) throw new Error("Tipo de plato inválido");
+
   const supabase = await crearCliente();
 
   const { data, error } = await supabase

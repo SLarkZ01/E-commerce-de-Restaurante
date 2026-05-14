@@ -10,13 +10,66 @@ Tres servicios externos requieren integración: **PayPal** (pagos), **Cloudinary
 
 ### Fachadas implementadas
 
-| Fachada | Servicio | Métodos expuestos | ¿Qué oculta? |
-|---|---|---|---|
-| `PagoFacade` | PayPal | `crearOrden()`, `capturarPago()` | Autenticación OAuth2 de PayPal, reintentos, manejo de errores |
-| `MediaFacade` | Cloudinary | `subirImagen()`, `eliminarImagen()` | Configuración de upload, firmas, transformaciones de imagen |
-| `NotificacionFacade` | Brevo | `enviarComprobante()`, `enviarAvisoCocina()` | Templates de email, API key, manejo de bounces |
+| Fachada | Archivo | Servicio | Estado | Métodos expuestos |
+|---|---|---|---|---|
+| `MediaFacade` | `src/lib/servicios/mediaFacade.ts` | Cloudinary | ✅ **Implementado** | `subirImagen()`, `eliminarImagen()`, `firmarParametros()` |
+| `PagoFacade` | `src/lib/servicios/_PagoFacade.ts` | PayPal | 🔜 Esqueleto (TODO) | `crearOrden()`, `capturarPago()` |
+| `NotificacionFacade` | `src/lib/servicios/_NotificacionFacade.ts` | Brevo | 🔜 Esqueleto (TODO) | `enviarComprobante()`, `enviarAvisoCocina()` |
 
-### Ejemplo: Flujo de "Finalizar Compra"
+> **Nota:** Los archivos con prefijo `_` (ej: `_PagoFacade.ts`) son esqueletos listos para implementar. Las interfaces, métodos y tipos ya están definidos. Solo falta integrar los SDKs correspondientes.
+
+### MediaFacade — Implementación real
+
+| Método | Descripción | ¿Quién lo usa? |
+|---|---|---|
+| `subirImagen(buffer, opciones)` | Sube una imagen a Cloudinary y devuelve la URL | `acciones/imagenes.ts` → `subirImagenPlato()` |
+| `eliminarImagen(publicId)` | Elimina una imagen de Cloudinary | No usado aún |
+| `firmarParametros(parametros)` | Firma parámetros para upload directo desde el cliente | No usado aún |
+
+```typescript
+// src/lib/acciones/imagenes.ts — uso real de MediaFacade
+const buffer = Buffer.from(await archivo.arrayBuffer());
+const resultado = await MediaFacade.subirImagen(buffer, {
+  folder: "e-kitchen/platos",
+});
+return resultado.secureUrl;
+```
+
+### PagoFacade — Esqueleto (listo para PayPal)
+
+```typescript
+// src/lib/servicios/_PagoFacade.ts
+export class PagoFacade {
+  static async crearOrden(total: number): Promise<ResultadoOperacion<string>> {
+    // TODO: Integrar SDK de PayPal
+    // 1. Autenticar con OAuth2
+    // 2. POST /v2/checkout/orders
+    // 3. Retornar orderID
+  }
+
+  static async capturarPago(ordenId: string): Promise<ResultadoOperacion<OrdenPago>> {
+    // TODO: POST /v2/checkout/orders/{ordenId}/capture
+  }
+}
+```
+
+### NotificacionFacade — Esqueleto (listo para Brevo)
+
+```typescript
+// src/lib/servicios/_NotificacionFacade.ts
+export class NotificacionFacade {
+  static async enviarComprobante(email, pedidoId, total): Promise<ResultadoOperacion> {
+    // TODO: Integrar SDK de Brevo
+    // Usar template "comprobante de compra"
+  }
+
+  static async enviarAvisoCocina(email, pedidoId): Promise<ResultadoOperacion> {
+    // TODO: Usar template "pedido listo"
+  }
+}
+```
+
+### Diagrama de integración (cuando esté completo)
 
 ```mermaid
 sequenceDiagram
@@ -38,14 +91,6 @@ sequenceDiagram
     FC-->>UI: compra exitosa
 ```
 
-La UI solo llama a `FachadaCompra.finalizarCompra()`. No necesita saber nada sobre OAuth de PayPal, estructura de emails de Brevo ni el formato de la respuesta.
-
-### Referencia en el código
-
-- **Tabla platos:** `src/lib/db/schema.ts:49` — columna `imagenUrl` (URL de Cloudinary guardada)
-- **Tabla pedidos:** `src/lib/db/schema.ts:72-73` — columnas `total` y `paypalPedidoId`
-- Las fachadas se implementan en `src/lib/services/` como módulos independientes
-
 ### Beneficio clave
 
-Si mañana se cambia PayPal por Stripe, o Brevo por SendGrid, solo se modifica la fachada correspondiente. El resto del código (UI, Server Actions, lógica de negocio) no se toca.
+Si mañana se cambia PayPal por Stripe, o Brevo por SendGrid, **solo se modifica la fachada correspondiente**. El resto del código (UI, Server Actions, lógica de negocio) no se toca. Los archivos con prefijo `_` están diseñados para que al implementar el SDK real, solo haya que rellenar los métodos sin cambiar la interfaz.

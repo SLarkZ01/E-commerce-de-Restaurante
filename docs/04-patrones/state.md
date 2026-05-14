@@ -27,17 +27,61 @@ El ciclo de vida de un pedido es una **máquina de estados finitos** con 4 estad
 
 ### Implementación
 
-La validación se hace a nivel de **Server Action**. Antes de actualizar el estado, se verifica que la transición sea válida:
+La máquina de estados se implementa en la **Server Action** `cambiarEstadoPedido`. Antes de actualizar, se validan dos cosas:
 
-- **Schema:** `src/lib/db/schema.ts:14-19` — enum `estadoPedidoEnum`
-- **Tabla pedidos:** `src/lib/db/schema.ts:66-77` — columna `estado` usa el enum
+1. **Transición válida:** `TRANSICIONES_VALIDAS[estadoActual]` contiene `nuevoEstado`
+2. **Rol autorizado:** solo `mesero` puede marcar como `entregado`
 
-Cada Server Action de cambio de estado incluye una validación:
+### Referencia en el código
+
+| Componente | Archivo | Descripción |
+|---|---|---|
+| **Máquina de estados** | `src/lib/acciones/cocina.ts:6-11` | `TRANSICIONES_VALIDAS` — mapa de estados → transiciones permitidas |
+| **Validación de transición** | `src/lib/acciones/cocina.ts:50-58` | Verifica que `nuevoEstado` esté en las transiciones válidas |
+| **Validación de rol** | `src/lib/acciones/cocina.ts:60-65` | Solo mesero puede marcar `entregado` |
+| **Actualización** | `src/lib/acciones/cocina.ts:67-70` | `UPDATE pedidos SET estado = nuevoEstado` |
+| **Strategy integrado** | `src/lib/acciones/cocina.ts:73-76` | Al llegar a `entregado`, ejecuta `crearEstrategiaDespacho().alEntregar()` |
+| **Enum de estados** | `src/lib/db/schema.ts` | `estadoPedidoEnum` |
+| **Tipos** | `src/types/index.ts` | `EstadoPedido` |
+| **Hook consumidor** | `src/hooks/usePedidos.ts` | `cambiarEstado()` expone la acción a los componentes |
+
+### Flujo de validación
+
+```typescript
+// src/lib/acciones/cocina.ts — cambiarEstadoPedido
+const TRANSICIONES_VALIDAS: Record<EstadoPedido, EstadoPedido[]> = {
+  pendiente: ["preparando"],
+  preparando: ["listo"],
+  listo: ["entregado"],
+  entregado: [],
+};
+
+// 1. Validar transición
+const validas = TRANSICIONES_VALIDAS[estadoActual];
+if (!validas.includes(nuevoEstado)) {
+  return { exito: false, error: `Transición inválida: ${estadoActual} → ${nuevoEstado}` };
+}
+
+// 2. Validar rol
+if (nuevoEstado === "entregado" && rolUsuario !== "mesero") {
+  return { exito: false, error: "Solo el mesero puede marcar como entregado" };
+}
+
+// 3. Actualizar
+await supabase.from("pedidos").update({ estado: nuevoEstado }).eq("id", pedidoId);
+
+// 4. Strategy (cuando llega a entregado)
+if (nuevoEstado === "entregado") {
+  const estrategia = crearEstrategiaDespacho(pedidoActual.tipo_despacho);
+  await estrategia.alEntregar(pedidoActual);
+}
 ```
-SI estado_actual NO es el esperado → error 400
-SI rol del usuario NO coincide con el requerido → error 403
+
+### Diagrama de estados
+
 ```
-
-## Diagrama de estados
-
-Ver `docs/03-arquitectura/flujos.md` — Flujo 2: Ciclo de vida del pedido.
+     ┌──────────┐     ┌────────────┐     ┌───────┐     ┌───────────┐
+     │ pendiente │ ──→ │ preparando │ ──→ │ listo │ ──→ │ entregado │
+     └──────────┘     └────────────┘     └───────┘     └───────────┘
+       (cocinero)        (cocinero)       (mesero)        (terminal)
+```

@@ -1,5 +1,5 @@
 import { Clock, AlertTriangle, CheckCircle2, Timer } from "lucide-react";
-import type { StatsCocina } from "@/lib/acciones/cocina";
+import type { StatsCocina } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface StatsBarProps {

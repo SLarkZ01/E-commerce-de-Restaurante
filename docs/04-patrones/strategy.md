@@ -10,53 +10,73 @@ El despacho de un pedido puede ser de dos tipos: **en mesa** o **para llevar**. 
 
 ### Estrategias de despacho
 
-| Estrategia | ¿Quién entrega? | ¿Requiere mesa? | Comportamiento adicional |
+| Estrategia | Clase | ¿Quién entrega? | Comportamiento |
 |---|---|---|---|
-| `mesa` | Mesero a la mesa física | Sí (`mesaId` requerido) | Al entregar, se libera la mesa para nuevos pedidos |
-| `para_llevar` | Cliente recoge en mostrador | No (`mesaId` nulo) | Se notifica al cliente por email cuando está listo |
+| Mesa | `DespachoMesa` | Mesero a la mesa física | Al entregar, se registra liberación de mesa |
+| Para llevar | `DespachoParaLlevar` | Cliente recoge en mostrador | Al entregar, se notifica al cliente por email |
 
 ### Cómo funciona
 
 1. El cliente selecciona "Para servir en mesa" o "Para llevar" al iniciar el pedido
-2. El sistema asigna la estrategia correspondiente según la selección
-3. El flujo de pago y preparación es idéntico para ambas
-4. Solo cambia la lógica de notificación y entrega al final
+2. El campo `tipo_despacho` se guarda en la tabla `pedidos`
+3. Cuando el mesero marca el pedido como "Entregado", la Server Action `cambiarEstadoPedido`:
+   - Cambia el estado a `entregado`
+   - Llama a `crearEstrategiaDespacho(tipo_despacho).alEntregar(pedido)`
+   - Cada estrategia ejecuta su propia lógica de finalización
+4. El flujo de pago y preparación es idéntico para ambas estrategias
 
 ### Referencia en el código
 
-- **Enum de despacho:** `src/lib/db/schema.ts:27` — `tipoDespachoEnum` (`mesa`, `para_llevar`)
-- **Tabla pedidos:** `src/lib/db/schema.ts:66-77` — columna `tipoDespacho`
-- **Tipos del dominio:** `src/types/index.ts:7` — `TipoDespacho`
+| Componente | Archivo | Descripción |
+|---|---|---|
+| **Interfaz + clases** | `src/lib/servicios/estrategiaDespacho.ts` | Define `EstrategiaDespacho` (interfaz), `DespachoMesa`, `DespachoParaLlevar` y la factory `crearEstrategiaDespacho(tipo)` |
+| **Integración** | `src/lib/acciones/cocina.ts:68-71` | `cambiarEstadoPedido` ejecuta la estrategia cuando `nuevoEstado === "entregado"` |
+| **Enum de despacho** | `src/lib/db/schema.ts` | `tipoDespachoEnum` (`mesa`, `para_llevar`) |
+| **Tipos del dominio** | `src/types/index.ts` | `TipoDespacho` |
 
 ### Diagrama
 
 ```mermaid
 classDiagram
-    class DespachoStrategy {
+    class EstrategiaDespacho {
         <<interface>>
-        +notificarEntrega(pedido: Pedido) void
-        +finalizarPedido(pedido: Pedido) void
+        +alEntregar(pedido: Pedido) Promise~void~
+        +getTipo() string
     }
 
     class DespachoMesa {
-        +notificarEntrega() "Notifica al panel de mesero"
-        +finalizarPedido() "Libera la mesa (permite nuevo QR)"
+        +alEntregar() "Registra liberación de mesa"
     }
 
     class DespachoParaLlevar {
-        +notificarEntrega() "Envía email al cliente (Brevo)"
-        +finalizarPedido() "Registra entrega sin liberar mesa"
+        +alEntregar() "Notifica al cliente por email"
     }
 
-    class PedidoContext {
-        -estrategia: DespachoStrategy
-        +asignarEstrategia(tipo: TipoDespacho)
-        +entregar()
+    class crearEstrategiaDespacho {
+        +crearEstrategiaDespacho(tipo: string) EstrategiaDespacho
     }
 
-    DespachoStrategy <|.. DespachoMesa
-    DespachoStrategy <|.. DespachoParaLlevar
-    PedidoContext --> DespachoStrategy
+    class cambiarEstadoPedido {
+        +cambiarEstadoPedido(pedidoId, nuevoEstado, rolUsuario)
+    }
+
+    EstrategiaDespacho <|.. DespachoMesa
+    EstrategiaDespacho <|.. DespachoParaLlevar
+    crearEstrategiaDespacho ..> EstrategiaDespacho : crea
+    cambiarEstadoPedido --> crearEstrategiaDespacho : "usa cuando estado='entregado'"
 ```
 
-El `PedidoContext` selecciona la estrategia en tiempo de ejecución según `tipoDespacho`. La UI de logística solo llama a `entregar()` sin conocer los detalles de cada estrategia.
+### Flujo de ejecución
+
+```typescript
+// src/lib/acciones/cocina.ts — cambiarEstadoPedido
+if (nuevoEstado === "entregado") {
+  // Strategy: ejecutar lógica de despacho según tipo (mesa o para llevar)
+  const estrategia = crearEstrategiaDespacho(pedidoActual.tipo_despacho);
+  await estrategia.alEntregar(pedidoActual);
+}
+```
+
+### Beneficio clave
+
+Si mañana se agrega un nuevo tipo de despacho (ej: "delivery a domicilio"), solo se crea una nueva clase `DespachoDomicilio implements EstrategiaDespacho` y se agrega al factory. El código de `cambiarEstadoPedido` y los paneles de UI no se modifican.

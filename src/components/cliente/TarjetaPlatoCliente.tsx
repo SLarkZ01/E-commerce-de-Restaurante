@@ -2,7 +2,7 @@
 
 import { Plus, Utensils } from "lucide-react";
 import { formatearPrecio } from "@/lib/formato";
-import { usarCarrito, type ItemCarrito } from "@/stores/cart";
+import { usarCarrito } from "@/stores/cart";
 import type { Plato } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { ShoppingBag, Check, AlertCircle } from "lucide-react";
 import { usarCarrito } from "@/stores/cart";
-import { crearPedido } from "@/lib/acciones/pago";
+import { usePago } from "@/hooks/usePago";
 import { formatearPrecio } from "@/lib/formato";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { CarritoItem } from "./CarritoItem";
@@ -29,6 +29,7 @@ export function CarritoSheet({ mesaUuid }: CarritoSheetProps) {
   const eliminarItem = usarCarrito((s) => s.eliminarItem);
   const total = usarCarrito((s) => s.total);
   const vaciarCarrito = usarCarrito((s) => s.vaciarCarrito);
+  const { crearPedido } = usePago();
 
   const cantidadTotal = mounted ? items.reduce((sum, i) => sum + i.cantidad, 0) : 0;
   const itemsLength = mounted ? items.length : 0;
@@ -44,7 +45,7 @@ export function CarritoSheet({ mesaUuid }: CarritoSheetProps) {
         return;
       }
       setConfirmacion(
-        `Pedido #${resultado.pedidoId.slice(0, 8)} creado correctamente`
+        `Pedido #${resultado.pedidoId?.slice(0, 8)} creado correctamente`
       );
       vaciarCarrito();
       setTimeout(() => {

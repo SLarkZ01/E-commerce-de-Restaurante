@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Clock, PackageCheck, AlertTriangle, Check, X } from "lucide-react";
-import { cambiarEstadoPedido } from "@/lib/acciones/cocina";
 import { formatearPrecio } from "@/lib/formato";
 import { useTiempoTranscurrido } from "@/hooks/useTiempoTranscurrido";
+import { usePedidos } from "@/hooks/usePedidos";
+import { useRealtime } from "@/hooks/useRealtime";
 import { MensajeToast } from "@/components/compartidos/MensajeToast";
 import { EstadoVacio } from "@/components/compartidos/EstadoVacio";
 import { Button } from "@/components/ui/button";
@@ -24,20 +25,33 @@ export function ListaEntregas({ pedidosIniciales }: ListaEntregasProps) {
   const [tipoMensaje, setTipoMensaje] = useState<"exito" | "error">("exito");
   const [confirmando, setConfirmando] = useState<string | null>(null);
   const { formatear, esUrgente } = useTiempoTranscurrido();
+  const { cambiarEstado } = usePedidos();
+
+  // Observer: suscribirse a pedidos que pasan a estado "listo" en tiempo real
+  useRealtime("pedidos", "UPDATE", useCallback((payload) => {
+    const actualizado = payload.new as Pedido;
+    if (actualizado.estado === "listo") {
+      setPedidos((prev) => {
+        const existe = prev.find((p) => p.id === actualizado.id);
+        if (existe) return prev;
+        return [...prev, actualizado];
+      });
+    }
+  }, []), "estado=eq.listo");
 
   const handleEntregar = async (pedidoId: string) => {
     setConfirmando(null);
-    const resultado = await cambiarEstadoPedido(pedidoId, "entregado", "mesero");
+    const resultado = await cambiarEstado(pedidoId, "entregado", "mesero");
 
     if (resultado.error) {
-      setTipoMensaje("error");
       setMensaje(resultado.error);
+      setTipoMensaje("error");
       return;
     }
 
     setPedidos((prev) => prev.filter((p) => p.id !== pedidoId));
-    setTipoMensaje("exito");
     setMensaje("Pedido entregado correctamente");
+    setTipoMensaje("exito");
   };
 
   return (

@@ -1,13 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-
-export interface ItemCarrito {
-  id: string;
-  nombre: string;
-  precio: number;
-  imagenUrl: string | null;
-  cantidad: number;
-}
+import type { ItemCarrito } from "@/types";
 
 interface EstadoCarrito {
   items: ItemCarrito[];

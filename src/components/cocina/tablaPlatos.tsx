@@ -2,22 +2,14 @@
 
 import { useState } from "react";
 import { Plus, Utensils, Tags } from "lucide-react";
-import {
-  crearPlato,
-  actualizarPlato,
-  eliminarPlato,
-} from "@/lib/acciones/catalogo";
-import { subirImagenPlato } from "@/lib/acciones/imagenes";
-import {
-  crearCategoria,
-  eliminarCategoria,
-} from "@/lib/acciones/categorias";
 import type { Plato, Categoria } from "@/types";
 import { MensajeToast } from "@/components/compartidos/MensajeToast";
 import { EstadoVacio } from "@/components/compartidos/EstadoVacio";
 import { TarjetaPlatoCocina } from "./TarjetaPlatoCocina";
 import { FormularioPlato, type DatosFormularioPlato, type ResultadoGuardado } from "./FormularioPlato";
 import { GestorCategorias } from "./GestorCategorias";
+import { useGestionPlatos } from "@/hooks/useGestionPlatos";
+import { useGestionCategorias } from "@/hooks/useGestionCategorias";
 import {
   Dialog,
   DialogContent,
@@ -43,71 +35,61 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
   const [mensaje, setMensaje] = useState("");
   const [tipoMensaje, setTipoMensaje] = useState<"exito" | "error">("exito");
 
-  const handleCrear = async (datos: DatosFormularioPlato): Promise<ResultadoGuardado> => {
-    try {
-      let imagenUrl: string | undefined;
-      if (datos.archivoImagen) {
-        const formData = new FormData();
-        formData.append("imagen", datos.archivoImagen);
-        imagenUrl = await subirImagenPlato(formData);
-      }
+  const { crear, actualizar, eliminar } = useGestionPlatos();
+  const { crear: crearCat, eliminar: eliminarCat } = useGestionCategorias();
 
-      const nuevo = await crearPlato({
-        nombre: datos.nombre,
-        descripcion: datos.descripcion,
-        precio: datos.precio,
-        tipoPlato: datos.tipoPlato,
-        categoriaId: datos.categoriaId,
-        ingredientes: datos.ingredientes,
-        imagenUrl,
-      });
-      setPlatos((prev) => [nuevo as Plato, ...prev]);
-      setMostrandoFormulario(false);
-      setTipoMensaje("exito");
-      setMensaje("Plato creado correctamente");
-      return { exito: true };
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "Error desconocido";
-      return { exito: false, error: msg };
+  const handleCrear = async (datos: DatosFormularioPlato): Promise<ResultadoGuardado> => {
+    const resultado = await crear(datos);
+    const platoCreado = resultado.plato;
+
+    if (!resultado.exito || !platoCreado) {
+      return { exito: false, error: resultado.error };
     }
+
+    setPlatos((prev) => [platoCreado, ...prev]);
+    setMostrandoFormulario(false);
+    setMensaje("Plato creado correctamente");
+    setTipoMensaje("exito");
+    return { exito: true };
   };
 
   const handleActualizar = async (id: string, datos: { disponible: boolean }) => {
     try {
-      await actualizarPlato(id, datos);
+      await actualizar(id, datos);
       setPlatos((prev) =>
         prev.map((p) => (p.id === id ? { ...p, ...datos } : p))
       );
-      setTipoMensaje("exito");
       setMensaje("Plato actualizado correctamente");
+      setTipoMensaje("exito");
     } catch {
-      setTipoMensaje("error");
       setMensaje("Error al actualizar el plato");
+      setTipoMensaje("error");
     }
   };
 
   const handleEliminarPlato = async (id: string) => {
     if (!confirm("¿Eliminar este plato?")) return;
     try {
-      await eliminarPlato(id);
+      await eliminar(id);
       setPlatos((prev) => prev.filter((p) => p.id !== id));
-      setTipoMensaje("exito");
       setMensaje("Plato eliminado correctamente");
+      setTipoMensaje("exito");
     } catch {
-      setTipoMensaje("error");
       setMensaje("Error al eliminar el plato");
+      setTipoMensaje("error");
     }
   };
 
   const handleCrearCategoria = async (nombre: string, slug: string) => {
-    try {
-      const nueva = await crearCategoria({ nombre, slug });
-      setCategorias((prev) => [...prev, nueva as Categoria]);
-      setTipoMensaje("exito");
+    const resultadoCat = await crearCat(nombre, slug);
+    const catCreada = resultadoCat.categoria;
+    if (resultadoCat.exito && catCreada) {
+      setCategorias((prev) => [...prev, catCreada]);
       setMensaje("Categoría creada correctamente");
-    } catch {
-      setTipoMensaje("error");
+      setTipoMensaje("exito");
+    } else {
       setMensaje("Error al crear la categoría");
+      setTipoMensaje("error");
     }
   };
 
@@ -115,13 +97,13 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
     if (!confirm("¿Eliminar esta categoría? Los platos asociados quedarán sin categoría."))
       return;
     try {
-      await eliminarCategoria(id);
+      await eliminarCat(id);
       setCategorias((prev) => prev.filter((c) => c.id !== id));
-      setTipoMensaje("exito");
       setMensaje("Categoría eliminada correctamente");
+      setTipoMensaje("exito");
     } catch {
-      setTipoMensaje("error");
       setMensaje("Error al eliminar la categoría");
+      setTipoMensaje("error");
     }
   };
 

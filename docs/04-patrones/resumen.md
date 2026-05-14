@@ -2,38 +2,91 @@
 
 El proyecto integra **5 patrones de diseño** que operan en distintos niveles de la arquitectura:
 
-| # | Patrón | Tipo | ¿Dónde actúa? | ¿Qué resuelve? |
-|---|---|---|---|---|
-| 1 | **Observer** | Comportamiento | Capa de datos → UI | Sincronización en tiempo real sin polling |
-| 2 | **State** | Comportamiento | Lógica de negocio | Transiciones válidas del ciclo de vida del pedido |
-| 3 | **Factory Method** | Creacional | Panel de Cocina | Creación uniforme de distintos tipos de plato |
-| 4 | **Strategy** | Comportamiento | Lógica de despacho | Reglas diferentes según mesa o para llevar |
-| 5 | **Facade** | Estructural | Integraciones externas | Simplificar PayPal, Cloudinary y Brevo |
+| # | Patrón | Tipo | ¿Dónde actúa? | ¿Qué resuelve? | Archivo principal |
+|---|---|---|---|---|---|
+| 1 | **Observer** | Comportamiento | Capa de datos → UI | Sincronización en tiempo real sin polling | `src/hooks/useRealtime.ts` |
+| 2 | **State** | Comportamiento | Lógica de negocio | Transiciones válidas del ciclo de vida del pedido | `src/lib/acciones/cocina.ts` |
+| 3 | **Factory Method** | Creacional | Panel de Cocina | Creación uniforme de distintos tipos de plato | `src/lib/servicios/platoFactory.ts` |
+| 4 | **Strategy** | Comportamiento | Lógica de despacho | Reglas diferentes según mesa o para llevar | `src/lib/servicios/estrategiaDespacho.ts` |
+| 5 | **Facade** | Estructural | Integraciones externas | Simplificar PayPal, Cloudinary y Brevo | `src/lib/servicios/mediaFacade.ts` |
+
+## Dónde está cada patrón en el código
+
+### Observer
+```
+src/hooks/useRealtime.ts              ← Hook genérico (canal WebSocket)
+src/components/cocina/kanbanPedidos.tsx:40-46  ← Suscripción INSERT pedidos
+src/components/logistica/listaEntregas.tsx:30-39 ← Suscripción UPDATE estado=listo
+src/lib/supabase/browser.ts           ← Cliente WebSocket Supabase
+```
+
+### State
+```
+src/lib/acciones/cocina.ts:6-11       ← TRANSICIONES_VALIDAS (máquina de estados)
+src/lib/acciones/cocina.ts:50-65      ← Validación de transición + rol
+src/lib/acciones/cocina.ts:67-76      ← Actualización + Strategy
+src/types/index.ts                    ← EstadoPedido (enum)
+```
+
+### Factory Method
+```
+src/lib/servicios/platoFactory.ts     ← Interfaz PlatoCreador + 3 clases + factory
+src/hooks/useGestionPlatos.ts:20-23   ← Integración: validar antes de crear
+src/components/cocina/FormularioPlato.tsx ← Renderizado condicional por tipo
+src/types/index.ts                    ← TipoPlato (enum)
+```
+
+### Strategy
+```
+src/lib/servicios/estrategiaDespacho.ts ← Interfaz + DespachoMesa + DespachoParaLlevar + factory
+src/lib/acciones/cocina.ts:73-76      ← Integración: ejecutar al entregar
+src/types/index.ts                    ← TipoDespacho (enum)
+```
+
+### Facade
+```
+src/lib/servicios/mediaFacade.ts      ← Cloudinary (implementado ✅)
+src/lib/servicios/_PagoFacade.ts      ← PayPal (esqueleto 🔜)
+src/lib/servicios/_NotificacionFacade.ts ← Brevo (esqueleto 🔜)
+src/lib/acciones/imagenes.ts          ← Usa MediaFacade.subirImagen()
+```
 
 ## Cómo se relacionan
 
 ```mermaid
 graph LR
     subgraph "Capa de Presentación"
-        OBS[Observer<br/>Supabase Realtime]
+        OBS[Observer<br/>useRealtime.ts]
     end
 
     subgraph "Capa de Negocio"
-        STATE[State<br/>Máquina de Pedidos]
-        STRATEGY[Strategy<br/>Lógica de Despacho]
-        FACTORY[Factory Method<br/>Creación de Platos]
+        STATE[State<br/>cocina.ts]
+        STRATEGY[Strategy<br/>estrategiaDespacho.ts]
+        FACTORY[Factory Method<br/>platoFactory.ts]
     end
 
     subgraph "Capa de Integración"
-        FACADE[Facade<br/>Servicios Externos]
+        FACADE[Facade<br/>mediaFacade.ts]
     end
 
     OBS -.->|Notifica cambios| STATE
     STATE -->|Decide lógica| STRATEGY
-    FACTORY -->|Crea platos que| OBS
-    FACADE -->|Simplifica llamadas a| STATE
+    FACTORY -->|Crea platos validados| OBS
+    FACADE -->|Simplifica subida de imágenes| FACTORY
 ```
 
-- **Factory** crea platos → **Observer** notifica a los clientes del nuevo menú
-- **State** controla el ciclo de vida → **Strategy** decide el despacho según origen
-- **Facade** envuelve PayPal y Brevo → **State** recibe el resultado del pago para crear el pedido
+- **Factory** (`platoFactory.ts`) valida y crea platos → los platos se reflejan en el catálogo que el cliente ve
+- **State** (`cocina.ts`) controla el ciclo de vida del pedido → cuando llega a "entregado", invoca **Strategy**
+- **Strategy** (`estrategiaDespacho.ts`) ejecuta la lógica de finalización según tipo de despacho
+- **Observer** (`useRealtime.ts`) notifica en tiempo real a cocina y logística de nuevos pedidos
+- **Facade** (`mediaFacade.ts`) simplifica la subida de imágenes a Cloudinary desde el Factory
+
+## Relación con principios SOLID
+
+| Patrón | Principio SOLID aplicado |
+|---|---|
+| **Factory Method** | OCP — Nuevos tipos de plato sin modificar código existente |
+| **Strategy** | OCP — Nuevas estrategias de despacho sin modificar `cambiarEstadoPedido` |
+| **Observer** | DIP — Los componentes dependen de la abstracción del canal, no de Supabase directamente |
+| **Facade** | SRP — Cada fachada tiene una sola razón de cambiar (un servicio externo) |
+| **State** | SRP — La máquina de estados está aislada en una sola Server Action |

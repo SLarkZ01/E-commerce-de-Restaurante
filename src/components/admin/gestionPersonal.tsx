@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Plus, Users } from "lucide-react";
 import type { Perfil } from "@/types";
-import { crearPerfil, eliminarPerfil } from "@/lib/acciones/admin";
+import { useGestionAdmin } from "@/hooks/useGestionAdmin";
 import { Button } from "@/components/ui/button";
 import { MensajeToast } from "@/components/compartidos/MensajeToast";
 import { EstadoVacio } from "@/components/compartidos/EstadoVacio";
@@ -24,17 +24,19 @@ export function GestionPersonal({ perfilesIniciales }: { perfilesIniciales: Perf
   const [mostrandoFormulario, setMostrandoFormulario] = useState(false);
   const [mensaje, setMensaje] = useState("");
   const [tipoMensaje, setTipoMensaje] = useState<"exito" | "error">("exito");
+  const { crearPerfil, eliminarPerfil } = useGestionAdmin();
 
   const handleCrear = async (datos: DatosPersonal) => {
-    try {
-      const nuevo = await crearPerfil(datos);
-      setPerfiles((prev) => [nuevo as Perfil, ...prev]);
+    const resultado = await crearPerfil(datos);
+    const perfilCreado = resultado.perfil;
+    if (resultado.exito && perfilCreado) {
+      setPerfiles((prev) => [perfilCreado, ...prev]);
       setMostrandoFormulario(false);
-      setTipoMensaje("exito");
       setMensaje("Personal agregado correctamente");
-    } catch {
-      setTipoMensaje("error");
+      setTipoMensaje("exito");
+    } else {
       setMensaje("Error al agregar personal");
+      setTipoMensaje("error");
     }
   };
 
@@ -43,11 +45,11 @@ export function GestionPersonal({ perfilesIniciales }: { perfilesIniciales: Perf
     try {
       await eliminarPerfil(id);
       setPerfiles((prev) => prev.filter((p) => p.id !== id));
-      setTipoMensaje("exito");
       setMensaje("Usuario eliminado correctamente");
+      setTipoMensaje("exito");
     } catch {
-      setTipoMensaje("error");
       setMensaje("Error al eliminar usuario");
+      setTipoMensaje("error");
     }
   };
 

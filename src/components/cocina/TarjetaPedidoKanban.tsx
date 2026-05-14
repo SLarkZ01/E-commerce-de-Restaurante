@@ -3,7 +3,7 @@ import { formatearPrecio } from "@/lib/formato";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import type { PedidoConItems } from "@/lib/acciones/cocina";
+import type { PedidoConItems } from "@/types";
 import type { EstadoConfig } from "./configEstados";
 import { useTiempoTranscurrido } from "@/hooks/useTiempoTranscurrido";
 
