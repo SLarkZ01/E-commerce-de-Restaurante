@@ -1,5 +1,3 @@
-"use client";
-
 import { UtensilsCrossed, MapPin } from "lucide-react";
 
 interface BarraMesaProps {

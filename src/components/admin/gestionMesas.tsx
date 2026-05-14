@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { QrCode, Trash2, Copy, Plus, X } from "lucide-react";
+import { QrCode, Trash2, Copy, Plus } from "lucide-react";
 import type { Mesa } from "@/types";
 import { crearMesa, eliminarMesa } from "@/lib/acciones/admin";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { MensajeToast } from "@/components/compartidos/MensajeToast";
+import { EstadoVacio } from "@/components/compartidos/EstadoVacio";
 import {
   Dialog,
   DialogContent,
@@ -24,6 +26,7 @@ export function GestionMesas({
   const [mostrandoQR, setMostrandoQR] = useState<Mesa | null>(null);
   const [numeroNuevo, setNumeroNuevo] = useState("");
   const [mensaje, setMensaje] = useState("");
+  const [tipoMensaje, setTipoMensaje] = useState<"exito" | "error">("exito");
 
   const handleCrear = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,8 +35,10 @@ export function GestionMesas({
       setMesas((prev) => [nueva as Mesa, ...prev]);
       setNumeroNuevo("");
       setMensaje("Mesa creada correctamente");
+      setTipoMensaje("exito");
     } catch {
       setMensaje("Error al crear la mesa");
+      setTipoMensaje("error");
     }
   };
 
@@ -42,8 +47,11 @@ export function GestionMesas({
     try {
       await eliminarMesa(id);
       setMesas((prev) => prev.filter((m) => m.id !== id));
+      setMensaje("Mesa eliminada correctamente");
+      setTipoMensaje("exito");
     } catch {
       setMensaje("Error al eliminar mesa");
+      setTipoMensaje("error");
     }
   };
 
@@ -53,11 +61,8 @@ export function GestionMesas({
     <div className="flex-1 overflow-y-auto">
       <div className="p-6">
         {mensaje && (
-          <div className="mb-5 px-5 py-3 bg-exito/10 text-exito text-sm rounded-xl flex justify-between items-center">
-            {mensaje}
-            <button onClick={() => setMensaje("")} className="text-exito/60 hover:text-exito">
-              <X className="w-4 h-4" />
-            </button>
+          <div className="mb-5">
+            <MensajeToast mensaje={mensaje} variante={tipoMensaje} onClose={() => setMensaje("")} />
           </div>
         )}
 
@@ -78,13 +83,11 @@ export function GestionMesas({
         </form>
 
         {mesas.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-texto-terciario">
-            <div className="w-16 h-16 rounded-full bg-fondo-oscuro flex items-center justify-center mb-4">
-              <QrCode className="w-7 h-7" />
-            </div>
-            <p className="text-sm font-medium text-texto-secundario">No hay mesas registradas</p>
-            <p className="text-xs mt-1">Agrega tu primera mesa</p>
-          </div>
+          <EstadoVacio
+            icono={QrCode}
+            titulo="No hay mesas registradas"
+            descripcion="Agrega tu primera mesa"
+          />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {mesas.map((m) => (

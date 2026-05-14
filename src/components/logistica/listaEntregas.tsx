@@ -1,14 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Clock, PackageCheck, AlertTriangle, Check, X } from "lucide-react";
 import { cambiarEstadoPedido } from "@/lib/acciones/cocina";
 import { formatearPrecio } from "@/lib/formato";
-import type { Pedido } from "@/types";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useTiempoTranscurrido } from "@/hooks/useTiempoTranscurrido";
+import { MensajeToast } from "@/components/compartidos/MensajeToast";
+import { EstadoVacio } from "@/components/compartidos/EstadoVacio";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import type { Pedido } from "@/types";
+
+export { SkeletonListaEntregas } from "./SkeletonListaEntregas";
 
 interface ListaEntregasProps {
   pedidosIniciales: Pedido[];
@@ -17,76 +21,62 @@ interface ListaEntregasProps {
 export function ListaEntregas({ pedidosIniciales }: ListaEntregasProps) {
   const [pedidos, setPedidos] = useState(pedidosIniciales);
   const [mensaje, setMensaje] = useState("");
+  const [tipoMensaje, setTipoMensaje] = useState<"exito" | "error">("exito");
   const [confirmando, setConfirmando] = useState<string | null>(null);
-  const [ahora, setAhora] = useState(() => Date.now());
-
-  useEffect(() => {
-    const intervalo = setInterval(() => setAhora(Date.now()), 30000);
-    return () => clearInterval(intervalo);
-  }, []);
+  const { formatear, esUrgente } = useTiempoTranscurrido();
 
   const handleEntregar = async (pedidoId: string) => {
     setConfirmando(null);
-    const resultado = await cambiarEstadoPedido(
-      pedidoId,
-      "entregado",
-      "mesero"
-    );
+    const resultado = await cambiarEstadoPedido(pedidoId, "entregado", "mesero");
 
     if (resultado.error) {
       setMensaje(resultado.error);
+      setTipoMensaje("error");
       return;
     }
 
     setPedidos((prev) => prev.filter((p) => p.id !== pedidoId));
     setMensaje("Pedido entregado correctamente");
+    setTipoMensaje("exito");
     setTimeout(() => setMensaje(""), 3000);
-  };
-
-  const tiempoTranscurrido = (fecha: Date) => {
-    const min = Math.floor((ahora - new Date(fecha).getTime()) / 60000);
-    if (min < 1) return "Ahora";
-    return `Hace ${min} min`;
   };
 
   return (
     <div className="flex-1 overflow-y-auto p-4">
       {mensaje && (
-        <div className="mb-4 px-4 py-3 bg-exito/10 text-exito text-sm rounded-xl text-center flex items-center justify-center gap-2">
-          <Check className="w-4 h-4" />
-          {mensaje}
+        <div className="mb-4">
+          <MensajeToast mensaje={mensaje} variante={tipoMensaje} onClose={() => setMensaje("")} />
         </div>
       )}
 
       {pedidos.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-texto-terciario">
-          <div className="w-16 h-16 rounded-full bg-fondo-oscuro flex items-center justify-center mb-4">
-            <PackageCheck className="w-7 h-7" />
-          </div>
-          <p className="text-sm font-medium text-texto-secundario">No hay platos listos para entregar</p>
-          <p className="text-xs mt-1">Esperando que cocina termine...</p>
-        </div>
+        <EstadoVacio
+          icono={PackageCheck}
+          titulo="No hay platos listos para entregar"
+          descripcion="Esperando que cocina termine..."
+        />
       ) : (
         <div className="space-y-3">
           {pedidos.map((pedido) => {
-            const minutos = Math.floor((ahora - new Date(pedido.creado_en).getTime()) / 60000);
-            const esUrgente = minutos > 15;
+            const urgente = esUrgente(pedido.creado_en, 15);
             return (
               <div
                 key={pedido.id}
                 className={`bg-fondo-card rounded-xl border-2 p-5 shadow-[0_1px_3px_rgba(45,42,38,0.04)] transition-all ${
-                  esUrgente
+                  urgente
                     ? "border-advertencia/50 hover:shadow-[0_4px_16px_rgba(245,158,11,0.15)]"
                     : "border-exito/50 hover:shadow-[0_4px_16px_rgba(101,163,13,0.15)]"
                 }`}
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <Badge className={`text-xs font-semibold ${esUrgente ? "bg-advertencia/10 text-advertencia" : "bg-exito/10 text-exito"}`}>
+                    <Badge
+                      className={`text-xs font-semibold ${urgente ? "bg-advertencia/10 text-advertencia" : "bg-exito/10 text-exito"}`}
+                    >
                       <PackageCheck className="w-3.5 h-3.5 mr-1" />
                       Listo para entregar
                     </Badge>
-                    {esUrgente && (
+                    {urgente && (
                       <Badge variant="destructive" className="text-xs font-semibold animate-pulse">
                         <AlertTriangle className="w-3.5 h-3.5 mr-1" />
                         Entregar pronto
@@ -94,9 +84,13 @@ export function ListaEntregas({ pedidosIniciales }: ListaEntregasProps) {
                     )}
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <Clock className={`w-3.5 h-3.5 ${esUrgente ? "text-advertencia animate-pulse" : "text-texto-terciario"}`} />
-                    <span className={`text-xs ${esUrgente ? "text-advertencia font-semibold" : "text-texto-terciario"}`}>
-                      {tiempoTranscurrido(new Date(pedido.creado_en))}
+                    <Clock
+                      className={`w-3.5 h-3.5 ${urgente ? "text-advertencia animate-pulse" : "text-texto-terciario"}`}
+                    />
+                    <span
+                      className={`text-xs ${urgente ? "text-advertencia font-semibold" : "text-texto-terciario"}`}
+                    >
+                      {formatear(pedido.creado_en)}
                     </span>
                   </div>
                 </div>
@@ -116,11 +110,7 @@ export function ListaEntregas({ pedidosIniciales }: ListaEntregasProps) {
 
                 {confirmando === pedido.id ? (
                   <div className="mt-4 flex gap-2">
-                    <Button
-                      onClick={() => setConfirmando(null)}
-                      variant="outline"
-                      className="flex-1"
-                    >
+                    <Button onClick={() => setConfirmando(null)} variant="outline" className="flex-1">
                       <X className="w-4 h-4 mr-1.5" />
                       Cancelar
                     </Button>
@@ -146,30 +136,6 @@ export function ListaEntregas({ pedidosIniciales }: ListaEntregasProps) {
           })}
         </div>
       )}
-    </div>
-  );
-}
-
-export function SkeletonListaEntregas() {
-  return (
-    <div className="flex-1 overflow-y-auto p-4">
-      <div className="space-y-3">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="bg-fondo-card rounded-xl border-2 border-borde/60 p-5 space-y-3">
-            <div className="flex justify-between">
-              <Skeleton className="w-28 h-6 rounded-full" />
-              <Skeleton className="w-16 h-4" />
-            </div>
-            <Skeleton className="w-20 h-7" />
-            <Skeleton className="w-full h-px" />
-            <div className="flex justify-between">
-              <Skeleton className="w-10 h-4" />
-              <Skeleton className="w-20 h-5" />
-            </div>
-            <Skeleton className="w-full h-11 rounded-xl" />
-          </div>
-        ))}
-      </div>
     </div>
   );
 }

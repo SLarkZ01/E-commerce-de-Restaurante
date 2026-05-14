@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Users, Trash2, Plus, X, Mail, User, ChefHat } from "lucide-react";
+import { Plus, Users } from "lucide-react";
 import type { Perfil } from "@/types";
 import { crearPerfil, eliminarPerfil } from "@/lib/acciones/admin";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { MensajeToast } from "@/components/compartidos/MensajeToast";
+import { EstadoVacio } from "@/components/compartidos/EstadoVacio";
+import { FormularioPersonal, type DatosPersonal } from "./FormularioPersonal";
+import { TarjetaPersonal } from "./TarjetaPersonal";
 import {
   Dialog,
   DialogContent,
@@ -17,37 +17,24 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
-const ROLES = [
-  { valor: "cocinero", etiqueta: "Cocinero", icono: <ChefHat className="w-4 h-4" />, color: "bg-advertencia/10 text-advertencia" },
-  { valor: "mesero", etiqueta: "Mesero", icono: <User className="w-4 h-4" />, color: "bg-info/10 text-info" },
-  { valor: "admin", etiqueta: "Admin", icono: <Users className="w-4 h-4" />, color: "bg-primario/10 text-primario" },
-];
+export { SkeletonGestionPersonal } from "./SkeletonGestionPersonal";
 
-export function GestionPersonal({
-  perfilesIniciales,
-}: {
-  perfilesIniciales: Perfil[];
-}) {
+export function GestionPersonal({ perfilesIniciales }: { perfilesIniciales: Perfil[] }) {
   const [perfiles, setPerfiles] = useState(perfilesIniciales);
   const [mostrandoFormulario, setMostrandoFormulario] = useState(false);
   const [mensaje, setMensaje] = useState("");
+  const [tipoMensaje, setTipoMensaje] = useState<"exito" | "error">("exito");
 
-  const [nombre, setNombre] = useState("");
-  const [email, setEmail] = useState("");
-  const [rol, setRol] = useState("cocinero");
-
-  const handleCrear = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleCrear = async (datos: DatosPersonal) => {
     try {
-      const nuevo = await crearPerfil({ nombre, email, rol });
+      const nuevo = await crearPerfil(datos);
       setPerfiles((prev) => [nuevo as Perfil, ...prev]);
       setMostrandoFormulario(false);
-      setNombre("");
-      setEmail("");
-      setRol("cocinero");
       setMensaje("Personal agregado correctamente");
+      setTipoMensaje("exito");
     } catch {
       setMensaje("Error al agregar personal");
+      setTipoMensaje("error");
     }
   };
 
@@ -56,29 +43,20 @@ export function GestionPersonal({
     try {
       await eliminarPerfil(id);
       setPerfiles((prev) => prev.filter((p) => p.id !== id));
+      setMensaje("Usuario eliminado correctamente");
+      setTipoMensaje("exito");
     } catch {
       setMensaje("Error al eliminar usuario");
+      setTipoMensaje("error");
     }
-  };
-
-  const getIniciales = (nombre: string) => {
-    return nombre
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
   };
 
   return (
     <div className="flex-1 overflow-y-auto">
       <div className="p-6">
         {mensaje && (
-          <div className="mb-5 px-5 py-3 bg-exito/10 text-exito text-sm rounded-xl flex justify-between items-center">
-            {mensaje}
-            <button onClick={() => setMensaje("")} className="text-exito/60 hover:text-exito">
-              <X className="w-4 h-4" />
-            </button>
+          <div className="mb-5">
+            <MensajeToast mensaje={mensaje} variante={tipoMensaje} onClose={() => setMensaje("")} />
           </div>
         )}
 
@@ -100,144 +78,26 @@ export function GestionPersonal({
                 Se enviará un correo de invitación para crear contraseña
               </DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleCrear} className="space-y-4 pt-2">
-              <div>
-                <label className="block text-xs font-medium text-texto-secundario mb-2">
-                  Nombre completo
-                </label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-texto-terciario" />
-                  <Input
-                    value={nombre}
-                    onChange={(e) => setNombre(e.target.value)}
-                    required
-                    placeholder="Juan Pérez"
-                    className="h-10 pl-10"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-texto-secundario mb-2">
-                  Correo electrónico
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-texto-terciario" />
-                  <Input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    placeholder="juan@ekitchen.com"
-                    className="h-10 pl-10"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-texto-secundario mb-2">
-                  Rol
-                </label>
-                <div className="flex gap-2">
-                  {ROLES.map((r) => (
-                    <button
-                      key={r.valor}
-                      type="button"
-                      onClick={() => setRol(r.valor)}
-                      className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold transition-all ${
-                        rol === r.valor
-                          ? "bg-primario text-primario-texto shadow-sm"
-                          : "bg-fondo-oscuro text-texto-secundario hover:bg-borde"
-                      }`}
-                    >
-                      {r.icono}
-                      {r.etiqueta}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="flex gap-3 pt-3">
-                <Button type="button" onClick={() => setMostrandoFormulario(false)} variant="outline" className="flex-1 h-10">
-                  Cancelar
-                </Button>
-                <Button type="submit" className="flex-1 bg-primario hover:bg-primario-hover text-primario-texto h-10">
-                  Guardar
-                </Button>
-              </div>
-            </form>
+            <FormularioPersonal
+              alGuardar={handleCrear}
+              alCancelar={() => setMostrandoFormulario(false)}
+            />
           </DialogContent>
         </Dialog>
 
         {perfiles.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-texto-terciario">
-            <div className="w-16 h-16 rounded-full bg-fondo-oscuro flex items-center justify-center mb-4">
-              <Users className="w-7 h-7" />
-            </div>
-            <p className="text-sm font-medium text-texto-secundario">No hay personal registrado</p>
-            <p className="text-xs mt-1">Agrega tu primer miembro</p>
-          </div>
+          <EstadoVacio
+            icono={Users}
+            titulo="No hay personal registrado"
+            descripcion="Agrega tu primer miembro"
+          />
         ) : (
           <div className="space-y-3">
-            {perfiles.map((p) => {
-              const rolInfo = ROLES.find((r) => r.valor === p.rol);
-              return (
-                <div
-                  key={p.id}
-                  className="bg-fondo-card rounded-xl border border-borde/60 p-5 shadow-[0_1px_3px_rgba(45,42,38,0.04)] hover:shadow-[0_4px_12px_rgba(45,42,38,0.08)] transition-all"
-                >
-                  <div className="flex flex-wrap items-center gap-4">
-                    <Avatar className="w-11 h-11 border-2 border-borde">
-                      <AvatarFallback className="bg-primario/10 text-primario text-sm font-bold">
-                        {getIniciales(p.nombre)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-base font-semibold text-texto truncate">
-                        {p.nombre}
-                      </p>
-                      <p className="text-sm text-texto-terciario truncate">
-                        {p.email}
-                      </p>
-                    </div>
-                    <Badge variant="secondary" className={`text-xs font-semibold px-3 py-1 ${rolInfo?.color}`}>
-                      {rolInfo?.icono}
-                      {rolInfo?.etiqueta}
-                    </Badge>
-                    <button
-                      onClick={() => handleEliminar(p.id)}
-                      className="text-texto-terciario hover:text-error transition-colors p-2 rounded-lg hover:bg-error/10"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
+            {perfiles.map((p) => (
+              <TarjetaPersonal key={p.id} perfil={p} onEliminar={handleEliminar} />
+            ))}
           </div>
         )}
-      </div>
-    </div>
-  );
-}
-
-export function SkeletonGestionPersonal() {
-  return (
-    <div className="p-6">
-      <div className="flex gap-2 mb-6">
-        <Skeleton className="w-36 h-10" />
-      </div>
-      <div className="space-y-3">
-        {[1, 2, 3, 4, 5].map((i) => (
-          <div key={i} className="bg-fondo-card rounded-xl border border-borde/60 p-5">
-            <div className="flex items-center gap-4">
-              <Skeleton className="w-11 h-11 rounded-full" />
-              <div className="flex-1 space-y-2">
-                <Skeleton className="w-28 h-5" />
-                <Skeleton className="w-36 h-4" />
-              </div>
-              <Skeleton className="w-20 h-6 rounded-full" />
-              <Skeleton className="w-8 h-8" />
-            </div>
-          </div>
-        ))}
       </div>
     </div>
   );
