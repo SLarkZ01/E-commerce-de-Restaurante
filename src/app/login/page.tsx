@@ -58,9 +58,9 @@ export default function PaginaLogin() {
           className="absolute inset-0 bg-cover bg-no-repeat bg-left-top sm:bg-center"
           style={{ backgroundImage: "url('/images/background/fondo2.webp')" }}
         />
-        {/* Overlay más transparente para que se note el fondo */}
-        <div className="absolute inset-0 bg-white/55 sm:bg-white/60 lg:bg-white/65" />
-        <div className="absolute inset-0 bg-gradient-to-br from-primario/5 via-transparent to-acento/10" />
+        {/* Overlay más transparente para que el fondo sea más vivo */}
+        <div className="absolute inset-0 bg-white/30 sm:bg-white/35 lg:bg-white/40" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primario/10 via-transparent to-acento/15" />
       </div>
 
       {/* ============================================ */}
