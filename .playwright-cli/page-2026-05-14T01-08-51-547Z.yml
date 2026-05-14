@@ -1,0 +1,315 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e4]:
+      - link [ref=e351] [cursor=pointer]:
+        - /url: /cocina
+        - img [ref=e8]
+        - generic [ref=e10]: E-Kitchen
+      - separator [ref=e11]
+      - navigation [ref=e12]:
+        - link [ref=e352] [cursor=pointer]:
+          - /url: /cocina
+          - img [ref=e14]
+          - text: Pedidos
+        - link [ref=e353] [cursor=pointer]:
+          - /url: /cocina/platos
+          - img [ref=e18]
+          - text: Gestión de Menú
+        - link [ref=e354] [cursor=pointer]:
+          - /url: /logistica
+          - img [ref=e24]
+          - text: Platos Listos
+        - generic [ref=e29]:
+          - button [ref=e355]:
+            - img [ref=e31]
+            - generic [ref=e36]: Admin
+            - img [ref=e37]
+          - generic [ref=e39]:
+            - link [ref=e356] [cursor=pointer]:
+              - /url: /admin
+              - img [ref=e41]
+              - text: Inicio
+            - link [ref=e357] [cursor=pointer]:
+              - /url: /admin/personal
+              - img [ref=e47]
+              - text: Personal
+            - link [ref=e358] [cursor=pointer]:
+              - /url: /admin/mesas
+              - img [ref=e53]
+              - text: Mesas
+      - separator [ref=e56]
+      - generic [ref=e57]:
+        - generic [ref=e58]:
+          - generic [ref=e60]: A
+          - generic [ref=e61]:
+            - paragraph [ref=e62]: Usuario
+            - paragraph [ref=e63]: admin@ekitchen.com
+        - button [ref=e359]:
+          - img [ref=e66]
+          - text: Cerrar Sesión
+        - button [ref=e360]:
+          - img [ref=e70]
+          - text: Comprimir
+    - generic [ref=e73]:
+      - banner [ref=e74]:
+        - generic [ref=e75]:
+          - button [ref=e361]:
+            - img [ref=e77]
+          - generic [ref=e80]:
+            - heading [level=1] [ref=e362]: Gestión de Menú
+            - paragraph [ref=e82]: Administra platos y categorías
+        - generic [ref=e83]:
+          - generic [ref=e85]: 08:08 p. m.
+          - button [ref=e363]:
+            - generic [ref=e89]: A
+      - generic [ref=e90]:
+        - generic [ref=e91]:
+          - button [expanded] [ref=e364]:
+            - img [ref=e93]
+            - text: Nuevo Plato
+          - button [ref=e365]:
+            - img [ref=e95]
+            - text: Categorías
+        - generic [ref=e100]:
+          - generic [ref=e101]:
+            - img [ref=e104]
+            - generic [ref=e106]:
+              - generic [ref=e107]:
+                - generic [ref=e108]:
+                  - paragraph [ref=e109]: borrar
+                  - paragraph [ref=e110]: sduifsdhfu
+                - button [ref=e111]:
+                  - img [ref=e112]
+              - separator [ref=e115]
+              - generic [ref=e116]:
+                - generic [ref=e117]:
+                  - generic [ref=e118]: Bebida
+                  - generic [ref=e119]: $ 8.000
+                - generic [ref=e120]:
+                  - generic [ref=e121]: Activo
+                  - switch [checked] [ref=e122]
+                  - checkbox [checked] [ref=e123]
+          - generic [ref=e124]:
+            - img [ref=e127]
+            - generic [ref=e130]:
+              - generic [ref=e131]:
+                - generic [ref=e132]:
+                  - paragraph [ref=e133]: Lomo Saltado
+                  - paragraph [ref=e134]: Lomo fino salteado con cebolla y tomate
+                - button [ref=e135]:
+                  - img [ref=e136]
+              - separator [ref=e139]
+              - generic [ref=e140]:
+                - generic [ref=e141]:
+                  - generic [ref=e142]: Plato Fuerte
+                  - generic [ref=e143]: $ 32.000
+                - generic [ref=e144]:
+                  - generic [ref=e145]: Activo
+                  - switch [checked] [ref=e146]
+                  - checkbox [checked] [ref=e147]
+          - generic [ref=e148]:
+            - img [ref=e151]
+            - generic [ref=e154]:
+              - generic [ref=e155]:
+                - generic [ref=e156]:
+                  - paragraph [ref=e157]: Test
+                  - paragraph [ref=e158]: Test
+                - button [ref=e159]:
+                  - img [ref=e160]
+              - separator [ref=e163]
+              - generic [ref=e164]:
+                - generic [ref=e165]:
+                  - generic [ref=e166]: Plato Fuerte
+                  - generic [ref=e167]: $ 10.000
+                - generic [ref=e168]:
+                  - generic [ref=e169]: Activo
+                  - switch [checked] [ref=e170]
+                  - checkbox [checked] [ref=e171]
+          - generic [ref=e172]:
+            - img [ref=e175]
+            - generic [ref=e178]:
+              - generic [ref=e179]:
+                - generic [ref=e180]:
+                  - paragraph [ref=e181]: Ensalada Caprese
+                  - paragraph [ref=e182]: Tomate, mozzarella fresca y albahaca con reducción de balsámico
+                - button [ref=e183]:
+                  - img [ref=e184]
+              - separator [ref=e187]
+              - generic [ref=e188]:
+                - generic [ref=e189]:
+                  - generic [ref=e190]: Plato Fuerte
+                  - generic [ref=e191]: $ 22.000
+                - generic [ref=e192]:
+                  - generic [ref=e193]: Activo
+                  - switch [checked] [ref=e194]
+                  - checkbox [checked] [ref=e195]
+          - generic [ref=e196]:
+            - img [ref=e199]
+            - generic [ref=e201]:
+              - generic [ref=e202]:
+                - generic [ref=e203]:
+                  - paragraph [ref=e204]: Limonada Artesanal
+                  - paragraph [ref=e205]: Limonada natural con hierbabuena fresca
+                - button [ref=e206]:
+                  - img [ref=e207]
+              - separator [ref=e210]
+              - generic [ref=e211]:
+                - generic [ref=e212]:
+                  - generic [ref=e213]: Bebida
+                  - generic [ref=e214]: $ 9.000
+                - generic [ref=e215]:
+                  - generic [ref=e216]: Activo
+                  - switch [checked] [ref=e217]
+                  - checkbox [checked] [ref=e218]
+          - generic [ref=e219]:
+            - img [ref=e222]
+            - generic [ref=e225]:
+              - generic [ref=e226]:
+                - generic [ref=e227]:
+                  - paragraph [ref=e228]: Pasta a la Boloñesa
+                  - paragraph [ref=e229]: Pasta artesanal con salsa de tomate, carne y queso parmesano
+                - button [ref=e230]:
+                  - img [ref=e231]
+              - separator [ref=e234]
+              - generic [ref=e235]:
+                - generic [ref=e236]:
+                  - generic [ref=e237]: Plato Fuerte
+                  - generic [ref=e238]: $ 28.000
+                - generic [ref=e239]:
+                  - generic [ref=e240]: Activo
+                  - switch [checked] [ref=e241]
+                  - checkbox [checked] [ref=e242]
+          - generic [ref=e243]:
+            - img [ref=e246]
+            - generic [ref=e252]:
+              - generic [ref=e253]:
+                - generic [ref=e254]:
+                  - paragraph [ref=e255]: Combo Pareja
+                  - paragraph [ref=e256]: 1 Pasta + 1 Bife + 2 Bebidas a elección
+                - button [ref=e257]:
+                  - img [ref=e258]
+              - separator [ref=e261]
+              - generic [ref=e262]:
+                - generic [ref=e263]:
+                  - generic [ref=e264]: Combo
+                  - generic [ref=e265]: $ 62.000
+                - generic [ref=e266]:
+                  - generic [ref=e267]: Activo
+                  - switch [checked] [ref=e268]
+                  - checkbox [checked] [ref=e269]
+          - generic [ref=e270]:
+            - img [ref=e273]
+            - generic [ref=e275]:
+              - generic [ref=e276]:
+                - generic [ref=e277]:
+                  - paragraph [ref=e278]: Jugo de Mango
+                  - paragraph [ref=e279]: Jugo natural de mango sin azúcar añadida
+                - button [ref=e280]:
+                  - img [ref=e281]
+              - separator [ref=e284]
+              - generic [ref=e285]:
+                - generic [ref=e286]:
+                  - generic [ref=e287]: Bebida
+                  - generic [ref=e288]: $ 11.000
+                - generic [ref=e289]:
+                  - generic [ref=e290]: Activo
+                  - switch [checked] [ref=e291]
+                  - checkbox [checked] [ref=e292]
+          - generic [ref=e293]:
+            - img [ref=e296]
+            - generic [ref=e299]:
+              - generic [ref=e300]:
+                - generic [ref=e301]:
+                  - paragraph [ref=e302]: Bife de Chorizo
+                  - paragraph [ref=e303]: Corte de 300g con papas rústicas y chimichurri
+                - button [ref=e304]:
+                  - img [ref=e305]
+              - separator [ref=e308]
+              - generic [ref=e309]:
+                - generic [ref=e310]:
+                  - generic [ref=e311]: Plato Fuerte
+                  - generic [ref=e312]: $ 42.000
+                - generic [ref=e313]:
+                  - generic [ref=e314]: Activo
+                  - switch [checked] [ref=e315]
+                  - checkbox [checked] [ref=e316]
+          - generic [ref=e317]:
+            - img [ref=e320]
+            - generic [ref=e323]:
+              - generic [ref=e324]:
+                - generic [ref=e325]:
+                  - paragraph [ref=e326]: Salmón Glaseado
+                  - paragraph [ref=e327]: Salmón con miel y soya, arroz jazmín y vegetales salteados
+                - button [ref=e328]:
+                  - img [ref=e329]
+              - separator [ref=e332]
+              - generic [ref=e333]:
+                - generic [ref=e334]:
+                  - generic [ref=e335]: Plato Fuerte
+                  - generic [ref=e336]: $ 38.000
+                - generic [ref=e337]:
+                  - generic [ref=e338]: Activo
+                  - switch [checked] [ref=e339]
+                  - checkbox [checked] [ref=e340]
+  - button "Open Next.js Dev Tools" [ref=e346] [cursor=pointer]:
+    - img [ref=e347]
+  - alert [ref=e350]
+  - dialog "Nuevo Plato" [ref=e369]:
+    - generic [ref=e370]:
+      - heading "Nuevo Plato" [level=2] [ref=e372]
+      - generic [ref=e373]:
+        - button "Plato Fuerte" [active] [ref=e374]:
+          - img [ref=e375]
+          - text: Plato Fuerte
+        - button "Bebida" [ref=e378]:
+          - img [ref=e379]
+          - text: Bebida
+        - button "Combo" [ref=e381]:
+          - img [ref=e382]
+          - text: Combo
+      - generic [ref=e388]:
+        - generic [ref=e389]: Imagen del plato
+        - button "Subir imagen JPG, PNG, WebP (max 5MB)" [ref=e390]:
+          - img [ref=e391]
+          - generic [ref=e395]: Subir imagen
+          - generic [ref=e396]: JPG, PNG, WebP (max 5MB)
+      - generic [ref=e397]:
+        - generic [ref=e398]: Nombre del plato
+        - 'textbox "Ej: Lomo Saltado" [ref=e399]'
+      - generic [ref=e400]:
+        - generic [ref=e401]: Descripción
+        - textbox "Breve descripción del plato" [ref=e402]
+      - generic [ref=e403]:
+        - generic [ref=e404]: Categoría
+        - combobox [ref=e405]:
+          - option "Sin categoría" [selected]
+          - option "Platos Fuertes"
+          - option "Bebidas"
+          - option "Combos"
+          - option "Postres"
+          - option "yrthrth"
+          - option "hsfghfgbfghty"
+          - option "hfsghsrthgfhg"
+          - option "hsfghsfghvnfghjhgjg"
+          - option "sfghfgjfjfgh"
+          - option "fghfjghjdghdfh"
+          - option "fghjfgjdjfgh"
+          - option "jdghjdghjdgh"
+          - option "aguas"
+      - generic [ref=e406]:
+        - generic [ref=e407]: Precio (COP)
+        - generic [ref=e408]:
+          - generic [ref=e409]: $
+          - spinbutton [ref=e410]
+      - generic [ref=e411]:
+        - generic [ref=e412]: Ingredientes
+        - generic [ref=e413]:
+          - 'textbox "Ej: Tomate" [ref=e414]'
+          - button [ref=e415]:
+            - img
+      - generic [ref=e416]:
+        - button "Cancelar" [ref=e417]
+        - button "Guardar Plato" [ref=e418]
+    - button "Close" [ref=e419]:
+      - img
+      - generic [ref=e420]: Close

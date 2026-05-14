@@ -1,0 +1,28 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - img [ref=e6]
+      - heading "E-Kitchen" [level=1] [ref=e11]
+      - paragraph [ref=e12]: Panel de Staff
+    - generic [ref=e13]:
+      - generic [ref=e14]:
+        - generic [ref=e15]: Correo electrónico
+        - generic [ref=e16]:
+          - img [ref=e17]
+          - textbox "chef@ekitchen.com" [ref=e20]: admin@ekitchen.com
+      - generic [ref=e21]:
+        - generic [ref=e22]: Contraseña
+        - generic [ref=e23]:
+          - img [ref=e24]
+          - textbox "••••••" [ref=e27]: admin123
+      - button "Iniciando sesión..." [disabled] [ref=e39]:
+        - img [ref=e40]
+        - text: Iniciando sesión...
+  - button "Open Next.js Dev Tools" [ref=e42] [cursor=pointer]:
+    - generic [ref=e45]:
+      - text: Rendering
+      - generic [ref=e46]:
+        - generic [ref=e47]: .
+        - generic [ref=e48]: .
+        - generic [ref=e49]: .
+  - alert [ref=e29]
