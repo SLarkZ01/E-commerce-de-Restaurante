@@ -1,0 +1,94 @@
+- generic [ref=e1]:
+  - generic [active]:
+    - generic [ref=e353]:
+      - generic [ref=e354]:
+        - generic [ref=e355]:
+          - navigation [ref=e356]:
+            - button "previous" [disabled] [ref=e357]:
+              - img "previous" [ref=e358]
+            - generic [ref=e360]:
+              - generic [ref=e361]: 1/
+              - text: "1"
+            - button "next" [disabled] [ref=e362]:
+              - img "next" [ref=e363]
+          - img
+        - generic [ref=e365]:
+          - generic [ref=e366]:
+            - img [ref=e367]
+            - generic "Latest available version is detected (16.2.6)." [ref=e369]: Next.js 16.2.6
+            - generic [ref=e370]: Turbopack
+          - img
+      - dialog "Runtime Error" [ref=e372]:
+        - generic [ref=e375]:
+          - generic [ref=e376]:
+            - generic [ref=e377]:
+              - generic [ref=e379]: Runtime Error
+              - generic [ref=e380]:
+                - button "Copy Error Info" [ref=e381] [cursor=pointer]:
+                  - img [ref=e382]
+                - button "No related documentation found" [disabled] [ref=e384]:
+                  - img [ref=e385]
+                - button "Attach Node.js inspector" [ref=e387] [cursor=pointer]:
+                  - img [ref=e388]
+            - generic [ref=e397]: A Cloudinary Cloud name is required, please make sure NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME is set and configured in your environment.
+          - generic [ref=e398]:
+            - generic [ref=e399]:
+              - paragraph [ref=e401]:
+                - img [ref=e403]
+                - generic [ref=e406]: src/components/cocina/tablaPlatos.tsx (335:7) @ FormularioPlato
+                - button "Open in editor" [ref=e407] [cursor=pointer]:
+                  - img [ref=e409]
+              - generic [ref=e412]:
+                - generic [ref=e413]: 333 | </div>
+                - generic [ref=e414]: 334 |
+                - generic [ref=e415]: "> 335 | <CldUploadWidget"
+                - generic [ref=e416]: "| ^"
+                - generic [ref=e417]: 336 | signatureEndpoint="/api/sign-cloudinary-params"
+                - generic [ref=e418]: 337 | uploadPreset="e-kitchen-platos"
+                - generic [ref=e419]: "338 | onSuccess={(result) => {"
+            - generic [ref=e420]:
+              - generic [ref=e421]:
+                - paragraph [ref=e422]:
+                  - text: Call Stack
+                  - generic [ref=e423]: "18"
+                - button "Show 15 ignore-listed frame(s)" [ref=e424] [cursor=pointer]:
+                  - text: Show 15 ignore-listed frame(s)
+                  - img [ref=e425]
+              - generic [ref=e427]:
+                - generic [ref=e428]:
+                  - text: FormularioPlato
+                  - button "Open FormularioPlato in editor" [ref=e429] [cursor=pointer]:
+                    - img [ref=e430]
+                - text: src/components/cocina/tablaPlatos.tsx (335:7)
+              - generic [ref=e432]:
+                - generic [ref=e433]:
+                  - text: TablaPlatos
+                  - button "Open TablaPlatos in editor" [ref=e434] [cursor=pointer]:
+                    - img [ref=e435]
+                - text: src/components/cocina/tablaPlatos.tsx (146:13)
+              - generic [ref=e437]:
+                - generic [ref=e438]:
+                  - text: PaginaPlatos
+                  - button "Open PaginaPlatos in editor" [ref=e439] [cursor=pointer]:
+                    - img [ref=e440]
+                - text: src\app\(staff)\cocina\platos\page.tsx (14:7)
+        - generic [ref=e442]: "1"
+        - generic [ref=e443]: "2"
+    - generic [ref=e345] [cursor=pointer]:
+      - button "Open Next.js Dev Tools" [ref=e346]:
+        - img [ref=e347]
+      - generic [ref=e444]:
+        - button "Open issues overlay" [ref=e445]:
+          - generic [ref=e446]:
+            - generic [ref=e447]: "0"
+            - generic [ref=e448]: "1"
+          - generic [ref=e449]: Issue
+        - button "Collapse issues badge" [ref=e450]:
+          - img [ref=e451]
+  - generic [ref=e454]:
+    - img [ref=e455]
+    - heading "This page couldn’t load" [level=1] [ref=e457]
+    - paragraph [ref=e458]: Reload to try again, or go back.
+    - generic [ref=e459]:
+      - button "Reload" [ref=e461] [cursor=pointer]
+      - button "Back" [ref=e462] [cursor=pointer]

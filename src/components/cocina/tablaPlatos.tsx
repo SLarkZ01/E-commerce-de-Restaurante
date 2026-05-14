@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState, useMemo, useDeferredValue, useCallback } from "react";
-import { Plus, Utensils, Trash2, Coffee, Sandwich, Tags, X, Search } from "lucide-react";
+import React, { useState, useMemo, useDeferredValue, useCallback, useRef } from "react";
+import { Plus, Utensils, Trash2, Coffee, Sandwich, Tags, X, Search, Upload, Image as ImageIcon, Loader2 } from "lucide-react";
 import {
   crearPlato,
   actualizarPlato,
   eliminarPlato,
 } from "@/lib/acciones/catalogo";
+import { subirImagenPlato } from "@/lib/acciones/imagenes";
 import {
   crearCategoria,
   actualizarCategoria,
@@ -69,9 +70,25 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
     tipoPlato: string;
     categoriaId?: string;
     ingredientes?: string[];
+    archivoImagen?: File;
   }) => {
     try {
-      const nuevo = await crearPlato(datos);
+      let imagenUrl: string | undefined;
+      if (datos.archivoImagen) {
+        const formData = new FormData();
+        formData.append("imagen", datos.archivoImagen);
+        imagenUrl = await subirImagenPlato(formData);
+      }
+
+      const nuevo = await crearPlato({
+        nombre: datos.nombre,
+        descripcion: datos.descripcion,
+        precio: datos.precio,
+        tipoPlato: datos.tipoPlato,
+        categoriaId: datos.categoriaId,
+        ingredientes: datos.ingredientes,
+        imagenUrl,
+      });
       setPlatos((prev) => [nuevo as Plato, ...prev]);
       setMostrandoFormulario(false);
       setMensaje("Plato creado correctamente");
@@ -138,9 +155,10 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
         <Dialog open={mostrandoFormulario} onOpenChange={setMostrandoFormulario}>
           <DialogTrigger className="inline-flex items-center justify-center gap-1.5 h-10 px-4 rounded-xl bg-primario text-primario-texto text-sm font-medium hover:bg-primario-hover transition-all shadow-sm active:scale-[0.98]">
             <Plus className="w-4 h-4" />
-            Nuevo Plato
+            <span className="hidden sm:inline">Nuevo Plato</span>
+            <span className="sm:hidden">Nuevo</span>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
             <FormularioPlato
               alGuardar={handleCrear}
               alCancelar={() => setMostrandoFormulario(false)}
@@ -152,7 +170,7 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
         <Sheet>
           <SheetTrigger className="inline-flex items-center justify-center gap-1.5 h-10 px-4 rounded-xl bg-fondo-card text-texto text-sm font-medium hover:bg-borde transition-all border border-borde">
             <Tags className="w-4 h-4" />
-            Categorías
+            <span className="hidden sm:inline">Categorías</span>
           </SheetTrigger>
           <SheetContent className="sm:max-w-sm p-0 flex flex-col h-[calc(100dvh-2rem)]" showCloseButton={false}>
             <GestionCategorias
@@ -174,21 +192,40 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
             <p className="text-xs mt-1">Agrega tu primer plato</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
             {platos.map((plato) => (
               <div
                 key={plato.id}
-                className={`bg-fondo-card rounded-xl border border-borde/60 p-4 shadow-[0_1px_3px_rgba(45,42,38,0.04)] transition-all ${
+                className={`bg-fondo-card rounded-xl border border-borde/60 overflow-hidden shadow-[0_1px_3px_rgba(45,42,38,0.04)] transition-all ${
                   !plato.disponible ? "opacity-50" : "hover:shadow-[0_4px_12px_rgba(45,42,38,0.08)]"
                 }`}
               >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-fondo-oscuro flex items-center justify-center text-texto-terciario shrink-0">
-                      {TIPOS_PLATO.find((t) => t.valor === plato.tipo_plato)?.icono || <Utensils className="w-5 h-5" />}
+                <div className="relative aspect-[16/10] bg-fondo-oscuro overflow-hidden">
+                  {plato.imagen_url ? (
+                    <img
+                      src={plato.imagen_url}
+                      alt={plato.nombre}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                      width="400"
+                      height="250"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-texto-terciario">
+                      {TIPOS_PLATO.find((t) => t.valor === plato.tipo_plato)?.icono || <Utensils className="w-8 h-8" />}
                     </div>
-                    <div>
-                      <p className="font-playfair text-sm font-semibold text-texto leading-tight">
+                  )}
+                  {!plato.disponible && (
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                      <Badge variant="destructive" className="text-xs">Agotado</Badge>
+                    </div>
+                  )}
+                </div>
+
+                <div className="p-4">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-playfair text-sm font-semibold text-texto leading-tight truncate">
                         {plato.nombre}
                       </p>
                       {plato.descripcion && (
@@ -197,36 +234,36 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
                         </p>
                       )}
                     </div>
+                    <button
+                      onClick={() => handleEliminar(plato.id)}
+                      className="text-texto-terciario hover:text-error transition-colors p-1 shrink-0 ml-2"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
-                  <button
-                    onClick={() => handleEliminar(plato.id)}
-                    className="text-texto-terciario hover:text-error transition-colors p-1"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
 
-                <Separator className="mb-3" />
+                  <Separator className="mb-3" />
 
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Badge variant="secondary" className="text-[10px] font-medium">
-                      {TIPOS_PLATO.find((t) => t.valor === plato.tipo_plato)?.etiqueta}
-                    </Badge>
-                    <span className="font-playfair text-sm font-bold text-primario tabular-nums">
-                      {formatearPrecio(plato.precio)}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] text-texto-secundario">
-                      {plato.disponible ? "Activo" : "Inactivo"}
-                    </span>
-                    <Switch
-                      checked={plato.disponible}
-                      onCheckedChange={() =>
-                        handleActualizar(plato.id, { disponible: !plato.disponible })
-                      }
-                    />
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary" className="text-[10px] font-medium">
+                        {TIPOS_PLATO.find((t) => t.valor === plato.tipo_plato)?.etiqueta}
+                      </Badge>
+                      <span className="font-playfair text-sm font-bold text-primario tabular-nums">
+                        {formatearPrecio(plato.precio)}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-texto-secundario">
+                        {plato.disponible ? "Activo" : "Inactivo"}
+                      </span>
+                      <Switch
+                        checked={plato.disponible}
+                        onCheckedChange={() =>
+                          handleActualizar(plato.id, { disponible: !plato.disponible })
+                        }
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -234,6 +271,130 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function ZonaCargaImagen({
+  archivo,
+  onArchivoSeleccionado,
+  onEliminar,
+}: {
+  archivo: File | null;
+  onArchivoSeleccionado: (file: File) => void;
+  onEliminar: () => void;
+}) {
+  const [arrastrando, setArrastrando] = useState(false);
+  const [error, setError] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+  const previewUrl = archivo ? URL.createObjectURL(archivo) : null;
+
+  const validarArchivo = (file: File): boolean => {
+    if (!file.type.startsWith("image/")) {
+      setError("Solo se permiten imágenes");
+      return false;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError("La imagen no puede superar los 5MB");
+      return false;
+    }
+    setError("");
+    return true;
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setArrastrando(false);
+    const file = e.dataTransfer.files[0];
+    if (file && validarArchivo(file)) onArchivoSeleccionado(file);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setArrastrando(true);
+  };
+
+  const handleDragLeave = () => {
+    setArrastrando(false);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && validarArchivo(file)) onArchivoSeleccionado(file);
+  };
+
+  if (archivo && previewUrl) {
+    return (
+      <div>
+        <label className="block text-xs font-medium text-texto-secundario mb-1.5">
+          Imagen del plato
+        </label>
+        <div className="relative group rounded-lg overflow-hidden border border-borde">
+          <img
+            src={previewUrl}
+            alt="Vista previa"
+            className="w-full aspect-[16/10] object-cover"
+          />
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+            <button
+              type="button"
+              onClick={() => inputRef.current?.click()}
+              className="bg-white/90 hover:bg-white text-texto p-2 rounded-lg transition-colors"
+            >
+              <Upload className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              onClick={onEliminar}
+              className="bg-white/90 hover:bg-white text-error p-2 rounded-lg transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleChange}
+          className="hidden"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <label className="block text-xs font-medium text-texto-secundario mb-1.5">
+        Imagen del plato
+      </label>
+      <div
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onClick={() => inputRef.current?.click()}
+        className={`w-full aspect-[16/10] rounded-lg border-2 border-dashed transition-all flex flex-col items-center justify-center gap-2 cursor-pointer ${
+          arrastrando
+            ? "border-primario bg-primario/5"
+            : "border-borde bg-fondo-oscuro hover:border-primario/50 hover:bg-fondo-card"
+        } ${error ? "border-error/50 bg-error/5" : ""}`}
+      >
+        <ImageIcon className={`w-8 h-8 ${arrastrando ? "text-primario" : "text-texto-terciario"}`} />
+        <span className={`text-xs font-medium ${arrastrando ? "text-primario" : "text-texto-secundario"}`}>
+          {arrastrando ? "Suelta la imagen aquí" : "Arrastra una imagen o haz clic para seleccionar"}
+        </span>
+        <span className="text-[10px] text-texto-terciario">JPG, PNG, WebP (max 5MB)</span>
+      </div>
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleChange}
+        className="hidden"
+      />
+      {error && (
+        <p className="text-xs text-error mt-1">{error}</p>
+      )}
     </div>
   );
 }
@@ -250,6 +411,7 @@ function FormularioPlato({
     tipoPlato: string;
     categoriaId?: string;
     ingredientes?: string[];
+    archivoImagen?: File;
   }) => void;
   alCancelar: () => void;
   categorias: Categoria[];
@@ -261,6 +423,8 @@ function FormularioPlato({
   const [categoriaId, setCategoriaId] = useState("");
   const [ingrediente, setIngrediente] = useState("");
   const [ingredientes, setIngredientes] = useState<string[]>([]);
+  const [archivoImagen, setArchivoImagen] = useState<File | null>(null);
+  const [guardando, setGuardando] = useState(false);
 
   const agregarIngrediente = () => {
     if (ingrediente.trim()) {
@@ -269,16 +433,22 @@ function FormularioPlato({
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alGuardar({
-      nombre,
-      descripcion: descripcion || undefined,
-      precio: Number(precio),
-      tipoPlato,
-      categoriaId: categoriaId || undefined,
-      ingredientes: ingredientes.length > 0 ? ingredientes : undefined,
-    });
+    setGuardando(true);
+    try {
+      await alGuardar({
+        nombre,
+        descripcion: descripcion || undefined,
+        precio: Number(precio),
+        tipoPlato,
+        categoriaId: categoriaId || undefined,
+        ingredientes: ingredientes.length > 0 ? ingredientes : undefined,
+        archivoImagen: archivoImagen || undefined,
+      });
+    } finally {
+      setGuardando(false);
+    }
   };
 
   return (
@@ -306,6 +476,12 @@ function FormularioPlato({
           </button>
         ))}
       </div>
+
+      <ZonaCargaImagen
+        archivo={archivoImagen}
+        onArchivoSeleccionado={setArchivoImagen}
+        onEliminar={() => setArchivoImagen(null)}
+      />
 
       <div>
         <label className="block text-xs font-medium text-texto-secundario mb-1.5">
@@ -416,11 +592,18 @@ function FormularioPlato({
       )}
 
       <div className="flex gap-3 pt-2">
-        <Button type="button" onClick={alCancelar} variant="outline" className="flex-1">
+        <Button type="button" onClick={alCancelar} variant="outline" className="flex-1" disabled={guardando}>
           Cancelar
         </Button>
-        <Button type="submit" className="flex-1 bg-primario hover:bg-primario-hover text-primario-texto">
-          Guardar Plato
+        <Button type="submit" className="flex-1 bg-primario hover:bg-primario-hover text-primario-texto" disabled={guardando}>
+          {guardando ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Guardando...
+            </>
+          ) : (
+            "Guardar Plato"
+          )}
         </Button>
       </div>
     </form>
@@ -672,20 +855,17 @@ function GestionCategorias({
 export function SkeletonTablaPlatos() {
   return (
     <div className="flex-1 overflow-y-auto px-4 pb-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
         {[1, 2, 3, 4, 5, 6].map((i) => (
-          <div key={i} className="bg-fondo-card rounded-xl border border-borde/60 p-4 space-y-3">
-            <div className="flex items-center gap-3">
-              <Skeleton className="w-10 h-10 rounded-lg" />
-              <div className="space-y-1.5">
-                <Skeleton className="w-24 h-4" />
-                <Skeleton className="w-32 h-3" />
+          <div key={i} className="bg-fondo-card rounded-xl border border-borde/60 overflow-hidden">
+            <Skeleton className="aspect-[16/10] rounded-none" />
+            <div className="p-4 space-y-3">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-px w-full" />
+              <div className="flex justify-between">
+                <Skeleton className="h-5 w-20" />
+                <Skeleton className="h-5 w-16" />
               </div>
-            </div>
-            <Skeleton className="w-full h-px" />
-            <div className="flex justify-between">
-              <Skeleton className="w-20 h-5" />
-              <Skeleton className="w-16 h-5" />
             </div>
           </div>
         ))}
