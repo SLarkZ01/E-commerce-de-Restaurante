@@ -7,6 +7,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { SidebarStaff } from "./sidebarStaff";
+import { obtenerIniciales } from "@/lib/iniciales";
 
 interface HeaderStaffProps {
   userEmail: string;
@@ -40,10 +41,6 @@ export function HeaderStaff({ userEmail, collapsed, onToggle }: HeaderStaffProps
         minute: "2-digit",
       })
     : "--:--";
-
-  const getIniciales = (email: string) => {
-    return email.charAt(0).toUpperCase();
-  };
 
   const seccion = SECCIONES[pathname] ?? { titulo: "E-Kitchen", descripcion: "" };
 
@@ -95,7 +92,7 @@ export function HeaderStaff({ userEmail, collapsed, onToggle }: HeaderStaffProps
             <div className="flex items-center gap-2 cursor-default">
               <Avatar className="w-9 h-9">
                 <AvatarFallback className="bg-primario/10 text-primario text-sm font-bold">
-                  {getIniciales(userEmail)}
+                  {obtenerIniciales(userEmail)}
                 </AvatarFallback>
               </Avatar>
             </div>

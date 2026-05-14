@@ -1,0 +1,44 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - img [ref=e6]
+        - generic [ref=e11]: E-Kitchen
+      - link "Staff" [ref=e12] [cursor=pointer]:
+        - /url: /login
+        - img [ref=e13]
+        - text: Staff
+    - generic [ref=e16]:
+      - generic [ref=e18]:
+        - img [ref=e19]
+        - textbox "Buscar plato..." [active] [ref=e22]: Pasta
+      - generic [ref=e23]:
+        - button "Todos" [ref=e24]
+        - button "Platos Fuertes" [ref=e25]:
+          - img [ref=e26]
+          - text: Platos Fuertes
+        - button "Bebidas" [ref=e29]:
+          - img [ref=e30]
+          - text: Bebidas
+        - button "Combos" [ref=e32]:
+          - img [ref=e33]
+          - text: Combos
+      - generic [ref=e41]:
+        - generic [ref=e42]:
+          - img [ref=e44]
+          - paragraph [ref=e48]: $ 28.000
+        - generic [ref=e49]:
+          - heading "Pasta a la Boloñesa" [level=3] [ref=e50]
+          - paragraph [ref=e51]: Pasta artesanal con salsa de tomate, carne y queso parmesano
+          - button "Agregar" [ref=e52]:
+            - img
+            - text: Agregar
+    - contentinfo [ref=e179]:
+      - button "1 plato $ 28.000" [ref=e196]:
+        - generic [ref=e181]:
+          - img [ref=e182]
+          - text: 1 plato
+        - generic [ref=e185]: $ 28.000
+  - button "Open Next.js Dev Tools" [ref=e191] [cursor=pointer]:
+    - img [ref=e192]
+  - alert [ref=e195]

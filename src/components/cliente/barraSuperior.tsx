@@ -1,5 +1,3 @@
-"use client";
-
 import { UtensilsCrossed, Lock } from "lucide-react";
 
 export function BarraSuperior() {
