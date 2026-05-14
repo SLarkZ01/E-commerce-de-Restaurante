@@ -63,8 +63,8 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
       });
       setPlatos((prev) => [nuevo as Plato, ...prev]);
       setMostrandoFormulario(false);
-      setMensaje("Plato creado correctamente");
       setTipoMensaje("exito");
+      setMensaje("Plato creado correctamente");
       return { exito: true };
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Error desconocido";
@@ -78,11 +78,11 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
       setPlatos((prev) =>
         prev.map((p) => (p.id === id ? { ...p, ...datos } : p))
       );
-      setMensaje("Plato actualizado correctamente");
       setTipoMensaje("exito");
+      setMensaje("Plato actualizado correctamente");
     } catch {
-      setMensaje("Error al actualizar el plato");
       setTipoMensaje("error");
+      setMensaje("Error al actualizar el plato");
     }
   };
 
@@ -91,11 +91,11 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
     try {
       await eliminarPlato(id);
       setPlatos((prev) => prev.filter((p) => p.id !== id));
-      setMensaje("Plato eliminado correctamente");
       setTipoMensaje("exito");
+      setMensaje("Plato eliminado correctamente");
     } catch {
-      setMensaje("Error al eliminar el plato");
       setTipoMensaje("error");
+      setMensaje("Error al eliminar el plato");
     }
   };
 
@@ -103,11 +103,11 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
     try {
       const nueva = await crearCategoria({ nombre, slug });
       setCategorias((prev) => [...prev, nueva as Categoria]);
-      setMensaje("Categoría creada correctamente");
       setTipoMensaje("exito");
+      setMensaje("Categoría creada correctamente");
     } catch {
-      setMensaje("Error al crear la categoría");
       setTipoMensaje("error");
+      setMensaje("Error al crear la categoría");
     }
   };
 
@@ -117,11 +117,11 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
     try {
       await eliminarCategoria(id);
       setCategorias((prev) => prev.filter((c) => c.id !== id));
-      setMensaje("Categoría eliminada correctamente");
       setTipoMensaje("exito");
+      setMensaje("Categoría eliminada correctamente");
     } catch {
-      setMensaje("Error al eliminar la categoría");
       setTipoMensaje("error");
+      setMensaje("Error al eliminar la categoría");
     }
   };
 

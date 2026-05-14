@@ -1,9 +1,13 @@
+"use client";
+
+import { useEffect, useRef } from "react";
 import { AlertTriangle, Check, X } from "lucide-react";
 
 interface MensajeToastProps {
   mensaje: string;
   onClose?: () => void;
   variante?: "exito" | "error" | "advertencia";
+  duracionMs?: number;
 }
 
 const ESTILOS: Record<string, { bg: string; text: string; icono: React.ReactNode }> = {
@@ -24,7 +28,20 @@ const ESTILOS: Record<string, { bg: string; text: string; icono: React.ReactNode
   },
 };
 
-export function MensajeToast({ mensaje, onClose, variante = "exito" }: MensajeToastProps) {
+export function MensajeToast({
+  mensaje,
+  onClose,
+  variante = "exito",
+  duracionMs = 4000,
+}: MensajeToastProps) {
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  useEffect(() => {
+    if (!mensaje || !onClose || duracionMs <= 0) return;
+    timerRef.current = setTimeout(onClose, duracionMs);
+    return () => clearTimeout(timerRef.current);
+  }, [mensaje, onClose, duracionMs]);
+
   if (!mensaje) return null;
 
   const estilo = ESTILOS[variante];

@@ -75,19 +75,24 @@ export async function actualizarPlato(
   if (datos.imagenUrl !== undefined)
     actualizacion.imagen_url = datos.imagenUrl;
 
-  const { error } = await supabase
+  const { error, count } = await supabase
     .from("platos")
-    .update(actualizacion)
+    .update(actualizacion, { count: "exact" })
     .eq("id", id);
 
   if (error) throw new Error(error.message);
+  if (count === 0) throw new Error("No se pudo actualizar: permiso denegado o plato no encontrado");
   revalidatePath("/cocina/platos");
 }
 
 export async function eliminarPlato(id: string) {
   const supabase = await crearCliente();
-  const { error } = await supabase.from("platos").delete().eq("id", id);
+  const { error, count } = await supabase
+    .from("platos")
+    .delete({ count: "exact" })
+    .eq("id", id);
 
   if (error) throw new Error(error.message);
+  if (count === 0) throw new Error("No se pudo eliminar: permiso denegado o plato no encontrado");
   revalidatePath("/cocina/platos");
 }

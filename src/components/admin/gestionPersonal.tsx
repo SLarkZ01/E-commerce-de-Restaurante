@@ -30,11 +30,11 @@ export function GestionPersonal({ perfilesIniciales }: { perfilesIniciales: Perf
       const nuevo = await crearPerfil(datos);
       setPerfiles((prev) => [nuevo as Perfil, ...prev]);
       setMostrandoFormulario(false);
-      setMensaje("Personal agregado correctamente");
       setTipoMensaje("exito");
+      setMensaje("Personal agregado correctamente");
     } catch {
-      setMensaje("Error al agregar personal");
       setTipoMensaje("error");
+      setMensaje("Error al agregar personal");
     }
   };
 
@@ -43,11 +43,11 @@ export function GestionPersonal({ perfilesIniciales }: { perfilesIniciales: Perf
     try {
       await eliminarPerfil(id);
       setPerfiles((prev) => prev.filter((p) => p.id !== id));
-      setMensaje("Usuario eliminado correctamente");
       setTipoMensaje("exito");
+      setMensaje("Usuario eliminado correctamente");
     } catch {
-      setMensaje("Error al eliminar usuario");
       setTipoMensaje("error");
+      setMensaje("Error al eliminar usuario");
     }
   };
 

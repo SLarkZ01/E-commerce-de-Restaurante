@@ -34,11 +34,11 @@ export function GestionMesas({
       const nueva = await crearMesa(Number(numeroNuevo));
       setMesas((prev) => [nueva as Mesa, ...prev]);
       setNumeroNuevo("");
-      setMensaje("Mesa creada correctamente");
       setTipoMensaje("exito");
+      setMensaje("Mesa creada correctamente");
     } catch {
-      setMensaje("Error al crear la mesa");
       setTipoMensaje("error");
+      setMensaje("Error al crear la mesa");
     }
   };
 
@@ -47,11 +47,11 @@ export function GestionMesas({
     try {
       await eliminarMesa(id);
       setMesas((prev) => prev.filter((m) => m.id !== id));
-      setMensaje("Mesa eliminada correctamente");
       setTipoMensaje("exito");
+      setMensaje("Mesa eliminada correctamente");
     } catch {
-      setMensaje("Error al eliminar mesa");
       setTipoMensaje("error");
+      setMensaje("Error al eliminar mesa");
     }
   };
 
