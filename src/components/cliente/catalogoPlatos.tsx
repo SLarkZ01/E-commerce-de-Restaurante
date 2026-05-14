@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { Search, Utensils, Coffee, Soup, Sandwich, Cake, Wine } from "lucide-react";
-import { usarCarrito, type ItemCarrito } from "@/stores/cart";
+import { usarCarrito } from "@/stores/cart";
+import type { ItemCarrito } from "@/types";
 import type { Plato, Categoria } from "@/types";
 import { EstadoVacio } from "@/components/compartidos/EstadoVacio";
 import { TarjetaPlatoCliente } from "./TarjetaPlatoCliente";
@@ -12,7 +13,6 @@ export { SkeletonCatalogo } from "./SkeletonCatalogo";
 interface CatalogoPlatosProps {
   platos: Plato[];
   categorias: Categoria[];
-  mesaUuid: string | null;
 }
 
 const ICONOS_POR_SLUG: Record<string, React.ReactNode> = {

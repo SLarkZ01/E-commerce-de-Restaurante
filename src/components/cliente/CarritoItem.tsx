@@ -1,6 +1,6 @@
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
 import { formatearPrecio } from "@/lib/formato";
-import type { ItemCarrito } from "@/stores/cart";
+import type { ItemCarrito } from "@/types";
 
 interface CarritoItemProps {
   item: ItemCarrito;

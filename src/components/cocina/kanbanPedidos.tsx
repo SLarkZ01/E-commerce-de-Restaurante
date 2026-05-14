@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { AlertTriangle } from "lucide-react";
-import { cambiarEstadoPedido, type PedidoConItems } from "@/lib/acciones/cocina";
+import { useState, useCallback, useRef } from "react";
 import { MensajeToast } from "@/components/compartidos/MensajeToast";
 import { KanbanColumna } from "./KanbanColumna";
 import { ESTADOS, CONFIG_ESTADO } from "./configEstados";
+import { usePedidos } from "@/hooks/usePedidos";
+import { useRealtime } from "@/hooks/useRealtime";
+import type { PedidoConItems, Pedido } from "@/types";
 
 export { SkeletonKanban } from "./SkeletonKanban";
 
@@ -16,15 +17,28 @@ interface KanbanPedidosProps {
 export function KanbanPedidos({ pedidosIniciales }: KanbanPedidosProps) {
   const [pedidos, setPedidos] = useState(pedidosIniciales);
   const [mensaje, setMensaje] = useState("");
+  const { cambiarEstado } = usePedidos();
+  const pedidosRef = useRef(pedidos);
+  pedidosRef.current = pedidos;
 
   const pedidosPorEstado = useCallback(
     (estado: string) => pedidos.filter((p) => p.estado === estado),
     [pedidos]
   );
 
+  // Observer: suscribirse a nuevos pedidos en tiempo real
+  useRealtime("pedidos", "INSERT", useCallback((payload) => {
+    const nuevo = payload.new as Pedido;
+    if (nuevo.estado === "pendiente") {
+      // Refetch completo para obtener los items del pedido
+      // (los inserts individuales no incluyen relaciones)
+      window.location.reload();
+    }
+  }, []));
+
   const handleCambiarEstado = async (pedidoId: string, nuevoEstado: string) => {
     setMensaje("");
-    const resultado = await cambiarEstadoPedido(
+    const resultado = await cambiarEstado(
       pedidoId,
       nuevoEstado as "preparando" | "listo" | "entregado",
       "cocinero"

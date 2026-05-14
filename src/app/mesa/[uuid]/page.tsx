@@ -25,11 +25,10 @@ export default async function PaginaMesa({
     <div className="flex flex-col min-h-dvh bg-fondo">
       <BarraMesa numeroMesa={mesa.numero} />
       <Suspense fallback={<SkeletonCatalogo />}>
-        <CatalogoPlatos
-          platos={datosCatalogo.platos}
-          categorias={datosCatalogo.categorias}
-          mesaUuid={uuid}
-        />
+          <CatalogoPlatos
+            platos={datosCatalogo.platos}
+            categorias={datosCatalogo.categorias}
+          />
       </Suspense>
       <CarritoSheet mesaUuid={uuid} />
     </div>

@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { TarjetaPedidoKanban } from "./TarjetaPedidoKanban";
 import { EstadoVacio } from "@/components/compartidos/EstadoVacio";
-import type { PedidoConItems } from "@/lib/acciones/cocina";
+import type { PedidoConItems } from "@/types";
 import type { EstadoKanban, EstadoConfig } from "./configEstados";
 
 interface KanbanColumnaProps {

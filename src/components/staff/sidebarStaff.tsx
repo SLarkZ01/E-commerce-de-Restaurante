@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { NavLink } from "./NavLink";
 import { SeccionAdmin } from "./SeccionAdmin";
 import { PieUsuario } from "./PieUsuario";
-import { useActiveRoute } from "./useActiveRoute";
+import { useActiveRoute } from "@/hooks/useActiveRoute";
 import { NAV_ITEMS, ADMIN_ITEMS } from "./configNavegacion";
 
 interface SidebarStaffProps {

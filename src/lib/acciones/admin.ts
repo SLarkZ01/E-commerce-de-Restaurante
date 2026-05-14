@@ -24,6 +24,12 @@ export async function crearPerfil(datos: {
   nombre: string;
   rol: string;
 }) {
+  // Validación server-side
+  if (!datos.nombre?.trim()) throw new Error("El nombre es requerido");
+  if (!datos.email?.includes("@")) throw new Error("El email no es válido");
+  const rolesValidos = ["cocinero", "mesero", "admin"];
+  if (!rolesValidos.includes(datos.rol)) throw new Error("Rol inválido");
+
   const supabase = await crearCliente();
 
   const { data, error } = await supabase

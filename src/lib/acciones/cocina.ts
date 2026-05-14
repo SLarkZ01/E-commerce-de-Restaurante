@@ -1,7 +1,8 @@
 "use server";
 
 import { crearCliente } from "@/lib/supabase/server";
-import type { EstadoPedido, Pedido } from "@/types";
+import { crearEstrategiaDespacho } from "@/lib/servicios/estrategiaDespacho";
+import type { EstadoPedido, Pedido, TipoDespacho } from "@/types";
 
 const TRANSICIONES_VALIDAS: Record<EstadoPedido, EstadoPedido[]> = {
   pendiente: ["preparando"],
@@ -68,6 +69,12 @@ export async function cambiarEstadoPedido(
     .from("pedidos")
     .update({ estado: nuevoEstado, actualizado_en: new Date().toISOString() })
     .eq("id", pedidoId);
+
+  // Strategy: ejecutar lógica de despacho según tipo (mesa o para llevar)
+  if (nuevoEstado === "entregado") {
+    const estrategia = crearEstrategiaDespacho(pedidoActual.tipo_despacho as TipoDespacho);
+    await estrategia.alEntregar(pedidoActual as Pedido);
+  }
 
   return { exito: true };
 }

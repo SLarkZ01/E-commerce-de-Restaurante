@@ -66,3 +66,40 @@ export interface ItemPedido {
   cantidad: number;
   precio_unitario: number;
 }
+
+// --- Tipos de carrito (Zustand) ---
+
+export interface ItemCarrito {
+  id: string;
+  nombre: string;
+  precio: number;
+  imagenUrl: string | null;
+  cantidad: number;
+}
+
+// --- Tipos de pedidos con items (cocina) ---
+
+export interface ItemPedidoConPlato {
+  plato_nombre: string;
+  cantidad: number;
+  precio_unitario: number;
+}
+
+export interface PedidoConItems extends Pedido {
+  items: ItemPedidoConPlato[];
+}
+
+export interface StatsCocina {
+  pendientes: number;
+  preparando: number;
+  listos: number;
+  tiempoPromedioMin: number;
+}
+
+// --- Tipo genérico para resultados de operaciones ---
+
+export interface ResultadoOperacion<T = void> {
+  exito: boolean;
+  datos?: T;
+  error?: string;
+}

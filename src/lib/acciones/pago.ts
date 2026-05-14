@@ -1,7 +1,7 @@
 "use server";
 
 import { crearCliente } from "@/lib/supabase/server";
-import type { ItemCarrito } from "@/stores/cart";
+import type { ItemCarrito } from "@/types";
 import type { Mesa } from "@/types";
 
 export async function crearPedido(

@@ -11,11 +11,10 @@ export default async function PaginaInicio() {
     <div className="flex flex-col min-h-dvh bg-fondo">
       <BarraSuperior />
       <Suspense fallback={<SkeletonCatalogo />}>
-        <CatalogoPlatos
-          platos={platos}
-          categorias={categorias}
-          mesaUuid={null}
-        />
+          <CatalogoPlatos
+            platos={platos}
+            categorias={categorias}
+          />
       </Suspense>
       <CarritoSheet mesaUuid={null} />
     </div>

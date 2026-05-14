@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { QrCode, Trash2, Copy, Plus } from "lucide-react";
 import type { Mesa } from "@/types";
-import { crearMesa, eliminarMesa } from "@/lib/acciones/admin";
+import { useGestionAdmin } from "@/hooks/useGestionAdmin";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,18 +27,20 @@ export function GestionMesas({
   const [numeroNuevo, setNumeroNuevo] = useState("");
   const [mensaje, setMensaje] = useState("");
   const [tipoMensaje, setTipoMensaje] = useState<"exito" | "error">("exito");
+  const { crearMesa, eliminarMesa } = useGestionAdmin();
 
   const handleCrear = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const nueva = await crearMesa(Number(numeroNuevo));
-      setMesas((prev) => [nueva as Mesa, ...prev]);
+    const resultado = await crearMesa(Number(numeroNuevo));
+    const mesaCreada = resultado.mesa;
+    if (resultado.exito && mesaCreada) {
+      setMesas((prev) => [mesaCreada, ...prev]);
       setNumeroNuevo("");
-      setTipoMensaje("exito");
       setMensaje("Mesa creada correctamente");
-    } catch {
-      setTipoMensaje("error");
+      setTipoMensaje("exito");
+    } else {
       setMensaje("Error al crear la mesa");
+      setTipoMensaje("error");
     }
   };
 
@@ -47,11 +49,11 @@ export function GestionMesas({
     try {
       await eliminarMesa(id);
       setMesas((prev) => prev.filter((m) => m.id !== id));
-      setTipoMensaje("exito");
       setMensaje("Mesa eliminada correctamente");
+      setTipoMensaje("exito");
     } catch {
-      setTipoMensaje("error");
       setMensaje("Error al eliminar mesa");
+      setTipoMensaje("error");
     }
   };
 
