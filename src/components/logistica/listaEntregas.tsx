@@ -30,15 +30,14 @@ export function ListaEntregas({ pedidosIniciales }: ListaEntregasProps) {
     const resultado = await cambiarEstadoPedido(pedidoId, "entregado", "mesero");
 
     if (resultado.error) {
-      setMensaje(resultado.error);
       setTipoMensaje("error");
+      setMensaje(resultado.error);
       return;
     }
 
     setPedidos((prev) => prev.filter((p) => p.id !== pedidoId));
-    setMensaje("Pedido entregado correctamente");
     setTipoMensaje("exito");
-    setTimeout(() => setMensaje(""), 3000);
+    setMensaje("Pedido entregado correctamente");
   };
 
   return (

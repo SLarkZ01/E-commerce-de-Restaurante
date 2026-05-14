@@ -17,6 +17,13 @@ interface SeccionAdminProps {
   colapsado?: boolean;
 }
 
+const estiloToggle = (activo: boolean) =>
+  `w-full flex items-center px-3 py-3 rounded-xl text-sm font-medium transition-all ${
+    activo
+      ? "bg-primario/10 text-primario"
+      : "text-texto-secundario hover:bg-fondo-oscuro hover:text-texto"
+  }`;
+
 export function SeccionAdmin({
   items,
   isActive,
@@ -25,42 +32,33 @@ export function SeccionAdmin({
   onToggle,
   colapsado,
 }: SeccionAdminProps) {
-  const toggleButton = (
-    <button
-      onClick={onToggle}
-      className={`w-full flex items-center gap-3.5 px-3 py-3 rounded-xl text-sm font-medium transition-all ${
-        isAdminSection
-          ? "bg-primario/10 text-primario"
-          : "text-texto-secundario hover:bg-fondo-oscuro hover:text-texto"
-      }`}
-    >
-      <LayoutDashboard className="w-5 h-5 shrink-0" />
-      {!colapsado && (
-        <>
-          <span className="flex-1 text-left">Admin</span>
-          {abierto ? (
-            <ChevronDown className="w-4 h-4" />
-          ) : (
-            <ChevronRight className="w-4 h-4" />
-          )}
-        </>
-      )}
-    </button>
-  );
-
   return (
     <div className="pt-3">
       {colapsado ? (
         <Tooltip>
-          <TooltipTrigger className="w-full flex items-center justify-center px-3 py-3 rounded-xl text-sm font-medium transition-all cursor-pointer">
-            {toggleButton}
+          <TooltipTrigger
+            onClick={onToggle}
+            className={`${estiloToggle(isAdminSection)} justify-center cursor-pointer`}
+          >
+            <LayoutDashboard className="w-5 h-5 shrink-0" />
           </TooltipTrigger>
           <TooltipContent side="right">
             <p className="text-xs">Admin</p>
           </TooltipContent>
         </Tooltip>
       ) : (
-        toggleButton
+        <button
+          onClick={onToggle}
+          className={`${estiloToggle(isAdminSection)} gap-3.5`}
+        >
+          <LayoutDashboard className="w-5 h-5 shrink-0" />
+          <span className="flex-1 text-left">Admin</span>
+          {abierto ? (
+            <ChevronDown className="w-4 h-4" />
+          ) : (
+            <ChevronRight className="w-4 h-4" />
+          )}
+        </button>
       )}
 
       {!colapsado && abierto && (

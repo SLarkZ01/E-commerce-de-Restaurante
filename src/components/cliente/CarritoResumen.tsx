@@ -4,14 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
 interface CarritoResumenProps {
-  total: () => number;
+  totalMostrado: number;
   pagando: boolean;
   itemsCount: number;
   onConfirmar: () => void;
 }
 
 export function CarritoResumen({
-  total,
+  totalMostrado,
   pagando,
   itemsCount,
   onConfirmar,
@@ -21,14 +21,14 @@ export function CarritoResumen({
       <div className="flex justify-between text-sm">
         <span className="text-texto-secundario">Subtotal</span>
         <span className="font-medium text-texto tabular-nums">
-          {formatearPrecio(total())}
+          {formatearPrecio(totalMostrado)}
         </span>
       </div>
       <Separator />
       <div className="flex justify-between">
         <span className="font-playfair text-base font-bold text-texto">Total</span>
         <span className="font-playfair text-xl font-bold text-primario tabular-nums">
-          {formatearPrecio(total())}
+          {formatearPrecio(totalMostrado)}
         </span>
       </div>
 

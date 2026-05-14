@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ShoppingBag, Check, AlertCircle } from "lucide-react";
 import { usarCarrito } from "@/stores/cart";
 import { crearPedido } from "@/lib/acciones/pago";
@@ -20,6 +20,9 @@ export function CarritoSheet({ mesaUuid }: CarritoSheetProps) {
   const [abierto, setAbierto] = useState(false);
   const [pagando, setPagando] = useState(false);
   const [confirmacion, setConfirmacion] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   const items = usarCarrito((s) => s.items);
   const actualizarCantidad = usarCarrito((s) => s.actualizarCantidad);
@@ -27,7 +30,9 @@ export function CarritoSheet({ mesaUuid }: CarritoSheetProps) {
   const total = usarCarrito((s) => s.total);
   const vaciarCarrito = usarCarrito((s) => s.vaciarCarrito);
 
-  const cantidadTotal = items.reduce((sum, i) => sum + i.cantidad, 0);
+  const cantidadTotal = mounted ? items.reduce((sum, i) => sum + i.cantidad, 0) : 0;
+  const itemsLength = mounted ? items.length : 0;
+  const totalMostrado = mounted ? total() : 0;
 
   const handlePago = async () => {
     if (!tieneMesa) return;
@@ -58,7 +63,7 @@ export function CarritoSheet({ mesaUuid }: CarritoSheetProps) {
       <footer className="sticky bottom-0 z-30 bg-fondo-card/95 backdrop-blur-sm border-t border-borde/60 px-4 py-3">
         <button
           onClick={() => setAbierto(true)}
-          disabled={items.length === 0}
+          disabled={itemsLength === 0}
           className="w-full flex items-center justify-between bg-primario text-primario-texto rounded-xl px-5 py-3.5 font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primario-hover transition-all active:scale-[0.98] shadow-lg shadow-primario/20"
         >
           <span className="flex items-center gap-2">
@@ -66,7 +71,7 @@ export function CarritoSheet({ mesaUuid }: CarritoSheetProps) {
             {cantidadTotal} {cantidadTotal === 1 ? "plato" : "platos"}
           </span>
           <span className="font-playfair font-bold text-lg">
-            {formatearPrecio(total())}
+            {formatearPrecio(totalMostrado)}
           </span>
         </button>
       </footer>
@@ -82,7 +87,7 @@ export function CarritoSheet({ mesaUuid }: CarritoSheetProps) {
           </div>
 
           <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
-            {items.length === 0 ? (
+            {itemsLength === 0 ? (
               <CarritoEstadoVacio />
             ) : (
               items.map((item) => (
@@ -115,9 +120,9 @@ export function CarritoSheet({ mesaUuid }: CarritoSheetProps) {
 
           {tieneMesa ? (
             <CarritoResumen
-              total={total}
+              totalMostrado={totalMostrado}
               pagando={pagando}
-              itemsCount={items.length}
+              itemsCount={itemsLength}
               onConfirmar={handlePago}
             />
           ) : (
