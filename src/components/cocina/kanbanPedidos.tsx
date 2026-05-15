@@ -24,13 +24,29 @@ export function KanbanPedidos({ pedidosIniciales }: KanbanPedidosProps) {
     [pedidos]
   );
 
-  // Observer: agrega nuevos pedidos en tiempo real sin recargar
-  usePedidosRealtime(useCallback((nuevoPedido: PedidoConItems) => {
-    setPedidos((prev) => {
-      if (prev.some((p) => p.id === nuevoPedido.id)) return prev;
-      return [nuevoPedido, ...prev];
-    });
-  }, []));
+  // Observer: INSERT + UPDATE + DELETE en tiempo real (multiventana)
+  usePedidosRealtime({
+    onNuevoPedido: useCallback((nuevoPedido: PedidoConItems) => {
+      setPedidos((prev) => {
+        if (prev.some((p) => p.id === nuevoPedido.id)) return prev;
+        return [nuevoPedido, ...prev];
+      });
+    }, []),
+
+    onCambioEstado: useCallback((pedidoId: string, nuevoEstado: string) => {
+      setPedidos((prev) =>
+        prev.map((p) =>
+          p.id === pedidoId
+            ? { ...p, estado: nuevoEstado as PedidoConItems["estado"] }
+            : p
+        )
+      );
+    }, []),
+
+    onPedidoEntregado: useCallback((pedidoId: string) => {
+      setPedidos((prev) => prev.filter((p) => p.id !== pedidoId));
+    }, []),
+  });
 
   const handleCambiarEstado = async (pedidoId: string, nuevoEstado: string) => {
     setMensaje("");
@@ -45,6 +61,7 @@ export function KanbanPedidos({ pedidosIniciales }: KanbanPedidosProps) {
       return;
     }
 
+    // Optimistic update local + Realtime lo replicará en otras ventanas
     if (nuevoEstado === "entregado") {
       setPedidos((prev) => prev.filter((p) => p.id !== pedidoId));
     } else {

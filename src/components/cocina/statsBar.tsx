@@ -1,12 +1,61 @@
+"use client";
+
+import { useState } from "react";
 import { Clock, AlertTriangle, CheckCircle2, Timer } from "lucide-react";
-import type { StatsCocina } from "@/types";
+import { useRealtime } from "@/hooks/useRealtime";
+import type { StatsCocina, Pedido } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface StatsBarProps {
   stats: StatsCocina;
 }
 
-export function StatsBar({ stats }: StatsBarProps) {
+export function StatsBar({ stats: statsIniciales }: StatsBarProps) {
+  const [stats, setStats] = useState(statsIniciales);
+
+  // Observer: actualizar contadores en tiempo real
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  useRealtime("pedidos", "*", (payload: any) => {
+    const eventType = payload.eventType as string;
+    const nuevo = payload.new as Pedido | undefined;
+    const viejo = payload.old as Pedido | undefined;
+
+    setStats((prev) => {
+      const next = { ...prev };
+
+      if (eventType === "INSERT" && nuevo) {
+        if (nuevo.estado === "pendiente") next.pendientes++;
+        else if (nuevo.estado === "preparando") next.preparando++;
+        else if (nuevo.estado === "listo") next.listos++;
+      }
+
+      if (eventType === "UPDATE" && nuevo) {
+        // Decrementar estado anterior
+        if (viejo?.estado === "pendiente") next.pendientes--;
+        else if (viejo?.estado === "preparando") next.preparando--;
+        else if (viejo?.estado === "listo") next.listos--;
+        // Incrementar nuevo estado
+        if (nuevo.estado === "pendiente") next.pendientes++;
+        else if (nuevo.estado === "preparando") next.preparando++;
+        else if (nuevo.estado === "listo") next.listos++;
+        // Si se entregó (entregado), no incrementamos ningún contador
+      }
+
+      if (eventType === "DELETE" && viejo) {
+        if (viejo.estado === "pendiente") next.pendientes--;
+        else if (viejo.estado === "preparando") next.preparando--;
+        else if (viejo.estado === "listo") next.listos--;
+      }
+
+      // No permitir negativos
+      next.pendientes = Math.max(0, next.pendientes);
+      next.preparando = Math.max(0, next.preparando);
+      next.listos = Math.max(0, next.listos);
+
+      return next;
+    });
+  });
+
   return (
     <div className="sticky top-16 z-20 bg-fondo/95 backdrop-blur-sm border-b border-borde/60 px-6 py-4">
       <div className="flex gap-4 overflow-x-auto no-scrollbar md:grid md:grid-cols-4">
@@ -62,12 +111,8 @@ function StatItem({
         {icon}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-medium text-texto-terciario uppercase tracking-wide">
-          {label}
-        </p>
-        <p className="font-playfair text-xl font-bold text-texto tabular-nums leading-tight mt-0.5">
-          {valor}
-        </p>
+        <p className="text-xs font-medium text-texto-terciario uppercase tracking-wide">{label}</p>
+        <p className="font-playfair text-xl font-bold text-texto tabular-nums leading-tight mt-0.5">{valor}</p>
       </div>
     </div>
   );
