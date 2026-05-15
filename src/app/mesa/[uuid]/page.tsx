@@ -3,8 +3,11 @@ import { obtenerMesaPorUuid } from "@/lib/acciones/pago";
 import { CatalogoPlatos, SkeletonCatalogo } from "@/components/cliente/catalogoPlatos";
 import { BarraMesa } from "@/components/cliente/barraMesa";
 import { CarritoSheet } from "@/components/cliente/carritoSheet";
+import { WompiProvider } from "@/components/cliente/WompiProvider";
+import { WompiModalProvider } from "@/components/cliente/WompiModalContext";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { MesaLayout } from "@/components/cliente/MesaLayout";
 
 export default async function PaginaMesa({
   params,
@@ -22,15 +25,19 @@ export default async function PaginaMesa({
   }
 
   return (
-    <div className="flex flex-col min-h-dvh bg-fondo">
-      <BarraMesa numeroMesa={mesa.numero} />
-      <Suspense fallback={<SkeletonCatalogo />}>
-          <CatalogoPlatos
-            platos={datosCatalogo.platos}
-            categorias={datosCatalogo.categorias}
-          />
-      </Suspense>
-      <CarritoSheet mesaUuid={uuid} />
-    </div>
+    <WompiProvider>
+      <WompiModalProvider>
+        <MesaLayout>
+          <BarraMesa numeroMesa={mesa.numero} />
+          <Suspense fallback={<SkeletonCatalogo />}>
+            <CatalogoPlatos
+              platos={datosCatalogo.platos}
+              categorias={datosCatalogo.categorias}
+            />
+          </Suspense>
+          <CarritoSheet mesaUuid={uuid} />
+        </MesaLayout>
+      </WompiModalProvider>
+    </WompiProvider>
   );
 }

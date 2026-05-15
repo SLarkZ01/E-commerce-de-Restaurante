@@ -28,15 +28,15 @@
 
 ---
 
-### HU-03: Pagar con PayPal
+### HU-03: Pagar con Wompi
 **Como** comensal  
-**Quiero** pagar mi pedido con PayPal  
+**Quiero** pagar mi pedido con Wompi  
 **Para** completar la compra sin compartir datos bancarios con el restaurante
 
 **Criterios de aceptación:**
-- El botón de PayPal solo se muestra si el carrito no está vacío
+- El botón de Wompi solo se muestra si el carrito no está vacío
 - Al completar el pago, el pedido se crea automáticamente en estado "Pendiente"
-- Se envía un comprobante al correo de PayPal del cliente
+- Se envía un comprobante al correo de Wompi del cliente
 - El carrito se vacía tras el pago exitoso
 
 ---

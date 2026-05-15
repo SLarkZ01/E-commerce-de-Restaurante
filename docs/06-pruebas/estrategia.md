@@ -24,7 +24,9 @@ Archivo de setup: `tests/setup.ts` (importa `@testing-library/jest-dom/vitest`)
 
 Comandos disponibles:
 ```bash
-bun test            # Watch mode
-bun test:run         # Single run
-bun test:coverage    # Con reporte de cobertura
+npm test            # Watch mode
+npm run test:run    # Single run
+npm run test:coverage # Con reporte de cobertura
 ```
+### Estado actual
+53 tests implementados (8 archivos): 45 unitarios + 8 integración.

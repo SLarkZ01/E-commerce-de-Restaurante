@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { crearCliente } from "@/lib/supabase/browser";
 import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 
@@ -8,42 +8,45 @@ type CallbackCambio = (
   payload: RealtimePostgresChangesPayload<Record<string, unknown>>
 ) => void;
 
-/**
- * Patrón Observer: suscribe al cliente a cambios en tiempo real de Supabase.
- * El componente que lo usa actúa como "observador" de la tabla especificada.
- *
- * @param tabla - Nombre de la tabla a observar ("pedidos", "platos", etc.)
- * @param evento - Tipo de evento: "INSERT", "UPDATE", "DELETE" o "*" para todos
- * @param callback - Función que se ejecuta cuando ocurre un cambio
- * @param filtro - Filtro opcional (ej: "estado=eq.listo")
- */
 export function useRealtime(
   tabla: string,
   evento: "INSERT" | "UPDATE" | "DELETE" | "*",
   callback: CallbackCambio,
   filtro?: string
 ) {
+  const callbackRef = useRef(callback);
+  callbackRef.current = callback;
+
   useEffect(() => {
     const supabase = crearCliente();
 
+    const channelConfig: Record<string, unknown> = {
+      event: evento,
+      schema: "public",
+      table: tabla,
+    };
+
+    if (filtro) {
+      channelConfig.filter = filtro;
+    }
+
     const canal = supabase
-      .channel(`realtime-${tabla}-${evento}`)
+      .channel(`realtime-${tabla}-${evento}-${filtro ?? "all"}`)
       .on(
         "postgres_changes" as never,
-        {
-          event: evento,
-          schema: "public",
-          table: tabla,
-          filter: filtro,
-        },
+        channelConfig,
         (payload: RealtimePostgresChangesPayload<Record<string, unknown>>) => {
-          callback(payload);
+          callbackRef.current(payload);
         }
       )
-      .subscribe();
+      .subscribe((status: string) => {
+        if (status === "SUBSCRIBED") {
+          console.log(`[Observer] ${evento} → ${tabla}${filtro ? ` (${filtro})` : ""}`);
+        }
+      });
 
     return () => {
-      supabase.removeChannel(canal);
+      supabase.removeChannel(canal).catch(() => {});
     };
-  }, [tabla, evento, callback, filtro]);
+  }, [tabla, evento, filtro]);
 }

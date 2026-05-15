@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback } from "react";
 import { MensajeToast } from "@/components/compartidos/MensajeToast";
 import { KanbanColumna } from "./KanbanColumna";
 import { ESTADOS, CONFIG_ESTADO } from "./configEstados";
 import { usePedidos } from "@/hooks/usePedidos";
-import { useRealtime } from "@/hooks/useRealtime";
-import type { PedidoConItems, Pedido } from "@/types";
+import { usePedidosRealtime } from "@/hooks/usePedidosRealtime";
+import type { PedidoConItems } from "@/types";
 
 export { SkeletonKanban } from "./SkeletonKanban";
 
@@ -18,23 +18,35 @@ export function KanbanPedidos({ pedidosIniciales }: KanbanPedidosProps) {
   const [pedidos, setPedidos] = useState(pedidosIniciales);
   const [mensaje, setMensaje] = useState("");
   const { cambiarEstado } = usePedidos();
-  const pedidosRef = useRef(pedidos);
-  pedidosRef.current = pedidos;
 
   const pedidosPorEstado = useCallback(
     (estado: string) => pedidos.filter((p) => p.estado === estado),
     [pedidos]
   );
 
-  // Observer: suscribirse a nuevos pedidos en tiempo real
-  useRealtime("pedidos", "INSERT", useCallback((payload) => {
-    const nuevo = payload.new as Pedido;
-    if (nuevo.estado === "pendiente") {
-      // Refetch completo para obtener los items del pedido
-      // (los inserts individuales no incluyen relaciones)
-      window.location.reload();
-    }
-  }, []));
+  // Observer: INSERT + UPDATE + DELETE en tiempo real (multiventana)
+  usePedidosRealtime({
+    onNuevoPedido: useCallback((nuevoPedido: PedidoConItems) => {
+      setPedidos((prev) => {
+        if (prev.some((p) => p.id === nuevoPedido.id)) return prev;
+        return [nuevoPedido, ...prev];
+      });
+    }, []),
+
+    onCambioEstado: useCallback((pedidoId: string, nuevoEstado: string) => {
+      setPedidos((prev) =>
+        prev.map((p) =>
+          p.id === pedidoId
+            ? { ...p, estado: nuevoEstado as PedidoConItems["estado"] }
+            : p
+        )
+      );
+    }, []),
+
+    onPedidoEntregado: useCallback((pedidoId: string) => {
+      setPedidos((prev) => prev.filter((p) => p.id !== pedidoId));
+    }, []),
+  });
 
   const handleCambiarEstado = async (pedidoId: string, nuevoEstado: string) => {
     setMensaje("");
@@ -49,6 +61,7 @@ export function KanbanPedidos({ pedidosIniciales }: KanbanPedidosProps) {
       return;
     }
 
+    // Optimistic update local + Realtime lo replicará en otras ventanas
     if (nuevoEstado === "entregado") {
       setPedidos((prev) => prev.filter((p) => p.id !== pedidoId));
     } else {
@@ -66,14 +79,9 @@ export function KanbanPedidos({ pedidosIniciales }: KanbanPedidosProps) {
     <div className="flex-1 flex flex-col overflow-hidden">
       {mensaje && (
         <div className="mx-6 mt-4">
-          <MensajeToast
-            mensaje={mensaje}
-            onClose={() => setMensaje("")}
-            variante="error"
-          />
+          <MensajeToast mensaje={mensaje} variante="error" onClose={() => setMensaje("")} />
         </div>
       )}
-
       <div className="flex-1 flex flex-col md:flex-row gap-5 p-6 overflow-auto">
         {ESTADOS.map((estado) => (
           <KanbanColumna

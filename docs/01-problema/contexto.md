@@ -23,6 +23,6 @@ Los restaurantes modernos necesitan:
 
 ## La solución: E-Kitchen
 
-E-Kitchen es un menú digital interactivo accesible vía **código QR** en cada mesa. El cliente escanea, ve el catálogo en tiempo real, arma su carrito y paga con PayPal. Automáticamente, el pedido aparece en el panel de cocina. Cuando está listo, el mesero recibe una notificación para entregarlo.
+E-Kitchen es un menú digital interactivo accesible vía **código QR** en cada mesa. El cliente escanea, ve el catálogo en tiempo real, arma su carrito y paga con Wompi. Automáticamente, el pedido aparece en el panel de cocina. Cuando está listo, el mesero recibe una notificación para entregarlo.
 
 Todo esto sin que el cliente necesite crear una cuenta.

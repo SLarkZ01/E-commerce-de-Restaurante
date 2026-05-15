@@ -9,14 +9,14 @@
 - Filtro por tipo de plato (`plato_fuerte`, `bebida`, `combo`) y por categoría (definida por el chef)
 - Carrito de compras local persistente (Zustand + localStorage)
 - Para completar la compra debe escanear el QR de su mesa → redirige a `/mesa/{uuid}` (el carrito se mantiene)
-- Pago confirmado desde la mesa asignada (PayPal — pendiente de implementar)
-- Recepción de comprobante por correo electrónico (Brevo — pendiente de implementar)
+- Pago confirmado desde la mesa asignada (Wompi ✅ implementado vía `PagoFacade`)
+- Recepción de comprobante por correo electrónico (Brevo ✅ implementado vía `NotificacionFacade`)
 
 ### Cocinero (Chef)
 - Panel de pedidos en tiempo real (columna por estado)
 - Gestión CRUD del catálogo de platos y categorías
 - Creación de platos con tipo (`plato_fuerte`, `bebida`, `combo`)
-- Subida de imágenes (Cloudinary — pendiente de implementar)
+- Subida de imágenes (Cloudinary ✅ implementado vía `MediaFacade`)
 - Cambio de estado del pedido: Pendiente → Preparando → Listo
 - Stats de cocina: contadores por estado y tiempo promedio
 - Los cambios en el catálogo se reflejan instantáneamente en el menú del cliente
@@ -30,5 +30,5 @@
 ### Administrador
 - Gestión de personal (crear/editar/eliminar cocineros y meseros)
 - Asignación de roles (cocinero, mesero, admin)
-- Generación de códigos QR únicos (UUID) vinculados a mesas físicas
+- Generación de códigos QR únicos (UUID) vinculados a mesas físicas (✅ implementado con `qrcode`)
 - Auditoría de ventas y pedidos

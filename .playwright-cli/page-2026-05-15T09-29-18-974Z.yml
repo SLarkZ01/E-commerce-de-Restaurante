@@ -1,0 +1,45 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e8]:
+      - generic [ref=e13]:
+        - generic [ref=e14]:
+          - img [ref=e18]
+          - heading "Bienvenido a E-Kitchen" [level=1] [ref=e23]
+          - paragraph [ref=e24]: Accede al panel de gestión gastronómica. Solo personal autorizado.
+        - generic [ref=e25]:
+          - generic [ref=e26]:
+            - generic [ref=e27]: Correo electrónico
+            - generic [ref=e28]:
+              - img [ref=e29]
+              - textbox "Correo electrónico" [ref=e32]:
+                - /placeholder: chef@ekitchen.com
+          - generic [ref=e33]:
+            - generic [ref=e34]: Contraseña
+            - generic [ref=e35]:
+              - img [ref=e36]
+              - textbox "Contraseña" [ref=e39]:
+                - /placeholder: ••••••••
+              - button "Mostrar contraseña" [ref=e40]:
+                - img [ref=e41]
+          - button "Iniciar Sesión" [ref=e45]:
+            - generic [ref=e47]:
+              - text: Iniciar Sesión
+              - img
+        - generic [ref=e52]: Solo miembros autorizados
+        - generic [ref=e53]:
+          - generic [ref=e54]:
+            - img [ref=e55]
+            - generic [ref=e58]: Conexión segura con Supabase Auth
+          - generic [ref=e59]:
+            - generic [ref=e60]:
+              - img [ref=e61]
+              - generic [ref=e63]: Cocina
+            - generic [ref=e65]:
+              - img [ref=e66]
+              - generic [ref=e69]: Logística
+            - generic [ref=e71]:
+              - img [ref=e72]
+              - generic [ref=e75]: Admin
+      - paragraph [ref=e76]: © 2026 E-Kitchen. Todos los derechos reservados.
+  - button "Open Next.js Dev Tools" [ref=e82] [cursor=pointer]:
+    - img [ref=e83]

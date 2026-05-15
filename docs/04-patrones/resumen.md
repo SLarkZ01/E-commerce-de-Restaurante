@@ -8,16 +8,17 @@ El proyecto integra **5 patrones de diseño** que operan en distintos niveles de
 | 2 | **State** | Comportamiento | Lógica de negocio | Transiciones válidas del ciclo de vida del pedido | `src/lib/acciones/cocina.ts` |
 | 3 | **Factory Method** | Creacional | Panel de Cocina | Creación uniforme de distintos tipos de plato | `src/lib/servicios/platoFactory.ts` |
 | 4 | **Strategy** | Comportamiento | Lógica de despacho | Reglas diferentes según mesa o para llevar | `src/lib/servicios/estrategiaDespacho.ts` |
-| 5 | **Facade** | Estructural | Integraciones externas | Simplificar PayPal, Cloudinary y Brevo | `src/lib/servicios/mediaFacade.ts` |
+| 5 | **Facade** | Estructural | Integraciones externas | Simplificar Wompi, Cloudinary y Brevo | `src/lib/servicios/PagoFacade.ts` |
 
 ## Dónde está cada patrón en el código
 
 ### Observer
 ```
-src/hooks/useRealtime.ts              ← Hook genérico (canal WebSocket)
-src/components/cocina/kanbanPedidos.tsx:40-46  ← Suscripción INSERT pedidos
-src/components/logistica/listaEntregas.tsx:30-39 ← Suscripción UPDATE estado=listo
-src/lib/supabase/browser.ts           ← Cliente WebSocket Supabase
+src/hooks/usePedidosRealtime.ts         ← Hook de negocio: INSERT + UPDATE + fetch items
+src/hooks/useRealtime.ts                ← Hook genérico: infraestructura WebSocket
+src/components/cocina/kanbanPedidos.tsx  ← Consumidor UI (kanban)
+src/components/cocina/statsBar.tsx      ← Consumidor UI (contadores)
+src/lib/supabase/browser.ts             ← Cliente WebSocket Supabase
 ```
 
 ### State
@@ -45,10 +46,11 @@ src/types/index.ts                    ← TipoDespacho (enum)
 
 ### Facade
 ```
-src/lib/servicios/mediaFacade.ts      ← Cloudinary (implementado ✅)
-src/lib/servicios/_PagoFacade.ts      ← PayPal (esqueleto 🔜)
-src/lib/servicios/_NotificacionFacade.ts ← Brevo (esqueleto 🔜)
-src/lib/acciones/imagenes.ts          ← Usa MediaFacade.subirImagen()
+src/lib/servicios/PagoFacade.ts          ← Wompi (implementado ✅)
+src/lib/servicios/mediaFacade.ts          ← Cloudinary (implementado ✅)
+src/lib/servicios/NotificacionFacade.ts    ← Brevo (implementado ✅)
+src/lib/acciones/pago.ts                  ← Usa PagoFacade
+src/lib/acciones/imagenes.ts              ← Usa MediaFacade
 ```
 
 ## Cómo se relacionan

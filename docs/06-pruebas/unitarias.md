@@ -12,7 +12,7 @@
 | U-04 | Actualizar cantidad a 0 (debe eliminar) | `actualizarCantidad("1", 0)` | `items.length === 0` |
 | U-05 | Calcular total con múltiples items | Pizza ($12 x2) + Bebida ($5 x1) | `total() === 29` |
 | U-06 | Vaciar carrito | `vaciarCarrito()` | `items.length === 0`, `total() === 0` |
-| U-07 | Persistencia en localStorage | Recargar página | Los items se mantienen |
+| U-07 | Persistencia e inmutabilidad | `vaciarCarrito()` + verificar nuevo array | 0 items, total 0, array nuevo |
 
 ### Validaciones de estado (State Pattern)
 
