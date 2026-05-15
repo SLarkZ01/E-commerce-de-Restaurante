@@ -74,8 +74,9 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
       setPlatos((prev) => prev.filter((p) => p.id !== id));
       setMensaje("Plato eliminado correctamente");
       setTipoMensaje("exito");
-    } catch {
-      setMensaje("Error al eliminar el plato");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Error al eliminar el plato";
+      setMensaje(msg);
       setTipoMensaje("error");
     }
   };
