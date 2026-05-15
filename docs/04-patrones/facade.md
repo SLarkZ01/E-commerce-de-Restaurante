@@ -13,8 +13,8 @@ Tres servicios externos requieren integración: **PayPal** (pagos), **Cloudinary
 | Fachada | Archivo | Servicio | Estado | Métodos expuestos |
 |---|---|---|---|---|
 | `MediaFacade` | `src/lib/servicios/mediaFacade.ts` | Cloudinary | ✅ **Implementado** | `subirImagen()`, `eliminarImagen()`, `firmarParametros()` |
-| `PagoFacade` | `src/lib/servicios/_PagoFacade.ts` | PayPal | 🔜 Esqueleto (TODO) | `crearOrden()`, `capturarPago()` |
-| `NotificacionFacade` | `src/lib/servicios/_NotificacionFacade.ts` | Brevo | 🔜 Esqueleto (TODO) | `enviarComprobante()`, `enviarAvisoCocina()` |
+| `PagoFacade` | `src/lib/servicios/PagoFacade.ts` | PayPal | ✅ **Implementado** | `crearOrden()`, `capturarOrden()` |
+| `NotificacionFacade` | `src/lib/servicios/NotificacionFacade.ts` | Brevo | ✅ **Implementado** | `enviarComprobante()` |
 
 > **Nota:** Los archivos con prefijo `_` (ej: `_PagoFacade.ts`) son esqueletos listos para implementar. Las interfaces, métodos y tipos ya están definidos. Solo falta integrar los SDKs correspondientes.
 
@@ -22,73 +22,33 @@ Tres servicios externos requieren integración: **PayPal** (pagos), **Cloudinary
 
 | Método | Descripción | ¿Quién lo usa? |
 |---|---|---|
-| `subirImagen(buffer, opciones)` | Sube una imagen a Cloudinary y devuelve la URL | `acciones/imagenes.ts` → `subirImagenPlato()` |
-| `eliminarImagen(publicId)` | Elimina una imagen de Cloudinary | No usado aún |
-| `firmarParametros(parametros)` | Firma parámetros para upload directo desde el cliente | No usado aún |
+| `crearOrden(total)` | Crea una orden de pago en PayPal (COP) | `acciones/pago.ts` → `PayPalButton.tsx` |
+| `capturarOrden(ordenId)` | Captura el pago después de aprobación del cliente | `acciones/pago.ts` → `capturarYCrearPedido()` |
 
 ```typescript
-// src/lib/acciones/imagenes.ts — uso real de MediaFacade
-const buffer = Buffer.from(await archivo.arrayBuffer());
-const resultado = await MediaFacade.subirImagen(buffer, {
-  folder: "e-kitchen/platos",
-});
-return resultado.secureUrl;
-```
+// src/lib/acciones/pago.ts — uso real de PagoFacade
+export async function capturarYCrearPedido(ordenId, mesaUuid, items, total) {
+  // 1. Capturar el pago en PayPal
+  const captura = await PagoFacade.capturarOrden(ordenId);
+  if (!captura.exito) return { pedidoId: "", error: captura.error };
 
-### PagoFacade — Esqueleto (listo para PayPal)
-
-```typescript
-// src/lib/servicios/_PagoFacade.ts
-export class PagoFacade {
-  static async crearOrden(total: number): Promise<ResultadoOperacion<string>> {
-    // TODO: Integrar SDK de PayPal
-    // 1. Autenticar con OAuth2
-    // 2. POST /v2/checkout/orders
-    // 3. Retornar orderID
-  }
-
-  static async capturarPago(ordenId: string): Promise<ResultadoOperacion<OrdenPago>> {
-    // TODO: POST /v2/checkout/orders/{ordenId}/capture
-  }
+  // 2. Crear el pedido en Supabase
+  const { data: nuevoPedido } = await supabase.from("pedidos").insert(...);
+  return { pedidoId: nuevoPedido.id };
 }
 ```
 
-### NotificacionFacade — Esqueleto (listo para Brevo)
+### PayPalButton — Componente cliente
 
 ```typescript
-// src/lib/servicios/_NotificacionFacade.ts
-export class NotificacionFacade {
-  static async enviarComprobante(email, pedidoId, total): Promise<ResultadoOperacion> {
-    // TODO: Integrar SDK de Brevo
-    // Usar template "comprobante de compra"
-  }
-
-  static async enviarAvisoCocina(email, pedidoId): Promise<ResultadoOperacion> {
-    // TODO: Usar template "pedido listo"
-  }
-}
-```
-
-### Diagrama de integración (cuando esté completo)
-
-```mermaid
-sequenceDiagram
-    participant UI as UI Cliente
-    participant FC as FachadaCompra
-    participant PP as PagoFacade (PayPal)
-    participant SA as Server Action
-    participant NF as NotificacionFacade (Brevo)
-
-    UI->>FC: finalizarCompra(carrito, mesaId)
-    FC->>PP: crearOrden(total)
-    PP-->>FC: paypalOrderId
-    FC->>SA: crearPedido(datos)
-    SA-->>FC: pedidoId
-    FC->>PP: capturarPago(paypalOrderId)
-    PP-->>FC: pago confirmado
-    FC->>NF: enviarComprobante(email, pedidoId)
-    NF-->>FC: email enviado
-    FC-->>UI: compra exitosa
+// src/components/cliente/PayPalButton.tsx
+<PayPalScriptProvider options={{ clientId, currency: "COP", intent: "capture" }}>
+  <PayPalButtons
+    createOrder={onCrearOrden}       // → PagoFacade.crearOrden()
+    onApprove={onAprobar}            // → capturarYCrearPedido()
+    onError={onError}
+  />
+</PayPalScriptProvider>
 ```
 
 ### Beneficio clave

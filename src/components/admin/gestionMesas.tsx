@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { QrCode, Trash2, Copy, Plus } from "lucide-react";
+import QRCode from "qrcode";
 import type { Mesa } from "@/types";
 import { useGestionAdmin } from "@/hooks/useGestionAdmin";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -24,6 +25,7 @@ export function GestionMesas({
 }) {
   const [mesas, setMesas] = useState(mesasIniciales);
   const [mostrandoQR, setMostrandoQR] = useState<Mesa | null>(null);
+  const [qrDataUrl, setQrDataUrl] = useState("");
   const [numeroNuevo, setNumeroNuevo] = useState("");
   const [mensaje, setMensaje] = useState("");
   const [tipoMensaje, setTipoMensaje] = useState<"exito" | "error">("exito");
@@ -58,6 +60,15 @@ export function GestionMesas({
   };
 
   const urlMesa = (qr: string) => `/mesa/${qr}`;
+
+  useEffect(() => {
+    if (mostrandoQR) {
+      const url = `${window.location.origin}${urlMesa(mostrandoQR.codigo_qr)}`;
+      QRCode.toDataURL(url, { width: 200, margin: 2 }).then(setQrDataUrl);
+    } else {
+      setQrDataUrl("");
+    }
+  }, [mostrandoQR]);
 
   return (
     <div className="flex-1 overflow-y-auto">
@@ -150,8 +161,12 @@ export function GestionMesas({
               </DialogDescription>
             </DialogHeader>
             <div className="flex flex-col items-center space-y-5 pt-2">
-              <div className="w-48 h-48 bg-fondo-oscuro rounded-2xl flex items-center justify-center">
-                <QrCode className="w-20 h-20 text-texto-terciario" />
+              <div className="w-48 h-48 bg-white rounded-2xl flex items-center justify-center p-2">
+                {qrDataUrl ? (
+                  <img src={qrDataUrl} alt={`QR Mesa ${mostrandoQR?.numero}`} className="w-full h-full object-contain" />
+                ) : (
+                  <QrCode className="w-20 h-20 text-texto-terciario" />
+                )}
               </div>
               <div className="bg-fondo-oscuro rounded-lg p-3 w-full">
                 <p className="text-[10px] text-texto-terciario font-mono text-center break-all">

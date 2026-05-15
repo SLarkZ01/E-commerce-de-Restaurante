@@ -2,6 +2,7 @@
 
 import { crearCliente } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { MediaFacade } from "@/lib/servicios/mediaFacade";
 
 export async function obtenerTodosPlatos() {
   const supabase = await crearCliente();
@@ -63,6 +64,25 @@ export async function actualizarPlato(
 ) {
   const supabase = await crearCliente();
 
+  if (datos.imagenUrl !== undefined) {
+    const { data: platoActual } = await supabase
+      .from("platos")
+      .select("imagen_url")
+      .eq("id", id)
+      .single();
+
+    if (platoActual?.imagen_url && platoActual.imagen_url !== datos.imagenUrl) {
+      const oldPublicId = MediaFacade.extraerPublicId(platoActual.imagen_url);
+      if (oldPublicId) {
+        try {
+          await MediaFacade.eliminarImagen(oldPublicId);
+        } catch (err) {
+          console.error("Error al eliminar imagen anterior de Cloudinary:", err);
+        }
+      }
+    }
+  }
+
   const actualizacion: Record<string, unknown> = {
     actualizado_en: new Date().toISOString(),
   };
@@ -93,6 +113,24 @@ export async function actualizarPlato(
 
 export async function eliminarPlato(id: string) {
   const supabase = await crearCliente();
+
+  const { data: plato } = await supabase
+    .from("platos")
+    .select("imagen_url")
+    .eq("id", id)
+    .single();
+
+  if (plato?.imagen_url) {
+    const publicId = MediaFacade.extraerPublicId(plato.imagen_url);
+    if (publicId) {
+      try {
+        await MediaFacade.eliminarImagen(publicId);
+      } catch (err) {
+        console.error("Error al eliminar imagen de Cloudinary:", err);
+      }
+    }
+  }
+
   const { error, count } = await supabase
     .from("platos")
     .delete({ count: "exact" })

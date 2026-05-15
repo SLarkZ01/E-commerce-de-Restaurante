@@ -92,7 +92,20 @@ export class MediaFacade {
   }
 
   static async eliminarImagen(publicId: string): Promise<void> {
-    await cloudinary.v2.uploader.destroy(publicId);
+    await cloudinary.v2.uploader.destroy(publicId, {
+      resource_type: "image",
+      invalidate: true,
+    });
+  }
+
+  static extraerPublicId(url: string): string | null {
+    try {
+      const regex = /\/upload\/v\d+\/(.+?)(?:\.\w+)?$/;
+      const match = url.match(regex);
+      return match?.[1] ?? null;
+    } catch {
+      return null;
+    }
   }
 
   static firmarParametros(params: Record<string, string>): string {
