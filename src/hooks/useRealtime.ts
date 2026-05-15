@@ -8,15 +8,6 @@ type CallbackCambio = (
   payload: RealtimePostgresChangesPayload<Record<string, unknown>>
 ) => void;
 
-/**
- * Patrón Observer: suscribe al cliente a cambios en tiempo real de Supabase.
- * El componente que lo usa actúa como "observador" de la tabla especificada.
- *
- * @param tabla - Nombre de la tabla a observar ("pedidos", "platos", etc.)
- * @param evento - Tipo de evento: "INSERT", "UPDATE", "DELETE" o "*" para todos
- * @param callback - Función que se ejecuta cuando ocurre un cambio
- * @param filtro - Filtro opcional (ej: "estado=eq.listo")
- */
 export function useRealtime(
   tabla: string,
   evento: "INSERT" | "UPDATE" | "DELETE" | "*",
@@ -24,26 +15,46 @@ export function useRealtime(
   filtro?: string
 ) {
   useEffect(() => {
-    const supabase = crearCliente();
+    let canal: ReturnType<ReturnType<typeof crearCliente>["channel"]> | null = null;
+    let supabase: ReturnType<typeof crearCliente> | null = null;
 
-    const canal = supabase
-      .channel(`realtime-${tabla}-${evento}`)
-      .on(
-        "postgres_changes" as never,
-        {
-          event: evento,
-          schema: "public",
-          table: tabla,
-          filter: filtro,
-        },
-        (payload: RealtimePostgresChangesPayload<Record<string, unknown>>) => {
-          callback(payload);
-        }
-      )
-      .subscribe();
+    (async () => {
+      supabase = crearCliente();
+
+      // Asegurar que la sesión esté cargada antes de suscribir
+      await supabase.auth.getSession();
+
+      const channelConfig: Record<string, unknown> = {
+        event: evento,
+        schema: "public",
+        table: tabla,
+      };
+
+      if (filtro) {
+        channelConfig.filter = filtro;
+      }
+
+      canal = supabase
+        .channel(`realtime-${tabla}-${evento}-${Date.now()}`)
+        .on(
+          "postgres_changes" as never,
+          channelConfig,
+          (payload: RealtimePostgresChangesPayload<Record<string, unknown>>) => {
+            callback(payload);
+          }
+        )
+        .subscribe((status: string) => {
+          if (status === "SUBSCRIBED") {
+            console.log(`[Observer] Suscrito a ${evento} en ${tabla}${filtro ? ` (${filtro})` : ""}`);
+          }
+          if (status === "CHANNEL_ERROR") {
+            console.error(`[Observer] Error suscribiendo a ${tabla}`);
+          }
+        });
+    })();
 
     return () => {
-      supabase.removeChannel(canal);
+      if (canal && supabase) supabase.removeChannel(canal);
     };
   }, [tabla, evento, callback, filtro]);
 }
