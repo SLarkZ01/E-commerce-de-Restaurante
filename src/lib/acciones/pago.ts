@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { PagoFacade } from "@/lib/servicios/PagoFacade";
 import { NotificacionFacade } from "@/lib/servicios/NotificacionFacade";
 import { crearCliente } from "@/lib/supabase/server";
@@ -79,6 +80,7 @@ export async function crearPedidoWompi(
     ).catch((err) => console.error("Error enviando factura:", err));
   }
 
+  revalidatePath("/cocina");
   return { pedidoId: nuevoPedido.id };
 }
 

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { MensajeToast } from "@/components/compartidos/MensajeToast";
 import { KanbanColumna } from "./KanbanColumna";
 import { ESTADOS, CONFIG_ESTADO } from "./configEstados";
@@ -18,8 +19,7 @@ export function KanbanPedidos({ pedidosIniciales }: KanbanPedidosProps) {
   const [pedidos, setPedidos] = useState(pedidosIniciales);
   const [mensaje, setMensaje] = useState("");
   const { cambiarEstado } = usePedidos();
-  const pedidosRef = useRef(pedidos);
-  pedidosRef.current = pedidos;
+  const router = useRouter();
 
   const pedidosPorEstado = useCallback(
     (estado: string) => pedidos.filter((p) => p.estado === estado),
@@ -30,11 +30,9 @@ export function KanbanPedidos({ pedidosIniciales }: KanbanPedidosProps) {
   useRealtime("pedidos", "INSERT", useCallback((payload) => {
     const nuevo = payload.new as Pedido;
     if (nuevo.estado === "pendiente") {
-      // Refetch completo para obtener los items del pedido
-      // (los inserts individuales no incluyen relaciones)
-      window.location.reload();
+      router.refresh();
     }
-  }, []));
+  }, [router]));
 
   const handleCambiarEstado = async (pedidoId: string, nuevoEstado: string) => {
     setMensaje("");
