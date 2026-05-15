@@ -1,37 +1,17 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
-import { crearCliente } from "@/lib/supabase/browser";
+import { useState, useCallback } from "react";
 import { MensajeToast } from "@/components/compartidos/MensajeToast";
 import { KanbanColumna } from "./KanbanColumna";
 import { ESTADOS, CONFIG_ESTADO } from "./configEstados";
 import { usePedidos } from "@/hooks/usePedidos";
-import { useRealtime } from "@/hooks/useRealtime";
-import type { PedidoConItems, Pedido, ItemPedidoConPlato } from "@/types";
+import { usePedidosRealtime } from "@/hooks/usePedidosRealtime";
+import type { PedidoConItems } from "@/types";
 
 export { SkeletonKanban } from "./SkeletonKanban";
 
 interface KanbanPedidosProps {
   pedidosIniciales: PedidoConItems[];
-}
-
-async function obtenerItemsPedido(pedidoId: string): Promise<ItemPedidoConPlato[]> {
-  const supabase = crearCliente();
-  const { data } = await supabase
-    .from("items_pedido")
-    .select("cantidad, precio_unitario, platos(nombre)")
-    .eq("pedido_id", pedidoId);
-
-  if (!data) return [];
-
-  return (data as unknown[]).map((item: unknown) => {
-    const i = item as { cantidad: number; precio_unitario: number; platos: Array<{ nombre: string }> | null };
-    return {
-      plato_nombre: i.platos?.[0]?.nombre ?? "Plato",
-      cantidad: i.cantidad,
-      precio_unitario: i.precio_unitario,
-    };
-  });
 }
 
 export function KanbanPedidos({ pedidosIniciales }: KanbanPedidosProps) {
@@ -44,29 +24,13 @@ export function KanbanPedidos({ pedidosIniciales }: KanbanPedidosProps) {
     [pedidos]
   );
 
-  // Observer: detectar nuevos pedidos vía Realtime y agregarlos sin recargar
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const manejarInsercion = useCallback((payload: any) => {
-    const nuevo = payload.new as Pedido;
-    if (nuevo?.estado !== "pendiente") return;
-
-    // Verificar si ya tenemos este pedido
+  // Observer: agrega nuevos pedidos en tiempo real sin recargar
+  usePedidosRealtime(useCallback((nuevoPedido: PedidoConItems) => {
     setPedidos((prev) => {
-      if (prev.some((p) => p.id === nuevo.id)) return prev;
-
-      // Fetch items del pedido y agregarlo al estado
-      obtenerItemsPedido(nuevo.id).then((items) => {
-        setPedidos((current) => {
-          if (current.some((p) => p.id === nuevo.id)) return current;
-          return [{ ...nuevo, items } as PedidoConItems, ...current];
-        });
-      });
-
-      return prev;
+      if (prev.some((p) => p.id === nuevoPedido.id)) return prev;
+      return [nuevoPedido, ...prev];
     });
-  }, []);
-
-  useRealtime("pedidos", "INSERT", manejarInsercion);
+  }, []));
 
   const handleCambiarEstado = async (pedidoId: string, nuevoEstado: string) => {
     setMensaje("");
@@ -98,14 +62,9 @@ export function KanbanPedidos({ pedidosIniciales }: KanbanPedidosProps) {
     <div className="flex-1 flex flex-col overflow-hidden">
       {mensaje && (
         <div className="mx-6 mt-4">
-          <MensajeToast
-            mensaje={mensaje}
-            onClose={() => setMensaje("")}
-            variante="error"
-          />
+          <MensajeToast mensaje={mensaje} variante="error" onClose={() => setMensaje("")} />
         </div>
       )}
-
       <div className="flex-1 flex flex-col md:flex-row gap-5 p-6 overflow-auto">
         {ESTADOS.map((estado) => (
           <KanbanColumna
