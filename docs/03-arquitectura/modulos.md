@@ -44,7 +44,7 @@ Cada módulo del monolito se implementa como un conjunto de archivos dentro de `
 ├─────────────────────────────────────────────┤
 │  Servicios (lib/servicios/)                 │  ← Patrones de diseño + integraciones
 │  platoFactory.ts  estrategiaDespacho.ts     │
-│  mediaFacade.ts  _PagoFacade.ts             │
+│  mediaFacade.ts  PagoFacade.ts  NotificacionFacade.ts │
 ├─────────────────────────────────────────────┤
 │  Datos (Supabase PostgreSQL + RLS)          │  ← Persistencia + Realtime
 └─────────────────────────────────────────────┘
@@ -92,8 +92,11 @@ src/
 │   ├── useGestionCategorias.ts   CRUD categorías
 │   ├── useGestionAdmin.ts        CRUD personal + mesas
 │   ├── usePedidos.ts             Cambio de estado de pedidos (State Pattern)
-│   ├── usePago.ts                Crear pedido
-│   ├── useRealtime.ts            Observer (Supabase Realtime)
+│   ├── usePago.ts                Crear pedido (DIP)
+│   ├── useCheckoutWompi.ts       Flujo completo de pago Wompi
+│   ├── usePedidosRealtime.ts     Observer: INSERT + UPDATE pedidos
+│   ├── useRealtime.ts            Observer genérico (WebSocket)
+│   ├── useWompiScript.ts         Carga del script Wompi
 │   ├── useActiveRoute.ts        Ruta activa (sidebar)
 │   ├── useTiempoTranscurrido.ts  Tiempo relativo + urgencia
 │   └── useMensajeTemporal.ts    Mensajes con auto-dismiss
@@ -121,8 +124,8 @@ src/
 │   │   ├── platoFactory.ts       Factory Method (3 tipos de plato)
 │   │   ├── estrategiaDespacho.ts Strategy (mesa vs para llevar)
 │   │   ├── mediaFacade.ts        Facade (Cloudinary) ✅
-│   │   ├── _PagoFacade.ts        Facade (PayPal) 🔜 esqueleto
-│   │   └── _NotificacionFacade.ts Facade (Brevo) 🔜 esqueleto
+│   │   ├── PagoFacade.ts           Facade (Wompi) ✅
+│   │   └── NotificacionFacade.ts   Facade (Brevo) ✅
 │   ├── formato.ts                formatearPrecio() (COP)
 │   ├── iniciales.ts              obtenerIniciales()
 │   └── utils.ts                  cn() (clsx + tailwind-merge)

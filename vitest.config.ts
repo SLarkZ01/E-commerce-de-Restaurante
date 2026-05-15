@@ -1,4 +1,9 @@
 import { defineConfig } from "vitest/config";
+import dotenv from "dotenv";
+import path from "path";
+
+// Cargar .env.local para tests de integración con Supabase
+dotenv.config({ path: path.resolve(__dirname, ".env.local") });
 
 export default defineConfig({
   resolve: {

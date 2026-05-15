@@ -8,7 +8,7 @@ sequenceDiagram
     participant QR as Código QR
     participant APP as Next.js /mesa/[uuid]
     participant ZUST as Zustand (carrito)
-    participant PP as PayPal SDK
+    participant PP as Wompi SDK
     participant SA as Server Action /pago
     participant DB as Supabase DB
     participant RT as Supabase Realtime
@@ -23,12 +23,12 @@ sequenceDiagram
     C->>ZUST: Agrega platos al carrito
     ZUST-->>C: Total actualizado
 
-    C->>PP: Clic en "Pagar con PayPal"
+    C->>PP: Clic en "Pagar con Wompi"
     PP-->>C: Ventana de pago
     C->>PP: Completa pago
     PP-->>APP: onApprove (transactionID)
 
-    APP->>SA: crearPedido(mesaId, items, transactionID)
+    APP->>SA: crearPedidoWompi(mesaId, items, transactionID)
     SA->>DB: INSERT pedido (estado: pendiente)
     SA->>DB: INSERT items_pedido
     DB-->>SA: Pedido creado
@@ -43,7 +43,7 @@ sequenceDiagram
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Pendiente: Webhook PayPal<br/>(crea pedido)
+    [*] --> Pendiente: Webhook Wompi<br/>(crea pedido)
     Pendiente --> Preparando: Chef selecciona pedido<br/>(valida estado actual = Pendiente)
     Preparando --> Listo: Chef termina plato<br/>(notifica al panel Mesero)
     Listo --> Entregado: Mesero confirma entrega<br/>(cierra ciclo, libera mesa)

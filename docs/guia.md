@@ -30,7 +30,7 @@ En el sector gastronómico, la eficiencia en la toma de pedidos y la comunicaci�
 
 ## 2. Alcance Funcional
 
-- **Cliente (Guest Checkout):** Acceso anónimo al catálogo dinámico vía QR. Visualización de platos con detalles (precios, ingredientes, imágenes). Gestión de carrito local (Zustand) y pago vía PayPal como validador de identidad y recolector de correo para recibos.
+- **Cliente (Guest Checkout):** Acceso anónimo al catálogo dinámico vía QR. Visualización de platos con detalles (precios, ingredientes, imágenes). Gestión de carrito local (Zustand) y pago vía Wompi como validador de identidad y recolector de correo para recibos.
 
 - **Cocina (Multi-Chef):** Panel interactivo para la recepción de pedidos en tiempo real. Gestión integral del catálogo: creación, edición y eliminación de platos (precios, ingredientes, categorías e imágenes optimizadas vía Cloudinary). Los cambios se reflejan instantáneamente en el menú del cliente.
 
@@ -58,7 +58,7 @@ Para garantizar la escalabilidad y mantenibilidad, se han aplicado 5 patrones cl
 
 4. **Strategy Pattern:** Gestiona la lógica de despacho según el origen (Mesa con UUID o Para llevar), permitiendo cambiar las reglas de logística sin afectar el núcleo del procesamiento de pagos.
 
-5. **Facade Pattern:** Simplifica la interacción con servicios externos (PayPal, Cloudinary, Brevo). Una fachada centraliza la lógica compleja de "Finalizar Compra" y "Cargar Multimedia".
+5. **Facade Pattern:** Simplifica la interacción con servicios externos (Wompi, Cloudinary, Brevo). Una fachada centraliza la lógica compleja de "Finalizar Compra" y "Cargar Multimedia".
 
 ---
 
@@ -77,7 +77,7 @@ Ver detalle completo de versiones y justificación en [`docs/05-tecnologico/stac
 | Testing | Vitest + Testing Library + jsdom |
 | Gestión de Assets | Cloudinary (imágenes de platos) |
 | Notificaciones | Brevo (email transaccional) |
-| Pagos | PayPal (pasarela de pagos) |
+| Pagos | Wompi (pasarela de pagos) |
 
 ---
 

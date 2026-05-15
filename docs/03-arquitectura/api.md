@@ -24,12 +24,19 @@ Todas las operaciones de lectura/escritura se hacen mediante Server Actions. Cad
 - **Devuelve:** `Mesa | null`
 - **Qué hace:** Busca una mesa por su `codigo_qr`
 
-### `crearPedido(mesaUuid, items, total, correoCliente?)`
+### `prepararPagoWompi(referencia, montoEnCentavos)`
 - **Archivo:** `src/lib/acciones/pago.ts`
 - **Quién:** Cliente anónimo
-- **Parámetros:** `mesaUuid: string`, `items: ItemCarrito[]`, `total: number`, `correoCliente?: string`
+- **Parámetros:** `referencia: string`, `montoEnCentavos: number`
+- **Devuelve:** `{ publicKey: string, firma: string, error?: string }`
+- **Qué hace:** Genera la llave pública y firma de integridad para el widget Wompi (server-side, sin exponer el secreto)
+
+### `crearPedidoWompi(mesaUuid, items, total, wompiTransactionId)`
+- **Archivo:** `src/lib/acciones/pago.ts`
+- **Quién:** Cliente anónimo
+- **Parámetros:** `mesaUuid: string`, `items: ItemCarrito[]`, `total: number`, `wompiTransactionId: string`
 - **Devuelve:** `{ pedidoId: string, error?: string }`
-- **Qué hace:** Valida que la mesa exista, inserta el pedido y sus items. Retorna el ID o un error
+- **Qué hace:** Consulta la transacción en Wompi para extraer el email, valida la mesa, inserta el pedido y sus items, envía factura por Brevo. Retorna el ID o un error
 
 ---
 

@@ -86,9 +86,9 @@ Todas las tablas viven en Supabase (PostgreSQL). El schema se define en `src/lib
 | `mesa_id` | `UUID` | FK → `mesas.id`, NULLABLE | NULL si es `para_llevar` |
 | `tipo_despacho` | `tipo_despacho` | NOT NULL, default `'mesa'` | |
 | `estado` | `estado_pedido` | NOT NULL, default `'pendiente'` | Máquina de estados |
-| `correo_cliente` | `TEXT` | NULLABLE | Email de PayPal del cliente |
+| `correo_cliente` | `TEXT` | NULLABLE | Email de Wompi del cliente |
 | `total` | `DECIMAL(10,0)` | NOT NULL | En COP, sin centavos |
-| `paypal_pedido_id` | `TEXT` | NULLABLE | ID de la orden en PayPal |
+| `paypal_pedido_id` | `TEXT` | NULLABLE | ID de la orden en Wompi |
 | `cocinero_id` | `UUID` | FK → `perfiles.id`, NULLABLE | Chef asignado |
 | `creado_en` | `TIMESTAMP` | NOT NULL, default `now()` | |
 | `actualizado_en` | `TIMESTAMP` | NOT NULL, default `now()` | |

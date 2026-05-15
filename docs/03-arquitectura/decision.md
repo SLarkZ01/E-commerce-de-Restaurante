@@ -34,7 +34,7 @@ El monolito se divide en 4 módulos lógicos:
 
 | Módulo | Responsabilidad | Rutas |
 |---|---|---|
-| **Menú Cliente** | Catálogo público, carrito, pago PayPal | `/mesa/[uuid]`, `/pago` |
+| **Menú Cliente** | Catálogo público, carrito, pago Wompi | `/mesa/[uuid]` |
 | **Cocina** | CRUD de platos, panel de pedidos, cambio de estado | `/cocina` |
 | **Logística** | Panel de entregas, confirmación de entrega | `/logistica` |
 | **Administración** | Gestión de personal, QR de mesas, auditoría | `/admin` |

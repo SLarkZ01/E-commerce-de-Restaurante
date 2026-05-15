@@ -8,7 +8,7 @@
 | **UI** | React | 19.2.4 | Server Components para renderizado híbrido. |
 | **Estilos** | Tailwind CSS | 4.x | Utilidades atómicas, zero-runtime con `@tailwindcss/postcss`. |
 | **UI Components** | shadcn/ui | latest | Componentes accesibles copiados al código fuente. Basado en Radix UI + Tailwind. | `components.json`, `src/components/ui/` |
-| **Íconos** | Lucide React | ^0.14 | Biblioteca de íconos usada por shadcn/ui. |
+| **Íconos** | Lucide React | ^1.14 | Biblioteca de íconos usada por shadcn/ui. |
 | **Utilidades CSS** | clsx + tailwind-merge | ^2 + ^3 | Fusión inteligente de clases Tailwind (`cn()` en `src/lib/utils.ts`). |
 | **Base de datos** | Supabase (PostgreSQL) | — | PostgreSQL gestionado + Realtime + Auth + RLS. Un solo servicio para datos, eventos y autenticación. |
 | **Cliente DB** | Supabase JS Client (`@supabase/supabase-js`) | ^2.105 | Cliente HTTP para todas las queries en runtime. Respeta RLS nativamente. Usado desde Server Actions y Client Components. |
@@ -16,8 +16,8 @@
 | **Auth** | Supabase Auth | SSR 0.10.3 | PKCE flow seguro, roles nativos, integración con RLS. Solo para staff (no clientes). |
 | **Estado cliente** | Zustand | 5.0.13 | Mínimo (~1KB), sin boilerplate, persistencia en localStorage para el carrito. |
 | **Imágenes** | Cloudinary | (SDK a integrar) | Optimización automática, transformaciones on-the-fly, CDN global. |
-| **Pagos** | PayPal | (SDK a integrar) | Guest checkout sin registro, webhooks para confirmación. |
-| **Emails** | Brevo | (SDK a integrar) | API de email transaccional, templates HTML, seguimiento de entregas. |
+| **Pagos** | Wompi | (Widget integrado) | Pasarela de pagos colombiana. Widget checkout + API REST para consulta de transacciones. |
+| **Emails** | Brevo | (SDK integrado) | API de email transaccional, templates HTML, seguimiento de entregas. |
 | **Testing** | Vitest | 4.1.6 | Nativo de Vite, compatible con Jest, watch mode, coverage v8. |
 | **Testing UI** | Testing Library | React 16.3.2 | Enfoque en comportamiento del usuario, no en implementación. |
 | **DOM** | jsdom | 29.1.1 | Simulación de navegador para tests de componentes. |

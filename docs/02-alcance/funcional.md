@@ -9,7 +9,7 @@
 - Filtro por tipo de plato (`plato_fuerte`, `bebida`, `combo`) y por categoría (definida por el chef)
 - Carrito de compras local persistente (Zustand + localStorage)
 - Para completar la compra debe escanear el QR de su mesa → redirige a `/mesa/{uuid}` (el carrito se mantiene)
-- Pago confirmado desde la mesa asignada (PayPal ✅ implementado vía `PagoFacade`)
+- Pago confirmado desde la mesa asignada (Wompi ✅ implementado vía `PagoFacade`)
 - Recepción de comprobante por correo electrónico (Brevo ✅ implementado vía `NotificacionFacade`)
 
 ### Cocinero (Chef)

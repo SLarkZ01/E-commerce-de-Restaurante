@@ -12,8 +12,9 @@ Supabase Realtime actúa como el **sujeto observable**. Cada cambio en la base d
 
 | Observador | Suscripción | Evento | Implementado |
 |---|---|---|---|
-| Panel Cocina | `pedidos` | Nuevos pedidos (`estado = pendiente`) | ✅ `INSERT` |
+| Panel Cocina | `pedidos` | Nuevos pedidos + cambios de estado | ✅ `INSERT` + `UPDATE` |
 | Panel Mesero | `pedidos` | Pedidos listos (`estado = listo`) | ✅ `UPDATE` con filtro `estado=eq.listo` |
+| Stats Bar | `pedidos` | Todos los cambios (contadores) | ✅ `*` (INSERT + UPDATE + DELETE) |
 | Menú Cliente | `platos` | Cambios en el catálogo (precio, disponibilidad, nuevo plato) | 🔜 Pendiente |
 | Cliente (estado) | `pedidos` (filtrado por ID) | Cambio de estado de su propio pedido | 🔜 Pendiente |
 
@@ -21,10 +22,11 @@ Supabase Realtime actúa como el **sujeto observable**. Cada cambio en la base d
 
 | Componente | Archivo | Descripción |
 |---|---|---|
-| **Hook Realtime** | `src/hooks/useRealtime.ts` | Hook genérico que encapsula `supabase.channel().on('postgres_changes', ...).subscribe()`. Acepta tabla, evento, callback y filtro. |
-| **Panel Cocina** | `src/components/cocina/kanbanPedidos.tsx:40-46` | Usa `useRealtime("pedidos", "INSERT", callback)` para detectar nuevos pedidos en tiempo real. |
-| **Panel Logística** | `src/components/logistica/listaEntregas.tsx:30-39` | Usa `useRealtime("pedidos", "UPDATE", callback, "estado=eq.listo")` para recibir pedidos que pasan a "listo". |
-| **Cliente Supabase** | `src/lib/supabase/browser.ts` | `createBrowserClient` gestiona la conexión WebSocket |
+| **Hook de negocio** | `src/hooks/usePedidosRealtime.ts` | Hook específico para pedidos: suscribe INSERT + UPDATE, fetchea items automáticamente |
+| **Hook genérico** | `src/hooks/useRealtime.ts` | Infraestructura: canal WebSocket + suscripción |
+| **Panel Cocina** | `src/components/cocina/kanbanPedidos.tsx:45` | Usa `usePedidosRealtime()` para recibir nuevos pedidos y cambios de estado |
+| **Stats Bar** | `src/components/cocina/statsBar.tsx:17` | Usa `useRealtime("*")` para actualizar contadores en tiempo real |
+| **Panel Logística** | `src/components/logistica/listaEntregas.tsx:30-39` | Usa `useRealtime("UPDATE", filtro: estado=eq.listo)` para recibir pedidos listos |
 
 ### Diagrama
 

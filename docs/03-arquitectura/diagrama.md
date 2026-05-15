@@ -6,7 +6,7 @@ graph TB
         QR["Código QR<br/>por mesa"]
         MENU["Menú Digital<br/>React + Zustand"]
         CARRITO["Carrito Local<br/>localStorage"]
-        PAGO["PayPal SDK"]
+        PAGO["Wompi SDK"]
     end
 
     subgraph "Next.js 16 (Monolito Modular)"
@@ -28,7 +28,7 @@ graph TB
     subgraph "Servicios Externos"
         SUPABASE["Supabase<br/>PostgreSQL + Auth + Realtime"]
         CLOUDINARY["Cloudinary<br/>Imágenes"]
-        PAYPAL["PayPal<br/>Pasarela de Pago"]
+        WOMPI["Wompi<br/>Pasarela de Pago"]
         BREVO["Brevo<br/>Emails Transaccionales"]
     end
 
@@ -45,7 +45,7 @@ graph TB
 
     SA_PLATOS --> SUPABASE
     SA_PEDIDOS --> SUPABASE
-    SA_PAGO --> PAYPAL
+    SA_PAGO --> WOMPI
     SA_PAGO --> BREVO
     SA_PERSONAL --> SUPABASE
     SA_PLATOS --> CLOUDINARY
