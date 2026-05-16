@@ -128,9 +128,11 @@ export const TarjetaPlatoCocina = memo(function TarjetaPlatoCocina({
             {plato.nombre}
           </h3>
           {plato.descripcion && (
-            <p className="text-[13px] text-[#6B7280] line-clamp-2 mt-2 leading-relaxed font-medium">
-              {plato.descripcion}
-            </p>
+            <div className="mt-3 pl-3 border-l-2 border-[#E2E8F0]">
+              <p className="text-[13px] text-[#78716C] line-clamp-2 leading-relaxed italic font-medium">
+                {plato.descripcion}
+              </p>
+            </div>
           )}
         </div>
 
@@ -143,8 +145,8 @@ export const TarjetaPlatoCocina = memo(function TarjetaPlatoCocina({
 
         {/* Footer: precio + acciones */}
         <div className="flex items-center justify-between pt-4 border-t border-[#F1F5F9]">
-          {/* Precio */}
-          <p className="font-playfair text-[22px] font-bold text-[#E8472A] tabular-nums leading-none tracking-tight">
+          {/* Precio destacado */}
+          <p className="font-playfair text-[28px] font-extrabold bg-gradient-to-r from-[#E8472A] to-[#FF6B35] bg-clip-text text-transparent tabular-nums leading-none tracking-tight drop-shadow-sm">
             {formatearPrecio(plato.precio)}
           </p>
 
