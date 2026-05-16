@@ -1,15 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Utensils, Tags } from "lucide-react";
+import { Plus, Tags } from "lucide-react";
+import dynamic from "next/dynamic";
 import type { Plato, Categoria } from "@/types";
 import { MensajeToast } from "@/components/compartidos/MensajeToast";
-import { EstadoVacio } from "@/components/compartidos/EstadoVacio";
-import { TarjetaPlatoCocina } from "./TarjetaPlatoCocina";
-import { FormularioPlato, type DatosFormularioPlato, type ResultadoGuardado } from "./FormularioPlato";
-import { GestorCategorias } from "./GestorCategorias";
+import { useFiltrosPlatos } from "@/hooks/useFiltrosPlatos";
+import { useAccionesPlatos } from "@/hooks/useAccionesPlatos";
 import { useGestionPlatos } from "@/hooks/useGestionPlatos";
 import { useGestionCategorias } from "@/hooks/useGestionCategorias";
+import { CabeceraPlatos } from "./CabeceraPlatos";
+import { BarraBusqueda } from "./BarraBusqueda";
+import { TabsPlatos } from "./TabsPlatos";
+import { PillsCategorias } from "./PillsCategorias";
+import { GridPlatos } from "./GridPlatos";
 import {
   Dialog,
   DialogContent,
@@ -21,6 +25,9 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
+const FormularioPlato = dynamic(() => import("./FormularioPlato").then((m) => ({ default: m.FormularioPlato })), { ssr: false });
+const GestorCategorias = dynamic(() => import("./GestorCategorias").then((m) => ({ default: m.GestorCategorias })), { ssr: false });
+
 export { SkeletonTablaPlatos } from "./SkeletonTablaPlatos";
 
 interface TablaPlatosProps {
@@ -31,144 +38,106 @@ interface TablaPlatosProps {
 export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }: TablaPlatosProps) {
   const [platos, setPlatos] = useState(platosIniciales);
   const [categorias, setCategorias] = useState(categoriasIniciales);
-  const [mostrandoFormulario, setMostrandoFormulario] = useState(false);
-  const [mensaje, setMensaje] = useState("");
-  const [tipoMensaje, setTipoMensaje] = useState<"exito" | "error">("exito");
 
   const { crear, actualizar, eliminar } = useGestionPlatos();
   const { crear: crearCat, eliminar: eliminarCat } = useGestionCategorias();
 
-  const handleCrear = async (datos: DatosFormularioPlato): Promise<ResultadoGuardado> => {
-    const resultado = await crear(datos);
-    const platoCreado = resultado.plato;
+  const {
+    busqueda,
+    setBusqueda,
+    tabActiva,
+    setTabActiva,
+    categoriaActiva,
+    setCategoriaActiva,
+    platosFiltrados,
+    platosDisponibles,
+  } = useFiltrosPlatos(platos);
 
-    if (!resultado.exito || !platoCreado) {
-      return { exito: false, error: resultado.error };
-    }
+  const {
+    mensaje,
+    tipoMensaje,
+    setMensaje,
+    mostrandoFormulario,
+    setMostrandoFormulario,
+    handleCrear,
+    handleActualizar,
+    handleEliminarPlato,
+    handleCrearCategoria,
+    handleEliminarCategoria,
+  } = useAccionesPlatos(
+    platos,
+    setPlatos,
+    categorias,
+    setCategorias,
+    crear,
+    actualizar,
+    eliminar,
+    crearCat,
+    eliminarCat
+  );
 
-    setPlatos((prev) => [platoCreado, ...prev]);
-    setMostrandoFormulario(false);
-    setMensaje("Plato creado correctamente");
-    setTipoMensaje("exito");
-    return { exito: true };
-  };
-
-  const handleActualizar = async (id: string, datos: { disponible: boolean }) => {
-    try {
-      await actualizar(id, datos);
-      setPlatos((prev) =>
-        prev.map((p) => (p.id === id ? { ...p, ...datos } : p))
-      );
-      setMensaje("Plato actualizado correctamente");
-      setTipoMensaje("exito");
-    } catch {
-      setMensaje("Error al actualizar el plato");
-      setTipoMensaje("error");
-    }
-  };
-
-  const handleEliminarPlato = async (id: string) => {
-    if (!confirm("¿Eliminar este plato?")) return;
-    try {
-      await eliminar(id);
-      setPlatos((prev) => prev.filter((p) => p.id !== id));
-      setMensaje("Plato eliminado correctamente");
-      setTipoMensaje("exito");
-    } catch {
-      setMensaje("Error al eliminar el plato");
-      setTipoMensaje("error");
-    }
-  };
-
-  const handleCrearCategoria = async (nombre: string, slug: string) => {
-    const resultadoCat = await crearCat(nombre, slug);
-    const catCreada = resultadoCat.categoria;
-    if (resultadoCat.exito && catCreada) {
-      setCategorias((prev) => [...prev, catCreada]);
-      setMensaje("Categoría creada correctamente");
-      setTipoMensaje("exito");
-    } else {
-      setMensaje("Error al crear la categoría");
-      setTipoMensaje("error");
-    }
-  };
-
-  const handleEliminarCategoria = async (id: string) => {
-    if (!confirm("¿Eliminar esta categoría? Los platos asociados quedarán sin categoría."))
-      return;
-    try {
-      await eliminarCat(id);
-      setCategorias((prev) => prev.filter((c) => c.id !== id));
-      setMensaje("Categoría eliminada correctamente");
-      setTipoMensaje("exito");
-    } catch {
-      setMensaje("Error al eliminar la categoría");
-      setTipoMensaje("error");
-    }
-  };
+  const tabs = [
+    { key: "todos" as const, label: "Todos", count: platos.length },
+    { key: "disponibles" as const, label: "Disponibles", count: platos.filter((p) => p.disponible).length },
+    { key: "agotados" as const, label: "Agotados", count: platos.filter((p) => !p.disponible).length },
+  ];
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden">
+    <div className="flex-1 flex flex-col overflow-hidden bg-[#F7F8FC]">
       {mensaje && (
-        <div className="mx-4 mt-2">
+        <div className="mx-6 mt-4">
           <MensajeToast mensaje={mensaje} variante={tipoMensaje} onClose={() => setMensaje("")} />
         </div>
       )}
 
-      <div className="flex items-center gap-2 p-4">
-        <Dialog open={mostrandoFormulario} onOpenChange={setMostrandoFormulario}>
-          <DialogTrigger className="inline-flex items-center justify-center gap-1.5 h-10 px-4 rounded-xl bg-primario text-primario-texto text-sm font-medium hover:bg-primario-hover transition-all shadow-sm active:scale-[0.98]">
-            <Plus className="w-4 h-4" />
-            <span className="hidden sm:inline">Nuevo Plato</span>
-            <span className="sm:hidden">Nuevo</span>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
-            <FormularioPlato
-              alGuardar={handleCrear}
-              alCancelar={() => setMostrandoFormulario(false)}
-              categorias={categorias}
-            />
-          </DialogContent>
-        </Dialog>
+      <div className="px-6 pt-6 pb-0 space-y-5">
+        <CabeceraPlatos platosDisponibles={platosDisponibles} />
 
-        <Sheet>
-          <SheetTrigger className="inline-flex items-center justify-center gap-1.5 h-10 px-4 rounded-xl bg-fondo-card text-texto text-sm font-medium hover:bg-borde transition-all border border-borde">
-            <Tags className="w-4 h-4" />
-            <span className="hidden sm:inline">Categorías</span>
-          </SheetTrigger>
-          <SheetContent
-            className="sm:max-w-sm p-0 flex flex-col h-[calc(100dvh-2rem)]"
-            showCloseButton={false}
-          >
-            <GestorCategorias
-              categorias={categorias}
-              alCrear={handleCrearCategoria}
-              alEliminar={handleEliminarCategoria}
-            />
-          </SheetContent>
-        </Sheet>
-      </div>
-
-      <div className="flex-1 overflow-y-auto px-4 pb-4">
-        {platos.length === 0 ? (
-          <EstadoVacio
-            icono={Utensils}
-            titulo="No hay platos en el catálogo"
-            descripcion="Agrega tu primer plato"
-          />
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-            {platos.map((plato) => (
-              <TarjetaPlatoCocina
-                key={plato.id}
-                plato={plato}
-                onEliminar={handleEliminarPlato}
-                onToggleDisponible={handleActualizar}
+        <div className="flex items-center gap-3">
+          <Sheet>
+            <SheetTrigger className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-white text-[#6B7280] text-sm font-semibold hover:text-[#E8472A] hover:border-[#E8472A]/30 transition-all duration-200 border border-[#E2E8F0] shadow-sm">
+              <Tags className="w-4 h-4" />
+              <span>Categorías</span>
+            </SheetTrigger>
+            <SheetContent
+              className="sm:max-w-sm p-0 flex flex-col h-[calc(100dvh-2rem)]"
+              showCloseButton={false}
+            >
+              <GestorCategorias
+                categorias={categorias}
+                alCrear={handleCrearCategoria}
+                alEliminar={handleEliminarCategoria}
               />
-            ))}
-          </div>
-        )}
+            </SheetContent>
+          </Sheet>
+
+          <Dialog open={mostrandoFormulario} onOpenChange={setMostrandoFormulario}>
+            <DialogTrigger className="inline-flex items-center gap-2 h-10 px-5 rounded-full bg-gradient-to-r from-[#E8472A] to-[#FF6B35] text-white text-sm font-semibold hover:from-[#D43D22] hover:to-[#E8472A] transition-all duration-300 shadow-md shadow-[#E8472A]/25 hover:shadow-lg hover:shadow-[#E8472A]/30 active:scale-[0.97]">
+              <Plus className="w-4 h-4" />
+              <span>Nuevo Plato</span>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
+              <FormularioPlato
+                alGuardar={handleCrear}
+                alCancelar={() => setMostrandoFormulario(false)}
+                categorias={categorias}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        <BarraBusqueda busqueda={busqueda} onCambio={setBusqueda} />
+
+        <TabsPlatos tabs={tabs} activa={tabActiva} onCambio={setTabActiva} />
+
+        <PillsCategorias categorias={categorias} activa={categoriaActiva} onCambio={setCategoriaActiva} />
       </div>
+
+      <GridPlatos
+        platos={platosFiltrados}
+        onEliminar={handleEliminarPlato}
+        onToggleDisponible={handleActualizar}
+      />
     </div>
   );
 }
