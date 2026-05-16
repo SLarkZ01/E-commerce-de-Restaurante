@@ -9,18 +9,23 @@ export function EntregaCardSkeleton() {
           <Skeleton className="w-28 h-9 rounded-xl" />
           <Skeleton className="w-14 h-4" />
         </div>
-        <div className="flex gap-1.5">
-          <Skeleton className="w-14 h-14 rounded-xl" />
-          <Skeleton className="w-14 h-14 rounded-xl" />
-          <Skeleton className="w-14 h-14 rounded-xl" />
-          <Skeleton className="w-14 h-14 rounded-xl" />
+        <div className="flex flex-wrap gap-1.5">
+          <Skeleton className="w-12 h-12 rounded-xl" />
+          <Skeleton className="w-12 h-12 rounded-xl" />
+          <Skeleton className="w-12 h-12 rounded-xl" />
+          <Skeleton className="w-12 h-12 rounded-xl" />
+        </div>
+        <div className="space-y-1">
+          <Skeleton className="w-full h-4" />
+          <Skeleton className="w-3/4 h-4" />
+          <Skeleton className="w-5/6 h-4" />
         </div>
         <Skeleton className="w-full h-px" />
         <div className="flex justify-between">
-          <Skeleton className="w-10 h-4" />
-          <Skeleton className="w-16 h-5" />
+          <Skeleton className="w-16 h-4" />
+          <Skeleton className="w-20 h-5" />
         </div>
-        <Skeleton className="w-full h-10 rounded-xl" />
+        <Skeleton className="w-full h-11 rounded-xl" />
       </div>
     </div>
   );

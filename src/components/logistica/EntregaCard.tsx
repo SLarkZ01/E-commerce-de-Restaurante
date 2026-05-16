@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { MesaBadge } from "./MesaBadge";
 import { PedidoTimer, useUrgencia } from "./PedidoTimer";
 import { DishThumbnails } from "./DishThumbnails";
+import { PedidoLista } from "./PedidoLista";
 import type { PedidoConDetalles } from "@/types";
 
 interface EntregaCardProps {
@@ -37,17 +38,13 @@ export function EntregaCard({
           : "border-exito/50 hover:shadow-[0_8px_24px_rgba(101,163,13,0.12)]"
       }`}
     >
-      {/* Barra de estado superior */}
       <div
         className={`h-1 transition-colors ${
-          urgente
-            ? "bg-advertencia"
-            : "bg-exito"
+          urgente ? "bg-advertencia" : "bg-exito"
         }`}
       />
 
       <div className="p-4">
-        {/* Header: Mesa + Timer */}
         <div className="flex items-start justify-between mb-3">
           {mesaNumero ? (
             <MesaBadge numero={mesaNumero} urgente={urgente} />
@@ -66,7 +63,6 @@ export function EntregaCard({
           <PedidoTimer creadoEn={pedido.creado_en} />
         </div>
 
-        {/* Badge urgente */}
         {urgente && (
           <Badge
             variant="destructive"
@@ -77,25 +73,23 @@ export function EntregaCard({
           </Badge>
         )}
 
-        {/* Thumbnails de platos */}
-        <div className="flex items-center justify-between mb-3">
-          <DishThumbnails items={pedido.items} />
-          <span className="text-xs text-texto-secundario font-medium ml-2 flex-shrink-0">
-            {totalPlatos} {totalPlatos === 1 ? "plato" : "platos"}
-          </span>
+        <DishThumbnails items={pedido.items} />
+
+        <div className="mt-2 mb-3">
+          <PedidoLista items={pedido.items} />
         </div>
 
         <Separator className="mb-3" />
 
-        {/* Total */}
         <div className="flex justify-between items-center mb-4">
-          <span className="text-sm text-texto-secundario">Total</span>
+          <span className="text-sm text-texto-secundario">
+            {totalPlatos} {totalPlatos === 1 ? "plato" : "platos"}
+          </span>
           <span className="font-playfair text-lg font-bold text-primario tabular-nums">
             {formatearPrecio(pedido.total)}
           </span>
         </div>
 
-        {/* Botón de acción */}
         {isConfirming ? (
           <div className="flex gap-2">
             <Button
