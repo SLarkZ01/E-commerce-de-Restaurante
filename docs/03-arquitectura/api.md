@@ -36,7 +36,8 @@ Todas las operaciones de lectura/escritura se hacen mediante Server Actions. Cad
 - **Quién:** Cliente anónimo
 - **Parámetros:** `mesaUuid: string`, `items: ItemCarrito[]`, `total: number`, `wompiTransactionId: string`
 - **Devuelve:** `{ pedidoId: string, error?: string }`
-- **Qué hace:** Consulta la transacción en Wompi para extraer el email, valida la mesa, inserta el pedido y sus items, envía factura por Brevo. Retorna el ID o un error
+- **Qué hace:** Consulta la transacción en Wompi para extraer el email, valida la mesa, genera el `pedidoId` con `crypto.randomUUID()`, inserta el pedido con ID pre-generado (sin `.select()` para evitar necesidad de permiso SELECT anónimo), inserta sus items, envía factura por Brevo. Retorna el ID o un error
+- **Nota:** Se usa `crypto.randomUUID()` del lado del servidor para evitar el patrón `.insert().select("id").single()` que requiere permiso SELECT en la tabla `pedidos`, el cual está restringido a `authenticated` por RLS
 
 ---
 

@@ -40,23 +40,24 @@ export async function crearPedidoWompi(
     return { pedidoId: "", error: "Mesa no encontrada" };
   }
 
-  const { data: nuevoPedido, error: errPedido } = await supabase
+  const pedidoId = crypto.randomUUID();
+
+  const { error: errPedido } = await supabase
     .from("pedidos")
     .insert({
+      id: pedidoId,
       mesa_id: mesa.id,
       estado: "pendiente",
       total,
       correo_cliente: tx.email ?? null,
-    })
-    .select("id")
-    .single();
+    });
 
-  if (errPedido || !nuevoPedido) {
+  if (errPedido) {
     return { pedidoId: "", error: "Error al crear el pedido" };
   }
 
   const itemsInsert = items.map((item) => ({
-    pedido_id: nuevoPedido.id,
+    pedido_id: pedidoId,
     plato_id: item.id,
     cantidad: item.cantidad,
     precio_unitario: item.precio,
@@ -73,7 +74,7 @@ export async function crearPedidoWompi(
     }));
     NotificacionFacade.enviarComprobante(
       tx.email,
-      nuevoPedido.id,
+      pedidoId,
       total,
       facturaItems,
       mesa.numero
@@ -81,7 +82,7 @@ export async function crearPedidoWompi(
   }
 
   revalidatePath("/cocina");
-  return { pedidoId: nuevoPedido.id };
+  return { pedidoId };
 }
 
 export async function obtenerMesaPorUuid(uuid: string): Promise<Mesa | null> {
