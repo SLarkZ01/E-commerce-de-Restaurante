@@ -4,6 +4,7 @@ import { PackageCheck } from "lucide-react";
 import { MensajeToast } from "@/components/compartidos/MensajeToast";
 import { EstadoVacio } from "@/components/compartidos/EstadoVacio";
 import { useEntregaPedidos } from "@/hooks/useEntregaPedidos";
+import { PanelHeader } from "./PanelHeader";
 import { EntregaCard } from "./EntregaCard";
 import type { PedidoConDetalles } from "@/types";
 
@@ -19,6 +20,7 @@ export function ListaEntregas({ pedidosIniciales }: ListaEntregasProps) {
     confirmando,
     mensaje,
     tipoMensaje,
+    urgentes,
     handleEntregar,
     handleCancelarConfirmacion,
     handleSolicitarConfirmacion,
@@ -44,18 +46,21 @@ export function ListaEntregas({ pedidosIniciales }: ListaEntregasProps) {
           descripcion="Esperando que cocina termine..."
         />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {pedidos.map((pedido) => (
-            <EntregaCard
-              key={pedido.id}
-              pedido={pedido}
-              isConfirming={confirmando === pedido.id}
-              onConfirm={() => handleEntregar(pedido.id)}
-              onCancel={handleCancelarConfirmacion}
-              onRequestConfirm={() => handleSolicitarConfirmacion(pedido.id)}
-            />
-          ))}
-        </div>
+        <>
+          <PanelHeader totalPedidos={pedidos.length} urgentes={urgentes} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-7xl mx-auto">
+            {pedidos.map((pedido) => (
+              <EntregaCard
+                key={pedido.id}
+                pedido={pedido}
+                isConfirming={confirmando === pedido.id}
+                onConfirm={() => handleEntregar(pedido.id)}
+                onCancel={handleCancelarConfirmacion}
+                onRequestConfirm={() => handleSolicitarConfirmacion(pedido.id)}
+              />
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

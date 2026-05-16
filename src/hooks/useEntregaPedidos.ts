@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { usePedidos } from "@/hooks/usePedidos";
 import { useRealtime } from "@/hooks/useRealtime";
+import { useTiempoTranscurrido } from "@/hooks/useTiempoTranscurrido";
 import type { PedidoConDetalles } from "@/types";
 
 export function useEntregaPedidos(pedidosIniciales: PedidoConDetalles[]) {
@@ -11,6 +12,7 @@ export function useEntregaPedidos(pedidosIniciales: PedidoConDetalles[]) {
   const [tipoMensaje, setTipoMensaje] = useState<"exito" | "error">("exito");
   const [confirmando, setConfirmando] = useState<string | null>(null);
   const { cambiarEstado } = usePedidos();
+  const { esUrgente } = useTiempoTranscurrido();
 
   useRealtime("pedidos", "UPDATE", useCallback((payload) => {
     const actualizado = payload.new as PedidoConDetalles;
@@ -40,11 +42,17 @@ export function useEntregaPedidos(pedidosIniciales: PedidoConDetalles[]) {
   const handleSolicitarConfirmacion = (pedidoId: string) => setConfirmando(pedidoId);
   const limpiarMensaje = () => setMensaje("");
 
+  const urgentes = useMemo(
+    () => pedidos.filter((p) => esUrgente(p.creado_en, 15)).length,
+    [pedidos, esUrgente]
+  );
+
   return {
     pedidos,
     confirmando,
     mensaje,
     tipoMensaje,
+    urgentes,
     handleEntregar,
     handleCancelarConfirmacion,
     handleSolicitarConfirmacion,

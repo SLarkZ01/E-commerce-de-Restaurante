@@ -98,6 +98,7 @@ export interface PedidoConItems extends Pedido {
 }
 
 export interface PedidoConDetalles extends Pedido {
+  mesa_numero: number | null;
   items: ItemPedidoConImagen[];
 }
 

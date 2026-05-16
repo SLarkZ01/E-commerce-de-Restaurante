@@ -213,6 +213,9 @@ export async function obtenerPedidosListosConDetalles(): Promise<PedidoConDetall
     .from("pedidos")
     .select(`
       *,
+      mesas (
+        numero
+      ),
       items_pedido (
         cantidad,
         precio_unitario,
@@ -229,6 +232,7 @@ export async function obtenerPedidosListosConDetalles(): Promise<PedidoConDetall
   if (!data) return [];
 
   return data.map((pedido: Record<string, unknown>) => {
+    const mesaData = (pedido.mesas as Record<string, unknown> | null) ?? null;
     const itemsRaw = (pedido.items_pedido as Record<string, unknown>[]) ?? [];
     const items = itemsRaw.map((item) => {
       const plato = (item.platos as Record<string, unknown>) ?? {};
@@ -244,6 +248,7 @@ export async function obtenerPedidosListosConDetalles(): Promise<PedidoConDetall
     return {
       id: pedido.id as string,
       mesa_id: (pedido.mesa_id as string) ?? null,
+      mesa_numero: mesaData ? (mesaData.numero as number | null) : null,
       tipo_despacho: (pedido.tipo_despacho as "mesa" | "para_llevar") ?? "mesa",
       estado: pedido.estado as EstadoPedido,
       correo_cliente: (pedido.correo_cliente as string) ?? null,
