@@ -37,7 +37,7 @@ export function ListaEntregas({ pedidosIniciales }: ListaEntregasProps) {
         return [...prev, actualizado];
       });
     }
-  }, []), "estado=eq.listo");
+  }, []));
 
   const handleEntregar = async (pedidoId: string) => {
     setConfirmando(null);

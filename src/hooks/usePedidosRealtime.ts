@@ -41,15 +41,12 @@ export function usePedidosRealtime(callbacks: CallbacksPedido) {
   // INSERT: nuevo pedido creado (desde cualquier cliente/ventana)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onInsert = useCallback((payload: any) => {
-    console.log("[Realtime Pedidos] INSERT recibido:", payload);
     const nuevo = payload.new as Pedido;
     if (nuevo?.estado !== "pendiente") {
-      console.log("[Realtime Pedidos] Ignorando INSERT con estado:", nuevo?.estado);
       return;
     }
 
     obtenerItemsPedido(nuevo.id).then((items) => {
-      console.log("[Realtime Pedidos] Items obtenidos:", items);
       onNuevoPedido({ ...nuevo, items } as PedidoConItems);
     });
   }, [onNuevoPedido]);
@@ -57,15 +54,12 @@ export function usePedidosRealtime(callbacks: CallbacksPedido) {
   // UPDATE: cambio de estado (desde cualquier ventana)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onUpdate = useCallback((payload: any) => {
-    console.log("[Realtime Pedidos] UPDATE recibido:", payload);
     const nuevo = payload.new as Pedido;
     if (!nuevo?.estado) return;
 
     if (nuevo.estado === "entregado") {
-      console.log("[Realtime Pedidos] Pedido entregado:", nuevo.id);
       onPedidoEntregado(nuevo.id);
     } else {
-      console.log("[Realtime Pedidos] Cambio de estado:", nuevo.id, nuevo.estado);
       onCambioEstado(nuevo.id, nuevo.estado);
     }
   }, [onCambioEstado, onPedidoEntregado]);

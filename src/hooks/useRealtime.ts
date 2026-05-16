@@ -19,7 +19,8 @@ export function useRealtime(
 
   useEffect(() => {
     const supabase = crearCliente();
-    const canalNombre = `realtime-${tabla}-${evento}-${filtro ?? "all"}-${Date.now()}`;
+    const canalNombre = `realtime-${tabla}-${evento}-${filtro ?? "all"}`;
+    let canalActivo = true;
 
     const channelConfig: Record<string, unknown> = {
       event: evento,
@@ -31,25 +32,37 @@ export function useRealtime(
       channelConfig.filter = filtro;
     }
 
-    const canal = supabase
-      .channel(canalNombre)
-      .on(
-        "postgres_changes" as never,
-        channelConfig,
-        (payload: RealtimePostgresChangesPayload<Record<string, unknown>>) => {
-          callbackRef.current(payload);
-        }
-      )
-      .subscribe((status: string) => {
-        if (status === "SUBSCRIBED") {
-          console.log(`[Observer] ${evento} → ${tabla}${filtro ? ` (${filtro})` : ""}`);
-        } else if (status === "CHANNEL_ERROR") {
-          console.error(`[Observer] Error en canal ${tabla}:`, status);
-        }
-      });
+    // Obtener sesión y configurar auth para realtime
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!canalActivo) return;
+
+      if (session?.access_token) {
+        supabase.realtime.setAuth(session.access_token);
+      }
+
+      const canal = supabase
+        .channel(canalNombre)
+        .on(
+          "postgres_changes" as never,
+          channelConfig,
+          (payload: RealtimePostgresChangesPayload<Record<string, unknown>>) => {
+            callbackRef.current(payload);
+          }
+        )
+        .subscribe((status: string) => {
+          if (status === "CHANNEL_ERROR") {
+            console.error(`[Observer] Error en canal ${tabla}:`, status);
+          }
+        });
+
+      // Guardar referencia para cleanup
+      (canal as any)._cleanup = () => {
+        supabase.removeChannel(canal).catch(() => {});
+      };
+    });
 
     return () => {
-      supabase.removeChannel(canal).catch(() => {});
+      canalActivo = false;
     };
   }, [tabla, evento, filtro]);
 }
