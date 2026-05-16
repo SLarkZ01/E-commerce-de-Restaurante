@@ -1,55 +1,45 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { ShoppingBag, Check, AlertCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { ShoppingBag } from "lucide-react";
 import { formatearPrecio } from "@/lib/formato";
-import { useCheckoutWompi } from "@/hooks/useCheckoutWompi";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { CarritoItem } from "./CarritoItem";
-import { CarritoEstadoVacio } from "./CarritoEstadoVacio";
-import { CarritoSinMesa } from "./CarritoSinMesa";
-import { WompiButton } from "./WompiButton";
+import { usarCarrito } from "@/stores/cart";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { CarritoContenido } from "./CarritoContenido";
 
 interface CarritoSheetProps {
   mesaUuid: string | null;
 }
 
 export function CarritoSheet({ mesaUuid }: CarritoSheetProps) {
-  const tieneMesa = mesaUuid !== null;
   const [abierto, setAbierto] = useState(false);
   const [mounted, setMounted] = useState(false);
 
+  const items = usarCarrito((s) => s.items);
+
   useEffect(() => setMounted(true), []);
 
-  const {
-    datosWompi, mensaje, esExito,
-    items, total, actualizarCantidad, eliminarItem,
-    manejarExito, manejarError,
-  } = useCheckoutWompi(mesaUuid, abierto);
-
   const cantidadTotal = mounted ? items.reduce((sum, i) => sum + i.cantidad, 0) : 0;
-  const itemsLength = mounted ? items.length : 0;
-  const totalMostrado = mounted ? total : 0;
-
-  const handleSheetChange = useCallback((open: boolean) => {
-    setAbierto(open);
-  }, []);
-
-  const handleAntesDeAbrir = useCallback(() => {
-    setAbierto(false);
-  }, []);
+  const totalMostrado = mounted
+    ? items.reduce((sum, i) => sum + Number(i.precio) * i.cantidad, 0)
+    : 0;
 
   return (
     <>
-      <footer className="sticky bottom-0 z-30 bg-fondo-card/95 backdrop-blur-sm border-t border-borde/60 px-4 py-3">
+      {/* Trigger en móvil/tablet */}
+      <footer className="lg:hidden sticky bottom-0 z-30 bg-fondo-card/95 backdrop-blur-md border-t border-borde/40 px-4 py-3 shadow-[0_-4px_24px_rgba(45,42,38,0.06)]">
         <button
-          onClick={() => handleSheetChange(true)}
-          disabled={itemsLength === 0}
+          onClick={() => setAbierto(true)}
+          disabled={cantidadTotal === 0}
           className="w-full flex items-center justify-between bg-primario text-primario-texto rounded-xl px-5 py-3.5 font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primario-hover transition-all active:scale-[0.98] shadow-lg shadow-primario/20"
         >
-          <span className="flex items-center gap-2">
-            <ShoppingBag className="w-4 h-4" />
-            {cantidadTotal} {cantidadTotal === 1 ? "plato" : "platos"}
+          <span className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-primario-texto/20 flex items-center justify-center">
+              <ShoppingBag className="w-4 h-4" />
+            </div>
+            <span className="text-sm">
+              {cantidadTotal} {cantidadTotal === 1 ? "plato" : "platos"}
+            </span>
           </span>
           <span className="font-playfair font-bold text-lg">
             {formatearPrecio(totalMostrado)}
@@ -57,63 +47,15 @@ export function CarritoSheet({ mesaUuid }: CarritoSheetProps) {
         </button>
       </footer>
 
-      <Sheet open={abierto} onOpenChange={handleSheetChange}>
+      {/* Sheet en móvil/tablet */}
+      <Sheet open={abierto} onOpenChange={setAbierto}>
         <SheetContent className="flex flex-col p-0 gap-0 sm:max-w-md">
-          <div className="bg-gradient-to-r from-primario to-primario-hover px-5 py-4">
-            <SheetHeader>
-              <SheetTitle className="font-playfair text-lg font-bold text-primario-texto">
-                Tu Pedido
-              </SheetTitle>
-            </SheetHeader>
-          </div>
-
-          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
-            {itemsLength === 0 ? (
-              <CarritoEstadoVacio />
-            ) : (
-              items.map((item) => (
-                <CarritoItem
-                  key={item.id}
-                  item={item}
-                  onActualizarCantidad={actualizarCantidad}
-                  onEliminar={eliminarItem}
-                />
-              ))
-            )}
-          </div>
-
-          {mensaje && (
-            <div
-              className={`mx-5 mb-2 px-4 py-3 rounded-xl text-sm text-center flex items-center justify-center gap-2 ${
-                esExito ? "bg-exito/10 text-exito" : "bg-error/10 text-error"
-              }`}
-            >
-              {esExito ? (
-                <Check className="w-4 h-4 shrink-0" />
-              ) : (
-                <AlertCircle className="w-4 h-4 shrink-0" />
-              )}
-              {mensaje}
-            </div>
-          )}
-
-          {itemsLength > 0 && (
-            <div className="px-5 py-4 border-t border-borde/60 space-y-3 bg-fondo-card">
-              {!tieneMesa ? (
-                <CarritoSinMesa />
-              ) : (
-                <WompiButton
-                  datos={datosWompi}
-                  onExito={manejarExito}
-                  onError={manejarError}
-                  onAntesDeAbrir={handleAntesDeAbrir}
-                />
-              )}
-              <p className="text-center text-[11px] text-texto-terciario">
-                Pago seguro vía Wompi — Bancolombia
-              </p>
-            </div>
-          )}
+          <CarritoContenido
+            mesaUuid={mesaUuid}
+            abierto={abierto}
+            variant="sheet"
+            onAntesDeAbrir={() => setAbierto(false)}
+          />
         </SheetContent>
       </Sheet>
     </>

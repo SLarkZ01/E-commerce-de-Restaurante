@@ -1,52 +1,63 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { crearCliente } from "@/lib/supabase/browser";
+import { useEffect, useRef, useState } from "react";
+import { crearRealtimeService } from "@/lib/servicios/realtimeService";
+import type {
+  IServicioRealtime,
+  ISuscripcionRealtime,
+  EventoRealtime,
+} from "@/lib/servicios/realtimeService";
 import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 
-type CallbackCambio = (
-  payload: RealtimePostgresChangesPayload<Record<string, unknown>>
-) => void;
+export type { EventoRealtime };
 
+/**
+ * Hook genérico del patrón Observer.
+ * Suscribe a cambios en una tabla de Supabase vía WebSocket.
+ *
+ * DIP: acepta un IServicioRealtime inyectable. Si no se provee, usa el singleton.
+ */
 export function useRealtime(
   tabla: string,
-  evento: "INSERT" | "UPDATE" | "DELETE" | "*",
-  callback: CallbackCambio,
-  filtro?: string
+  evento: EventoRealtime,
+  callback: (payload: RealtimePostgresChangesPayload<Record<string, unknown>>) => void,
+  filtro?: string,
+  servicio?: IServicioRealtime
 ) {
   const callbackRef = useRef(callback);
-  callbackRef.current = callback;
 
   useEffect(() => {
-    const supabase = crearCliente();
+    callbackRef.current = callback;
+  });
 
-    const channelConfig: Record<string, unknown> = {
-      event: evento,
-      schema: "public",
-      table: tabla,
-    };
+  const [svc] = useState(() => servicio ?? crearRealtimeService());
 
-    if (filtro) {
-      channelConfig.filter = filtro;
-    }
+  useEffect(() => {
+    let activo = true;
+    let suscripcionVigente: ISuscripcionRealtime | null = null;
 
-    const canal = supabase
-      .channel(`realtime-${tabla}-${evento}-${filtro ?? "all"}`)
-      .on(
-        "postgres_changes" as never,
-        channelConfig,
-        (payload: RealtimePostgresChangesPayload<Record<string, unknown>>) => {
-          callbackRef.current(payload);
+    svc
+      .suscribir(
+        { tabla, evento, filtro, schema: "public" },
+        (payload) => {
+          if (activo) {
+            callbackRef.current(payload);
+          }
         }
       )
-      .subscribe((status: string) => {
-        if (status === "SUBSCRIBED") {
-          console.log(`[Observer] ${evento} → ${tabla}${filtro ? ` (${filtro})` : ""}`);
+      .then((suscripcion) => {
+        if (activo) {
+          suscripcionVigente = suscripcion;
+        } else {
+          suscripcion.cancelar();
         }
       });
 
     return () => {
-      supabase.removeChannel(canal).catch(() => {});
+      activo = false;
+      if (suscripcionVigente) {
+        suscripcionVigente.cancelar();
+      }
     };
-  }, [tabla, evento, filtro]);
+  }, [svc, tabla, evento, filtro]);
 }

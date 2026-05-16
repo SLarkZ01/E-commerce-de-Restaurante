@@ -27,13 +27,21 @@ export function useCheckoutWompi(mesaUuid: string | null, abierto: boolean) {
   const total = totalFn();
   const itemsLength = items.length;
 
-  // Efecto principal: preparar pago cuando se abre el sheet
+  // Efecto principal: preparar pago cuando se abre el sheet/sidebar con items
   useEffect(() => {
-    if (!abierto || !tieneMesa || itemsLength === 0) return;
-    // Solo si no estamos ya en un estado activo
+    // Solo limpiar datos si el carrito está vacío
+    if (itemsLength === 0) {
+      setDatosWompi(null);
+      return;
+    }
+
+    // No preparar si no hay mesa o no está abierto
+    if (!abierto || !tieneMesa) return;
+
+    // No re-preparar si ya estamos en un estado activo
     if (estado === "pagando" || estado === "exito") return;
 
-    // Generar referencia fresca cada vez que se abre
+    // Generar referencia fresca cada vez que cambia el total o se abre
     referenciaRef.current = `ekitchen-${Date.now()}`;
     const monto = total * 100;
 
@@ -51,7 +59,7 @@ export function useCheckoutWompi(mesaUuid: string | null, abierto: boolean) {
       setEstado("listo");
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [abierto]);
+  }, [abierto, itemsLength, total, tieneMesa]);
 
   const manejarExito = useCallback(async (transactionId: string) => {
     if (!tieneMesa) return;

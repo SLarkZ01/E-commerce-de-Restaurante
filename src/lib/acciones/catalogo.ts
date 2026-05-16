@@ -120,7 +120,20 @@ export async function eliminarPlato(id: string) {
     .eq("id", id)
     .single();
 
-  if (plato?.imagen_url) {
+  if (!plato) throw new Error("Plato no encontrado");
+
+  const { count: itemsCount } = await supabase
+    .from("items_pedido")
+    .select("*", { count: "exact", head: true })
+    .eq("plato_id", id);
+
+  if (itemsCount && itemsCount > 0) {
+    throw new Error(
+      `No se puede eliminar: este plato tiene ${itemsCount} registro(s) en pedidos. Desactívalo en lugar de eliminarlo.`
+    );
+  }
+
+  if (plato.imagen_url) {
     const publicId = MediaFacade.extraerPublicId(plato.imagen_url);
     if (publicId) {
       try {

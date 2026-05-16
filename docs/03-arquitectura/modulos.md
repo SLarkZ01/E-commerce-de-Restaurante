@@ -34,7 +34,8 @@ Cada módulo del monolito se implementa como un conjunto de archivos dentro de `
 ├─────────────────────────────────────────────┤
 │  Hooks (hooks/)                             │  ← Lógica de cliente, sin Server Actions directas
 │  useGestionPlatos  usePedidos  usePago      │
-│  useRealtime  useTiempoTranscurrido         │
+│  useRealtime  usePedidosRealtime            │
+│  usePlatosRealtime  useMiPedidoRealtime     │
 ├─────────────────────────────────────────────┤
 │  Store (stores/)                            │  ← Estado global cliente (Zustand)
 │  cart.ts                                    │
@@ -43,8 +44,9 @@ Cada módulo del monolito se implementa como un conjunto de archivos dentro de `
 │  catalogo.ts  cocina.ts  admin.ts  pago.ts  │
 ├─────────────────────────────────────────────┤
 │  Servicios (lib/servicios/)                 │  ← Patrones de diseño + integraciones
-│  platoFactory.ts  estrategiaDespacho.ts     │
-│  mediaFacade.ts  PagoFacade.ts  NotificacionFacade.ts │
+│  realtimeService.ts  platoFactory.ts        │
+│  estrategiaDespacho.ts  mediaFacade.ts      │
+│  PagoFacade.ts  NotificacionFacade.ts       │
 ├─────────────────────────────────────────────┤
 │  Datos (Supabase PostgreSQL + RLS)          │  ← Persistencia + Realtime
 └─────────────────────────────────────────────┘
@@ -94,8 +96,10 @@ src/
 │   ├── usePedidos.ts             Cambio de estado de pedidos (State Pattern)
 │   ├── usePago.ts                Crear pedido (DIP)
 │   ├── useCheckoutWompi.ts       Flujo completo de pago Wompi
-│   ├── usePedidosRealtime.ts     Observer: INSERT + UPDATE pedidos
-│   ├── useRealtime.ts            Observer genérico (WebSocket)
+│   usePedidosRealtime.ts     Observer: INSERT + UPDATE pedidos (DIP)
+│   ├── usePlatosRealtime.ts       Observer: INSERT + UPDATE + DELETE platos
+│   ├── useMiPedidoRealtime.ts     Observer: UPDATE pedido por ID (cliente)
+│   ├── useRealtime.ts            Observer genérico (WebSocket + DIP)
 │   ├── useWompiScript.ts         Carga del script Wompi
 │   ├── useActiveRoute.ts        Ruta activa (sidebar)
 │   ├── useTiempoTranscurrido.ts  Tiempo relativo + urgencia
@@ -121,6 +125,7 @@ src/
 │   │   ├── auth.ts               Cerrar sesión
 │   │   └── imagenes.ts           Subir imagen (MediaFacade)
 │   ├── servicios/                 Patrones de diseño + integraciones
+│   │   ├── realtimeService.ts     Observer: IServicioRealtime + DIP
 │   │   ├── platoFactory.ts       Factory Method (3 tipos de plato)
 │   │   ├── estrategiaDespacho.ts Strategy (mesa vs para llevar)
 │   │   ├── mediaFacade.ts        Facade (Cloudinary) ✅

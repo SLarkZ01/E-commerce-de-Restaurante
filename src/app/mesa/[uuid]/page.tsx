@@ -3,6 +3,7 @@ import { obtenerMesaPorUuid } from "@/lib/acciones/pago";
 import { CatalogoPlatos, SkeletonCatalogo } from "@/components/cliente/catalogoPlatos";
 import { BarraMesa } from "@/components/cliente/barraMesa";
 import { CarritoSheet } from "@/components/cliente/carritoSheet";
+import { CarritoSidebar } from "@/components/cliente/CarritoSidebar";
 import { WompiProvider } from "@/components/cliente/WompiProvider";
 import { WompiModalProvider } from "@/components/cliente/WompiModalContext";
 import { notFound } from "next/navigation";
@@ -27,7 +28,7 @@ export default async function PaginaMesa({
   return (
     <WompiProvider>
       <WompiModalProvider>
-        <MesaLayout>
+        <MesaLayout carritoSidebar={<CarritoSidebar mesaUuid={uuid} />}>
           <BarraMesa numeroMesa={mesa.numero} />
           <Suspense fallback={<SkeletonCatalogo />}>
             <CatalogoPlatos

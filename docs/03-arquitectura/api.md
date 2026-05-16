@@ -176,3 +176,35 @@ Todas las operaciones de lectura/escritura se hacen mediante Server Actions. Cad
 - **Qué hace:** Define el comportamiento post-entrega según el tipo de despacho
   - `DespachoMesa`: libera la mesa
   - `DespachoParaLlevar`: notifica al cliente por email
+
+---
+
+## Servicio de Realtime (Observer + DIP)
+
+### `crearRealtimeService()`
+- **Archivo:** `src/lib/servicios/realtimeService.ts`
+- **Patrón:** Observer + Singleton
+- **Devuelve:** `IServicioRealtime`
+- **Qué hace:** Retorna la instancia global del servicio de canales WebSocket. Expone `suscribir()` y `desconectarTodo()`
+
+### `IServicioRealtime.suscribir(opciones, callback)`
+- **Parámetros:**
+  - `opciones.tabla: string` — Tabla a observar
+  - `opciones.evento: "INSERT" | "UPDATE" | "DELETE" | "*"` — Tipo de evento
+  - `opciones.filtro?: string` — Filtro PostgREST (ej: `"estado=eq.listo"`)
+  - `opciones.schema?: string` — Schema (default: `"public"`)
+  - `callback: (payload: RealtimePostgresChangesPayload) => void` — Se ejecuta por cada cambio
+- **Devuelve:** `Promise<ISuscripcionRealtime>` con método `cancelar()`
+- **Qué hace:** Obtiene la sesión, configura `setAuth()` para RLS, crea un canal WebSocket único y se suscribe a `postgres_changes`
+- **Implementación:** `SupabaseRealtimeService` (concreta)
+
+### Hooks del patrón Observer
+
+| Hook | Archivo | Suscripción | Uso |
+|---|---|---|---|
+| `useRealtime(tabla, evento, cb, filtro?, servicio?)` | `src/hooks/useRealtime.ts` | Generic | Cualquier tabla, cualquier evento |
+| `usePedidosRealtime(callbacks, servicio?)` | `src/hooks/usePedidosRealtime.ts` | `pedidos` INSERT + UPDATE | Panel cocina (kanban) |
+| `usePlatosRealtime(callbacks, servicio?)` | `src/hooks/usePlatosRealtime.ts` | `platos` INSERT + UPDATE + DELETE | Menú cliente (catálogo) |
+| `useMiPedidoRealtime(pedidoId, callbacks, servicio?)` | `src/hooks/useMiPedidoRealtime.ts` | `pedidos` UPDATE filtrado por ID | Cliente (estado de su pedido) |
+
+Todos los hooks aceptan un `IServicioRealtime` opcional para inyección de dependencias (testing).

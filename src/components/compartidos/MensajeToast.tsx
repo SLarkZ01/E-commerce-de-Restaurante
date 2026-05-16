@@ -32,7 +32,7 @@ export function MensajeToast({
   mensaje,
   onClose,
   variante = "exito",
-  duracionMs = 4000,
+  duracionMs = 5000,
 }: MensajeToastProps) {
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 

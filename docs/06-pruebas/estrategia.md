@@ -29,4 +29,4 @@ npm run test:run    # Single run
 npm run test:coverage # Con reporte de cobertura
 ```
 ### Estado actual
-53 tests implementados (8 archivos): 45 unitarios + 8 integración.
+99 tests implementados (16 archivos): 80 unitarios + 19 integración.
