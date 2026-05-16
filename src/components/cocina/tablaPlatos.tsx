@@ -145,7 +145,7 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
   ];
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden bg-[#FAF7F2]">
+    <div className="flex-1 flex flex-col overflow-hidden bg-[#F7F8FC]">
       {mensaje && (
         <div className="mx-6 mt-4">
           <MensajeToast mensaje={mensaje} variante={tipoMensaje} onClose={() => setMensaje("")} />
@@ -153,19 +153,27 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
       )}
 
       <div className="px-6 pt-6 pb-0">
-        {/* Header premium */}
+        {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="font-playfair text-2xl font-bold text-[#2D2A26] tracking-tight">
-              Gestión de Menú
-            </h2>
-            <p className="text-sm text-[#A8A29E] mt-1 font-medium">
-              {platosFiltrados.length} {platosFiltrados.length === 1 ? "plato" : "platos"} en tu carta
-            </p>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-[#E8472A] to-[#FF6B35] shadow-md shadow-[#E8472A]/20">
+              <Utensils className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="font-playfair text-2xl font-bold text-[#1A1A2E] tracking-tight leading-none">
+                Gestión de Menú
+              </h2>
+              <div className="flex items-center gap-2 mt-1.5">
+                <span className="h-0.5 w-8 bg-gradient-to-r from-[#E8472A] to-[#FF6B35] rounded-full" />
+                <p className="text-sm text-[#6B7280] font-medium">
+                  {platosFiltrados.length} {platosFiltrados.length === 1 ? "plato" : "platos"} en tu carta
+                </p>
+              </div>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             <Sheet>
-              <SheetTrigger className="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-white text-[#78716C] text-sm font-semibold hover:bg-[#F5F0EB] transition-all duration-200 border border-[#E7E0D8] shadow-sm">
+              <SheetTrigger className="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-white text-[#6B7280] text-sm font-semibold hover:text-[#E8472A] hover:border-[#E8472A]/30 transition-all duration-200 border border-[#E2E8F0] shadow-sm">
                 <Tags className="w-4 h-4" />
                 <span>Categorías</span>
               </SheetTrigger>
@@ -182,7 +190,7 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
             </Sheet>
 
             <Dialog open={mostrandoFormulario} onOpenChange={setMostrandoFormulario}>
-              <DialogTrigger className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-gradient-to-r from-[#C44536] to-[#D4564A] text-white text-sm font-semibold hover:from-[#A8382C] hover:to-[#C44536] transition-all duration-300 shadow-md shadow-[#C44536]/20 hover:shadow-lg hover:shadow-[#C44536]/25 active:scale-[0.97]">
+              <DialogTrigger className="inline-flex items-center gap-2 h-10 px-5 rounded-full bg-gradient-to-r from-[#E8472A] to-[#FF6B35] text-white text-sm font-semibold hover:from-[#D43D22] hover:to-[#E8472A] transition-all duration-300 shadow-md shadow-[#E8472A]/25 hover:shadow-lg hover:shadow-[#E8472A]/30 active:scale-[0.97]">
                 <Plus className="w-4 h-4" />
                 <span>Nuevo Plato</span>
               </DialogTrigger>
@@ -197,21 +205,21 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
           </div>
         </div>
 
-        {/* Search premium */}
+        {/* Search */}
         <div className="flex items-center gap-2 mb-5">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A8A29E]" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#E8472A]" />
             <Input
               type="text"
               placeholder="Buscar en tu carta..."
               value={busqueda}
               onChange={(e) => setBusqueda(e.target.value)}
-              className="pl-11 h-11 rounded-xl bg-white border-[#E7E0D8] text-sm placeholder:text-[#A8A29E] focus-visible:ring-[#C44536]/25 focus-visible:border-[#C44536]/50 shadow-sm transition-all duration-200"
+              className="pl-11 h-11 rounded-xl bg-white border-[#E2E8F0] text-sm placeholder:text-[#9CA3AF] focus-visible:ring-[#E8472A]/25 focus-visible:border-[#E8472A]/50 shadow-sm transition-all duration-200"
             />
           </div>
         </div>
 
-        {/* Tabs estilo premium con underline */}
+        {/* Tabs con underline */}
         <div className="flex items-center gap-8 mb-5">
           {tabs.map((tab) => (
             <button
@@ -219,27 +227,27 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
               onClick={() => setTabActiva(tab.key)}
               className="relative pb-3 text-sm font-semibold transition-colors group"
             >
-              <span className={tabActiva === tab.key ? "text-[#2D2A26]" : "text-[#A8A29E] group-hover:text-[#78716C]"}>
+              <span className={tabActiva === tab.key ? "text-[#1A1A2E]" : "text-[#9CA3AF] group-hover:text-[#6B7280]"}>
                 {tab.label}
               </span>
-              <span className={`ml-1.5 text-xs ${tabActiva === tab.key ? "text-[#A8A29E]" : "text-[#D4CFC8]"}`}>
+              <span className={`ml-1.5 text-xs ${tabActiva === tab.key ? "text-[#6B7280]" : "text-[#D1D5DB]"}`}>
                 {tab.count}
               </span>
               {tabActiva === tab.key && (
-                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-[#C44536] rounded-full" />
+                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-[#E8472A] rounded-full" />
               )}
             </button>
           ))}
         </div>
 
-        {/* Categorías pills premium */}
+        {/* Categorías chips */}
         <div className="flex items-center gap-2.5 mb-6 overflow-x-auto pb-1 no-scrollbar">
           <button
             onClick={() => setCategoriaActiva("todas")}
             className={`shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
               categoriaActiva === "todas"
-                ? "bg-[#C44536] text-white shadow-md shadow-[#C44536]/20"
-                : "bg-white text-[#78716C] hover:bg-[#F5F0EB] border border-[#E7E0D8] shadow-sm"
+                ? "bg-gradient-to-r from-[#E8472A] to-[#FF6B35] text-white shadow-md shadow-[#E8472A]/20"
+                : "bg-white text-[#6B7280] hover:text-[#E8472A] hover:border-[#E8472A]/40 border border-[#E2E8F0] shadow-sm"
             }`}
           >
             <Utensils className="w-4 h-4" />
@@ -251,8 +259,8 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
               onClick={() => setCategoriaActiva(cat.id)}
               className={`shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                 categoriaActiva === cat.id
-                  ? "bg-[#C44536] text-white shadow-md shadow-[#C44536]/20"
-                  : "bg-white text-[#78716C] hover:bg-[#F5F0EB] border border-[#E7E0D8] shadow-sm"
+                  ? "bg-gradient-to-r from-[#E8472A] to-[#FF6B35] text-white shadow-md shadow-[#E8472A]/20"
+                  : "bg-white text-[#6B7280] hover:text-[#E8472A] hover:border-[#E8472A]/40 border border-[#E2E8F0] shadow-sm"
               }`}
             >
               <span>{cat.nombre}</span>
