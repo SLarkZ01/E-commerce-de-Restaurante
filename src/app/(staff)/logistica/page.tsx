@@ -1,9 +1,9 @@
-import { obtenerPedidosPorEstado } from "@/lib/acciones/cocina";
+import { obtenerPedidosListosConDetalles } from "@/lib/acciones/cocina";
 import { ListaEntregas, SkeletonListaEntregas } from "@/components/logistica/listaEntregas";
 import { Suspense } from "react";
 
 export default async function PaginaLogistica() {
-  const pedidosListos = await obtenerPedidosPorEstado("listo");
+  const pedidosListos = await obtenerPedidosListosConDetalles();
 
   return (
     <Suspense fallback={<SkeletonListaEntregas />}>

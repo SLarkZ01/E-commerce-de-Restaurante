@@ -85,8 +85,20 @@ export interface ItemPedidoConPlato {
   precio_unitario: number;
 }
 
+export interface ItemPedidoConImagen {
+  plato_nombre: string;
+  plato_imagen_url: string | null;
+  plato_tipo: TipoPlato;
+  cantidad: number;
+  precio_unitario: number;
+}
+
 export interface PedidoConItems extends Pedido {
   items: ItemPedidoConPlato[];
+}
+
+export interface PedidoConDetalles extends Pedido {
+  items: ItemPedidoConImagen[];
 }
 
 export interface StatsCocina {

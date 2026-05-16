@@ -2,7 +2,7 @@
 
 import { crearCliente } from "@/lib/supabase/server";
 import { crearEstrategiaDespacho } from "@/lib/servicios/estrategiaDespacho";
-import type { EstadoPedido, Pedido, TipoDespacho } from "@/types";
+import type { EstadoPedido, Pedido, TipoDespacho, TipoPlato, PedidoConDetalles } from "@/types";
 
 const TRANSICIONES_VALIDAS: Record<EstadoPedido, EstadoPedido[]> = {
   pendiente: ["preparando"],
@@ -205,4 +205,54 @@ export async function obtenerStatsCocina(): Promise<StatsCocina> {
     listos: listos?.length ?? 0,
     tiempoPromedioMin: countConTiempo > 0 ? Math.round(tiempoTotal / countConTiempo) : 0,
   };
+}
+
+export async function obtenerPedidosListosConDetalles(): Promise<PedidoConDetalles[]> {
+  const supabase = await crearCliente();
+  const { data } = await supabase
+    .from("pedidos")
+    .select(`
+      *,
+      items_pedido (
+        cantidad,
+        precio_unitario,
+        platos (
+          nombre,
+          imagen_url,
+          tipo_plato
+        )
+      )
+    `)
+    .eq("estado", "listo")
+    .order("creado_en", { ascending: true });
+
+  if (!data) return [];
+
+  return data.map((pedido: Record<string, unknown>) => {
+    const itemsRaw = (pedido.items_pedido as Record<string, unknown>[]) ?? [];
+    const items = itemsRaw.map((item) => {
+      const plato = (item.platos as Record<string, unknown>) ?? {};
+      return {
+        plato_nombre: (plato.nombre as string) ?? "Plato",
+        plato_imagen_url: (plato.imagen_url as string) ?? null,
+        plato_tipo: (plato.tipo_plato as TipoPlato) ?? "plato_fuerte",
+        cantidad: (item.cantidad as number) ?? 1,
+        precio_unitario: Number(item.precio_unitario ?? 0),
+      };
+    });
+
+    return {
+      id: pedido.id as string,
+      mesa_id: (pedido.mesa_id as string) ?? null,
+      tipo_despacho: (pedido.tipo_despacho as "mesa" | "para_llevar") ?? "mesa",
+      estado: pedido.estado as EstadoPedido,
+      correo_cliente: (pedido.correo_cliente as string) ?? null,
+      total: Number(pedido.total ?? 0),
+      paypal_pedido_id: (pedido.paypal_pedido_id as string) ?? null,
+      cocinero_id: (pedido.cocinero_id as string) ?? null,
+      creado_en: pedido.creado_en as string,
+      actualizado_en: pedido.actualizado_en as string,
+      items,
+    };
+  });
 }
