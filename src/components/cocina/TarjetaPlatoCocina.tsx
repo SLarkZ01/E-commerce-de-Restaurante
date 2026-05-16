@@ -41,8 +41,8 @@ export const TarjetaPlatoCocina = memo(function TarjetaPlatoCocina({
     <div
       className={`group flex flex-col bg-white rounded-2xl overflow-hidden border transition-all duration-500 ease-out ${
         !plato.disponible
-          ? "border-[#C0C0C0] shadow-sm grayscale"
-          : `border-[#E2E8F0] shadow-[0_4px_16px_rgba(0,0,0,0.06)] hover:shadow-[0_16px_48px_rgba(0,0,0,0.10)] hover:-translate-y-[4px] ${badge.cardTint}`
+          ? "border-[#AAAAAA] shadow-sm grayscale"
+          : `border-[#C0C0C0] shadow-[0_4px_16px_rgba(0,0,0,0.06)] hover:shadow-[0_16px_48px_rgba(0,0,0,0.10)] hover:-translate-y-[4px] ${badge.cardTint}`
       }`}
     >
       {/* Área de imagen */}
