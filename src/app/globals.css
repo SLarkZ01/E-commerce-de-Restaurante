@@ -185,6 +185,15 @@
   .animate-slide-right {
     animation: slide-right 0.8s ease-out forwards;
   }
+  .animate-shimmer-skeleton {
+    animation: shimmer-skeleton 2s ease-in-out infinite;
+  }
+  .animate-count-up {
+    animation: count-up 0.4s ease-out forwards;
+  }
+  .animate-badge-pulse {
+    animation: badge-pulse 2s ease-in-out infinite;
+  }
 }
 
 @keyframes float {
@@ -220,4 +229,19 @@
 @keyframes slide-right {
   from { opacity: 0; transform: translateX(-30px); }
   to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes shimmer-skeleton {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes badge-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.4); }
+  50% { opacity: 0.8; box-shadow: 0 0 0 6px rgba(22, 163, 74, 0); }
 }

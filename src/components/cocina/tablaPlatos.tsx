@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useDeferredValue, useEffect, useRef } from "react";
 import { Plus, Tags, Utensils, Search } from "lucide-react";
 import type { Plato, Categoria } from "@/types";
 import { MensajeToast } from "@/components/compartidos/MensajeToast";
@@ -31,6 +31,24 @@ interface TablaPlatosProps {
 
 type TabActiva = "todos" | "disponibles" | "agotados";
 
+function ContadorAnimado({ valor }: { valor: number }) {
+  const [displayValue, setDisplayValue] = useState(valor);
+  const prevValue = useRef(valor);
+
+  useEffect(() => {
+    if (prevValue.current !== valor) {
+      prevValue.current = valor;
+      setDisplayValue(valor);
+    }
+  }, [valor]);
+
+  return (
+    <span key={displayValue} className="animate-count-up inline-block">
+      {displayValue}
+    </span>
+  );
+}
+
 export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }: TablaPlatosProps) {
   const [platos, setPlatos] = useState(platosIniciales);
   const [categorias, setCategorias] = useState(categoriasIniciales);
@@ -41,8 +59,13 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
   const [categoriaActiva, setCategoriaActiva] = useState<string>("todas");
   const [busqueda, setBusqueda] = useState("");
 
+  // Debounce para búsqueda
+  const busquedaDiferida = useDeferredValue(busqueda);
+
   const { crear, actualizar, eliminar } = useGestionPlatos();
   const { crear: crearCat, eliminar: eliminarCat } = useGestionCategorias();
+
+  const platosDisponibles = useMemo(() => platos.filter((p) => p.disponible).length, [platos]);
 
   const platosFiltrados = useMemo(() => {
     let resultado = [...platos];
@@ -57,8 +80,8 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
       resultado = resultado.filter((p) => p.categoria_id === categoriaActiva);
     }
 
-    if (busqueda.trim()) {
-      const termino = busqueda.toLowerCase();
+    if (busquedaDiferida.trim()) {
+      const termino = busquedaDiferida.toLowerCase();
       resultado = resultado.filter(
         (p) =>
           p.nombre.toLowerCase().includes(termino) ||
@@ -67,7 +90,7 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
     }
 
     return resultado;
-  }, [platos, tabActiva, categoriaActiva, busqueda]);
+  }, [platos, tabActiva, categoriaActiva, busquedaDiferida]);
 
   const handleCrear = async (datos: DatosFormularioPlato): Promise<ResultadoGuardado> => {
     const resultado = await crear(datos);
@@ -165,7 +188,7 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
             <div className="flex items-center gap-2 mt-1.5">
               <span className="h-0.5 w-8 bg-gradient-to-r from-[#E8472A] to-[#FF6B35] rounded-full" />
               <p className="text-sm text-[#6B7280] font-medium">
-                {platos.filter((p) => p.disponible).length} {platos.filter((p) => p.disponible).length === 1 ? "plato" : "platos"} en tu carta
+                <ContadorAnimado valor={platosDisponibles} /> {platosDisponibles === 1 ? "plato" : "platos"} en tu carta
               </p>
             </div>
           </div>

@@ -1,6 +1,7 @@
 "use client";
 
-import { Trash2, Utensils, Coffee, Package, Check } from "lucide-react";
+import { memo } from "react";
+import { Trash2, Utensils, Coffee, Package, Check, Eye } from "lucide-react";
 import { formatearPrecio } from "@/lib/formato";
 import { Switch } from "@/components/ui/switch";
 import type { Plato } from "@/types";
@@ -17,10 +18,10 @@ const ETIQUETAS_POR_TIPO: Record<string, string> = {
   combo: "Combo",
 };
 
-const BADGE_STYLES: Record<string, { bg: string; text: string }> = {
-  plato_fuerte: { bg: "bg-[#FFF3E0]", text: "text-[#E65100]" },
-  bebida: { bg: "bg-[#E3F2FD]", text: "text-[#1565C0]" },
-  combo: { bg: "bg-[#E8F5E9]", text: "text-[#2E7D32]" },
+const BADGE_STYLES: Record<string, { bg: string; text: string; border: string; cardTint: string }> = {
+  plato_fuerte: { bg: "bg-[#FFF3E0]", text: "text-[#E65100]", border: "border-[#FFE0B2]", cardTint: "hover:border-[#FFE0B2]" },
+  bebida: { bg: "bg-[#E3F2FD]", text: "text-[#1565C0]", border: "border-[#BBDEFB]", cardTint: "hover:border-[#BBDEFB]" },
+  combo: { bg: "bg-[#E8F5E9]", text: "text-[#2E7D32]", border: "border-[#C8E6C9]", cardTint: "hover:border-[#C8E6C9]" },
 };
 
 interface TarjetaPlatoCocinaProps {
@@ -29,7 +30,7 @@ interface TarjetaPlatoCocinaProps {
   onToggleDisponible: (id: string, datos: { disponible: boolean }) => void;
 }
 
-export function TarjetaPlatoCocina({
+export const TarjetaPlatoCocina = memo(function TarjetaPlatoCocina({
   plato,
   onEliminar,
   onToggleDisponible,
@@ -41,23 +42,32 @@ export function TarjetaPlatoCocina({
       className={`group flex flex-col bg-white rounded-2xl overflow-hidden border transition-all duration-500 ease-out ${
         !plato.disponible
           ? "border-[#C0C0C0] shadow-sm grayscale"
-          : "border-[#C0C0C0] shadow-[0_4px_16px_rgba(0,0,0,0.06)] hover:shadow-[0_16px_48px_rgba(0,0,0,0.10)] hover:-translate-y-[4px] hover:border-[#AAAAAA]"
+          : `border-[#E2E8F0] shadow-[0_4px_16px_rgba(0,0,0,0.06)] hover:shadow-[0_16px_48px_rgba(0,0,0,0.10)] hover:-translate-y-[4px] ${badge.cardTint}`
       }`}
     >
       {/* Área de imagen */}
       <div className="relative px-4 pt-4 pb-0">
-        {/* Fila superior: check + eliminar */}
+        {/* Fila superior: check pulsante + eliminar */}
         <div className="flex items-center justify-between mb-3 px-1">
-          {/* Check */}
-          <div
-            className={`flex items-center justify-center w-7 h-7 rounded-xl border-2 transition-all duration-300 ${
-              plato.disponible
-                ? "bg-gradient-to-br from-[#E8472A] to-[#FF6B35] border-transparent shadow-md shadow-[#E8472A]/25"
-                : "bg-white border-[#E2E8F0]"
-            }`}
-          >
+          {/* Check con badge pulsante */}
+          <div className="relative">
+            <div
+              className={`flex items-center justify-center w-7 h-7 rounded-xl border-2 transition-all duration-300 ${
+                plato.disponible
+                  ? "bg-gradient-to-br from-[#E8472A] to-[#FF6B35] border-transparent shadow-md shadow-[#E8472A]/25"
+                  : "bg-white border-[#E2E8F0]"
+              }`}
+            >
+              {plato.disponible && (
+                <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+              )}
+            </div>
+            {/* Led pulsante para disponible */}
             {plato.disponible && (
-              <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+              <span className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#16A34A] opacity-75" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#16A34A]" />
+              </span>
             )}
           </div>
 
@@ -71,19 +81,25 @@ export function TarjetaPlatoCocina({
           </button>
         </div>
 
-        {/* Contenedor de imagen */}
+        {/* Contenedor de imagen con hover "Ver detalles" */}
         <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-gradient-to-br from-[#F8F9FC] to-[#F1F3F8]">
           {plato.imagen_url ? (
             <>
               <img
                 src={plato.imagen_url}
                 alt={plato.nombre}
-                className="w-full h-full object-contain p-5 transition-transform duration-700 ease-out group-hover:scale-105"
+                className="w-full h-full object-contain p-5 transition-all duration-700 ease-out group-hover:scale-105 group-hover:brightness-95"
                 loading="lazy"
                 width="400"
                 height="300"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              {/* Overlay hover con "Ver detalles" */}
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-500 flex items-center justify-center">
+                <div className="flex items-center gap-2 bg-white/90 backdrop-blur-sm text-[#1A1A2E] text-xs font-semibold px-4 py-2 rounded-full opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-500 shadow-lg">
+                  <Eye className="w-3.5 h-3.5" />
+                  <span>Ver detalles</span>
+                </div>
+              </div>
             </>
           ) : (
             <div className="w-full h-full flex items-center justify-center text-[#D1D5DB]">
@@ -120,7 +136,7 @@ export function TarjetaPlatoCocina({
 
         {/* Badge de categoría con color por tipo */}
         <div className="mt-4 mb-4">
-          <span className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider ${badge.bg} ${badge.text}`}>
+          <span className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider ${badge.bg} ${badge.text} border ${badge.border}`}>
             {ETIQUETAS_POR_TIPO[plato.tipo_plato] ?? plato.tipo_plato}
           </span>
         </div>
@@ -166,4 +182,4 @@ export function TarjetaPlatoCocina({
       </div>
     </div>
   );
-}
+});

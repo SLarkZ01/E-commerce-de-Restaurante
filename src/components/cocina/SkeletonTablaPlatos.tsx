@@ -14,7 +14,7 @@ export function SkeletonTablaPlatos() {
                 <Skeleton className="w-7 h-7 rounded-xl" />
                 <Skeleton className="w-8 h-8 rounded-xl" />
               </div>
-              <Skeleton className="aspect-[4/3] rounded-2xl bg-[#F1F5F9]" />
+              <div className="aspect-[4/3] rounded-2xl bg-gradient-to-r from-[#F1F5F9] via-[#E2E8F0] to-[#F1F5F9] bg-[length:200%_100%] animate-shimmer-skeleton" />
             </div>
             <div className="p-5 pt-4 space-y-3">
               <Skeleton className="h-5 w-3/4" />
