@@ -1,0 +1,11 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - img [ref=e6]
+      - generic [ref=e11]: E-Kitchen
+    - link "Staff" [ref=e12] [cursor=pointer]:
+      - /url: /login
+      - img [ref=e13]
+      - text: Staff
+  - button "Open Next.js Dev Tools" [ref=e93] [cursor=pointer]:
+    - img [ref=e94]

@@ -1,0 +1,23 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - main [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - img [ref=e7]
+          - generic [ref=e12]: E-Kitchen
+        - generic [ref=e13]:
+          - img [ref=e14]
+          - text: Mesa 10
+    - complementary [ref=e89]:
+      - generic [ref=e90]:
+        - generic [ref=e93]:
+          - img [ref=e95]
+          - generic [ref=e98]:
+            - heading "Tu Pedido" [level=2] [ref=e99]
+            - paragraph [ref=e100]: 0 items
+        - generic [ref=e102]:
+          - img [ref=e104]
+          - paragraph [ref=e107]: El carrito está vacío
+          - paragraph [ref=e108]: Agrega platos del menú
+  - button "Open Next.js Dev Tools" [ref=e114] [cursor=pointer]:
+    - img [ref=e115]

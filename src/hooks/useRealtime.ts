@@ -19,6 +19,7 @@ export function useRealtime(
 
   useEffect(() => {
     const supabase = crearCliente();
+    const canalNombre = `realtime-${tabla}-${evento}-${filtro ?? "all"}-${Date.now()}`;
 
     const channelConfig: Record<string, unknown> = {
       event: evento,
@@ -31,7 +32,7 @@ export function useRealtime(
     }
 
     const canal = supabase
-      .channel(`realtime-${tabla}-${evento}-${filtro ?? "all"}`)
+      .channel(canalNombre)
       .on(
         "postgres_changes" as never,
         channelConfig,
@@ -42,6 +43,8 @@ export function useRealtime(
       .subscribe((status: string) => {
         if (status === "SUBSCRIBED") {
           console.log(`[Observer] ${evento} → ${tabla}${filtro ? ` (${filtro})` : ""}`);
+        } else if (status === "CHANNEL_ERROR") {
+          console.error(`[Observer] Error en canal ${tabla}:`, status);
         }
       });
 

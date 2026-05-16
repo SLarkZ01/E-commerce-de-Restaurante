@@ -7,17 +7,16 @@ import { CarritoItem } from "./CarritoItem";
 import { CarritoEstadoVacio } from "./CarritoEstadoVacio";
 import { CarritoSinMesa } from "./CarritoSinMesa";
 import { WompiButton } from "./WompiButton";
-import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 interface CarritoContenidoProps {
   mesaUuid: string | null;
   abierto: boolean;
   variant?: "sidebar" | "sheet";
+  onAntesDeAbrir?: () => void;
 }
 
-export function CarritoContenido({ mesaUuid, abierto, variant = "sheet" }: CarritoContenidoProps) {
+export function CarritoContenido({ mesaUuid, abierto, variant = "sheet", onAntesDeAbrir }: CarritoContenidoProps) {
   const tieneMesa = mesaUuid !== null;
 
   const {
@@ -35,18 +34,39 @@ export function CarritoContenido({ mesaUuid, abierto, variant = "sheet" }: Carri
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className={esSidebar
-        ? "px-5 py-4 bg-gradient-to-r from-primario to-primario-hover"
+        ? "px-5 py-4 bg-fondo-card border-b border-borde/40"
         : "bg-gradient-to-r from-primario to-primario-hover px-5 py-4"
       }>
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <ShoppingBag className="w-5 h-5 text-primario-texto" />
-            <h2 className="font-playfair text-lg font-bold text-primario-texto">
-              Tu Pedido
-            </h2>
+          <div className="flex items-center gap-3">
+            <div className={esSidebar
+              ? "w-9 h-9 rounded-xl bg-primario/10 flex items-center justify-center"
+              : "w-9 h-9 rounded-xl bg-primario-texto/20 flex items-center justify-center"
+            }>
+              <ShoppingBag className={esSidebar
+                ? "w-4.5 h-4.5 text-primario"
+                : "w-4.5 h-4.5 text-primario-texto"
+              } />
+            </div>
+            <div>
+              <h2 className={esSidebar
+                ? "font-playfair text-lg font-bold text-texto"
+                : "font-playfair text-lg font-bold text-primario-texto"
+              }>
+                Tu Pedido
+              </h2>
+              {esSidebar && (
+                <p className="text-xs text-texto-secundario mt-0.5">
+                  {cantidadTotal} {cantidadTotal === 1 ? "item" : "items"}
+                </p>
+              )}
+            </div>
           </div>
           {cantidadTotal > 0 && (
-            <Badge className="bg-primario-texto/20 text-primario-texto border-0 font-semibold">
+            <Badge className={esSidebar
+              ? "bg-primario text-primario-texto border-0 font-semibold text-xs px-2.5 py-0.5"
+              : "bg-primario-texto/20 text-primario-texto border-0 font-semibold"
+            }>
               {cantidadTotal}
             </Badge>
           )}
@@ -89,7 +109,10 @@ export function CarritoContenido({ mesaUuid, abierto, variant = "sheet" }: Carri
 
       {/* Footer */}
       {itemsLength > 0 && (
-        <div className="px-5 py-4 border-t border-borde/60 space-y-3 bg-fondo-card">
+        <div className={esSidebar
+          ? "px-5 py-4 border-t border-borde/40 space-y-3 bg-fondo-card"
+          : "px-5 py-4 border-t border-borde/60 space-y-3 bg-fondo-card"
+        }>
           <div className="flex items-center justify-between">
             <span className="text-sm text-texto-secundario">Total</span>
             <span className="font-playfair text-xl font-bold text-texto">
@@ -105,6 +128,7 @@ export function CarritoContenido({ mesaUuid, abierto, variant = "sheet" }: Carri
                 datos={datosWompi}
                 onExito={manejarExito}
                 onError={manejarError}
+                onAntesDeAbrir={onAntesDeAbrir ?? (() => {})}
               />
               <p className="text-center text-[11px] text-texto-terciario">
                 Pago seguro vía Wompi — Bancolombia

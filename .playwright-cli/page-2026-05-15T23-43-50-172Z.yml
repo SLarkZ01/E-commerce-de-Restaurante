@@ -1,0 +1,203 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - main [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - img [ref=e7]
+          - generic [ref=e12]: E-Kitchen
+        - generic [ref=e13]:
+          - img [ref=e14]
+          - text: Mesa 10
+      - generic [ref=e118]:
+        - generic [ref=e120]:
+          - img [ref=e121]
+          - textbox "Buscar plato..." [ref=e124]
+        - tablist [ref=e127]:
+          - tab "Todos" [selected] [ref=e128]
+          - tab "Platos Fuertes" [ref=e129]:
+            - img
+            - text: Platos Fuertes
+          - tab "Bebidas" [ref=e130]:
+            - img
+            - text: Bebidas
+          - tab "Combos" [ref=e131]:
+            - img
+            - text: Combos
+          - tab "yrthrth" [ref=e132]:
+            - img
+            - text: yrthrth
+          - tab "prueba" [ref=e133]:
+            - img
+            - text: prueba
+        - generic [ref=e137]:
+          - generic [ref=e138]:
+            - generic [ref=e139]:
+              - img [ref=e141]
+              - generic [ref=e147]: $ 28.000
+            - generic [ref=e148]:
+              - heading "Pasta a la Boloñesa" [level=3] [ref=e149]
+              - paragraph [ref=e150]: Pasta artesanal con salsa de tomate, carne y queso parmesano
+              - button "Agregar" [active] [ref=e151]:
+                - img
+                - text: Agregar
+          - generic [ref=e152]:
+            - generic [ref=e153]:
+              - img [ref=e155]
+              - generic [ref=e161]: $ 42.000
+            - generic [ref=e162]:
+              - heading "Bife de Chorizo" [level=3] [ref=e163]
+              - paragraph [ref=e164]: Corte de 300g con papas rústicas y chimichurri
+              - button "Agregar" [ref=e165]:
+                - img
+                - text: Agregar
+          - generic [ref=e166]:
+            - generic [ref=e167]:
+              - img [ref=e169]
+              - generic [ref=e175]: $ 38.000
+            - generic [ref=e176]:
+              - heading "Salmón Glaseado" [level=3] [ref=e177]
+              - paragraph [ref=e178]: Salmón con miel y soya, arroz jazmín y vegetales salteados
+              - button "Agregar" [ref=e179]:
+                - img
+                - text: Agregar
+          - generic [ref=e180]:
+            - generic [ref=e181]:
+              - img [ref=e183]
+              - generic [ref=e189]: $ 22.000
+            - generic [ref=e190]:
+              - heading "Ensalada Caprese" [level=3] [ref=e191]
+              - paragraph [ref=e192]: Tomate, mozzarella fresca y albahaca con reducción de balsámico
+              - button "Agregar" [ref=e193]:
+                - img
+                - text: Agregar
+          - generic [ref=e194]:
+            - generic [ref=e195]:
+              - img [ref=e197]
+              - generic [ref=e203]: $ 9.000
+            - generic [ref=e204]:
+              - heading "Limonada Artesanal" [level=3] [ref=e205]
+              - paragraph [ref=e206]: Limonada natural con hierbabuena fresca
+              - button "Agregar" [ref=e207]:
+                - img
+                - text: Agregar
+          - generic [ref=e208]:
+            - generic [ref=e209]:
+              - img [ref=e211]
+              - generic [ref=e217]: $ 11.000
+            - generic [ref=e218]:
+              - heading "Jugo de Mango" [level=3] [ref=e219]
+              - paragraph [ref=e220]: Jugo natural de mango sin azúcar añadida
+              - button "Agregar" [ref=e221]:
+                - img
+                - text: Agregar
+          - generic [ref=e222]:
+            - generic [ref=e223]:
+              - img [ref=e225]
+              - generic [ref=e231]: $ 32.000
+            - generic [ref=e232]:
+              - heading "Lomo Saltado" [level=3] [ref=e233]
+              - paragraph [ref=e234]: Lomo fino salteado con cebolla y tomate
+              - button "Agregar" [ref=e235]:
+                - img
+                - text: Agregar
+          - generic [ref=e236]:
+            - generic [ref=e237]:
+              - img [ref=e239]
+              - generic [ref=e245]: $ 8.000
+            - generic [ref=e246]:
+              - heading "borrar" [level=3] [ref=e247]
+              - paragraph [ref=e248]: sduifsdhfu
+              - button "Agregar" [ref=e249]:
+                - img
+                - text: Agregar
+          - generic [ref=e250]:
+            - generic [ref=e251]:
+              - img "Arroz con Pollo" [ref=e252]
+              - generic [ref=e256]: $ 25.000
+            - generic [ref=e257]:
+              - heading "Arroz con Pollo" [level=3] [ref=e258]
+              - paragraph [ref=e259]: Arroz con pollo al estilo criollo
+              - button "Agregar" [ref=e260]:
+                - img
+                - text: Agregar
+          - generic [ref=e261]:
+            - generic [ref=e262]:
+              - img [ref=e264]
+              - generic [ref=e270]: $ 62.000
+            - generic [ref=e271]:
+              - heading "Combo Pareja" [level=3] [ref=e272]
+              - paragraph [ref=e273]: 1 Pasta + 1 Bife + 2 Bebidas a elección
+              - button "Agregar" [ref=e274]:
+                - img
+                - text: Agregar
+          - generic [ref=e275]:
+            - generic [ref=e276]:
+              - img "Ceviche Mixto" [ref=e277]
+              - generic [ref=e281]: $ 35.000
+            - generic [ref=e282]:
+              - heading "Ceviche Mixto" [level=3] [ref=e283]
+              - paragraph [ref=e284]: Ceviche de pescado y mariscos con limón
+              - button "Agregar" [ref=e285]:
+                - img
+                - text: Agregar
+          - generic [ref=e286]:
+            - generic [ref=e287]:
+              - img "wefefsdf" [ref=e288]
+              - generic [ref=e292]: $ 10.000
+            - generic [ref=e293]:
+              - heading "wefefsdf" [level=3] [ref=e294]
+              - paragraph [ref=e295]: asdfasdfasdfsda
+              - button "Agregar" [ref=e296]:
+                - img
+                - text: Agregar
+          - generic [ref=e297]:
+            - generic [ref=e298]:
+              - img "prueba despues de la refactorizacion" [ref=e299]
+              - generic [ref=e303]: $ 10.000
+            - generic [ref=e304]:
+              - heading "prueba despues de la refactorizacion" [level=3] [ref=e305]
+              - paragraph [ref=e306]: borrar despues
+              - button "Agregar" [ref=e307]:
+                - img
+                - text: Agregar
+          - generic [ref=e308]:
+            - generic [ref=e309]:
+              - img "sancocho" [ref=e310]
+              - generic [ref=e314]: $ 200.000
+            - generic [ref=e315]:
+              - heading "sancocho" [level=3] [ref=e316]
+              - paragraph [ref=e317]: aguita con sal
+              - button "Agregar" [ref=e318]:
+                - img
+                - text: Agregar
+    - complementary [ref=e89]:
+      - generic [ref=e90]:
+        - generic [ref=e92]:
+          - generic [ref=e93]:
+            - img [ref=e95]
+            - generic [ref=e98]:
+              - heading "Tu Pedido" [level=2] [ref=e99]
+              - paragraph [ref=e100]: 1 item
+          - generic [ref=e320]: "1"
+        - generic [ref=e322]:
+          - img [ref=e324]
+          - generic [ref=e327]:
+            - paragraph [ref=e328]: Pasta a la Boloñesa
+            - paragraph [ref=e329]: $ 28.000 c/u
+          - generic [ref=e330]:
+            - button [ref=e331]:
+              - img [ref=e332]
+            - generic [ref=e333]: "1"
+            - button [ref=e334]:
+              - img [ref=e335]
+          - button "Eliminar Pasta a la Boloñesa" [ref=e336]:
+            - img [ref=e337]
+        - generic [ref=e340]:
+          - generic [ref=e341]:
+            - generic [ref=e342]: Total
+            - generic [ref=e343]: $ 28.000
+          - paragraph [ref=e345]: Preparando pago...
+          - paragraph [ref=e346]: Pago seguro vía Wompi — Bancolombia
+  - button "Open Next.js Dev Tools" [ref=e114] [cursor=pointer]:
+    - img [ref=e115]
+  - alert [ref=e319]

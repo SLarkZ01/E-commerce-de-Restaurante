@@ -2,16 +2,9 @@
 
 import { Plus, Utensils } from "lucide-react";
 import { formatearPrecio } from "@/lib/formato";
-import { usarCarrito } from "@/stores/cart";
 import type { Plato } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-
-const ICONOS_POR_TIPO: Record<string, React.ReactNode> = {
-  plato_fuerte: <Utensils className="w-8 h-8" />,
-  bebida: <Utensils className="w-8 h-8" />,
-  combo: <Utensils className="w-8 h-8" />,
-};
 
 interface TarjetaPlatoClienteProps {
   plato: Plato;
@@ -20,38 +13,51 @@ interface TarjetaPlatoClienteProps {
 
 export function TarjetaPlatoCliente({ plato, alAgregar }: TarjetaPlatoClienteProps) {
   return (
-    <div className="group bg-fondo-card rounded-2xl border border-borde/60 overflow-hidden shadow-[0_1px_3px_rgba(45,42,38,0.04)] hover:shadow-[0_8px_24px_rgba(45,42,38,0.10)] hover:border-borde transition-all duration-200 hover:-translate-y-0.5">
-      <div className="relative aspect-[4/3] bg-fondo-oscuro overflow-hidden">
+    <div className="group relative bg-fondo-card rounded-xl border border-borde/40 overflow-hidden shadow-sm hover:shadow-md hover:border-primario/30 transition-all duration-200 hover:-translate-y-1">
+      {/* Imagen */}
+      <div className="relative aspect-[3/2] bg-fondo-oscuro overflow-hidden">
         {plato.imagen_url ? (
           <img
             src={plato.imagen_url}
             alt={plato.nombre}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
             loading="lazy"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-texto-terciario">
-            {ICONOS_POR_TIPO[plato.tipo_plato] || <Utensils className="w-8 h-8" />}
+          <div className="w-full h-full flex items-center justify-center text-texto-terciario/40">
+            <Utensils className="w-12 h-12" />
           </div>
         )}
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent p-2">
-          <p className="text-white text-xs font-bold font-playfair">
-            {formatearPrecio(plato.precio)}
-          </p>
+
+        {/* Overlay gradiente */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+        {/* Precio */}
+        <div className="absolute top-3 right-3">
+          <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-fondo-card/95 backdrop-blur-sm shadow-sm">
+            <span className="font-playfair text-sm font-bold text-primario">
+              {formatearPrecio(plato.precio)}
+            </span>
+          </span>
         </div>
+
+        {/* Badge agotado */}
         {!plato.disponible && (
-          <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-            <Badge variant="destructive" className="text-xs">Agotado</Badge>
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px] flex items-center justify-center">
+            <Badge variant="destructive" className="text-xs font-semibold px-3 py-1">
+              Agotado
+            </Badge>
           </div>
         )}
       </div>
 
+      {/* Contenido */}
       <div className="p-3">
-        <h3 className="font-playfair text-sm font-semibold text-texto leading-tight line-clamp-2 mb-1">
+        <h3 className="font-playfair text-sm font-semibold text-texto leading-snug line-clamp-2 mb-1 group-hover:text-primario transition-colors">
           {plato.nombre}
         </h3>
         {plato.descripcion && (
-          <p className="text-[11px] text-texto-secundario line-clamp-2 mb-2.5">
+          <p className="text-[11px] text-texto-secundario line-clamp-2 mb-2.5 leading-relaxed">
             {plato.descripcion}
           </p>
         )}
@@ -59,9 +65,9 @@ export function TarjetaPlatoCliente({ plato, alAgregar }: TarjetaPlatoClientePro
           onClick={() => alAgregar(plato)}
           disabled={!plato.disponible}
           size="sm"
-          className="w-full h-8 text-xs font-semibold bg-primario hover:bg-primario-hover text-primario-texto rounded-lg shadow-sm hover:shadow transition-all active:scale-[0.97]"
+          className="w-full h-8 text-xs font-semibold bg-primario hover:bg-primario-hover text-primario-texto rounded-lg shadow-sm hover:shadow-md transition-all active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <Plus className="w-3.5 h-3.5 mr-1" />
+          <Plus className="w-3.5 h-3.5 mr-1.5" />
           Agregar
         </Button>
       </div>
