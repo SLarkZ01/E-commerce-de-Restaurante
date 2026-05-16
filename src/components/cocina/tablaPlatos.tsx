@@ -153,56 +153,56 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
       )}
 
       <div className="px-6 pt-6 pb-0">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-[#E8472A] to-[#FF6B35] shadow-md shadow-[#E8472A]/20">
-              <Utensils className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h2 className="font-playfair text-2xl font-bold text-[#1A1A2E] tracking-tight leading-none">
-                Gestión de Menú
-              </h2>
-              <div className="flex items-center gap-2 mt-1.5">
-                <span className="h-0.5 w-8 bg-gradient-to-r from-[#E8472A] to-[#FF6B35] rounded-full" />
-                <p className="text-sm text-[#6B7280] font-medium">
-                  {platosFiltrados.length} {platosFiltrados.length === 1 ? "plato" : "platos"} en tu carta
-                </p>
-              </div>
+        {/* Header con título e ícono */}
+        <div className="flex items-center gap-3 mb-5">
+          <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-[#E8472A] to-[#FF6B35] shadow-md shadow-[#E8472A]/20">
+            <Utensils className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h2 className="font-playfair text-2xl font-bold text-[#1A1A2E] tracking-tight leading-none">
+              Platos Disponibles
+            </h2>
+            <div className="flex items-center gap-2 mt-1.5">
+              <span className="h-0.5 w-8 bg-gradient-to-r from-[#E8472A] to-[#FF6B35] rounded-full" />
+              <p className="text-sm text-[#6B7280] font-medium">
+                {platos.filter((p) => p.disponible).length} {platos.filter((p) => p.disponible).length === 1 ? "plato" : "platos"} en tu carta
+              </p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <Sheet>
-              <SheetTrigger className="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-white text-[#6B7280] text-sm font-semibold hover:text-[#E8472A] hover:border-[#E8472A]/30 transition-all duration-200 border border-[#E2E8F0] shadow-sm">
-                <Tags className="w-4 h-4" />
-                <span>Categorías</span>
-              </SheetTrigger>
-              <SheetContent
-                className="sm:max-w-sm p-0 flex flex-col h-[calc(100dvh-2rem)]"
-                showCloseButton={false}
-              >
-                <GestorCategorias
-                  categorias={categorias}
-                  alCrear={handleCrearCategoria}
-                  alEliminar={handleEliminarCategoria}
-                />
-              </SheetContent>
-            </Sheet>
+        </div>
 
-            <Dialog open={mostrandoFormulario} onOpenChange={setMostrandoFormulario}>
-              <DialogTrigger className="inline-flex items-center gap-2 h-10 px-5 rounded-full bg-gradient-to-r from-[#E8472A] to-[#FF6B35] text-white text-sm font-semibold hover:from-[#D43D22] hover:to-[#E8472A] transition-all duration-300 shadow-md shadow-[#E8472A]/25 hover:shadow-lg hover:shadow-[#E8472A]/30 active:scale-[0.97]">
-                <Plus className="w-4 h-4" />
-                <span>Nuevo Plato</span>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
-                <FormularioPlato
-                  alGuardar={handleCrear}
-                  alCancelar={() => setMostrandoFormulario(false)}
-                  categorias={categorias}
-                />
-              </DialogContent>
-            </Dialog>
-          </div>
+        {/* Botones de acción */}
+        <div className="flex items-center gap-3 mb-5">
+          <Sheet>
+            <SheetTrigger className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-white text-[#6B7280] text-sm font-semibold hover:text-[#E8472A] hover:border-[#E8472A]/30 transition-all duration-200 border border-[#E2E8F0] shadow-sm">
+              <Tags className="w-4 h-4" />
+              <span>Categorías</span>
+            </SheetTrigger>
+            <SheetContent
+              className="sm:max-w-sm p-0 flex flex-col h-[calc(100dvh-2rem)]"
+              showCloseButton={false}
+            >
+              <GestorCategorias
+                categorias={categorias}
+                alCrear={handleCrearCategoria}
+                alEliminar={handleEliminarCategoria}
+              />
+            </SheetContent>
+          </Sheet>
+
+          <Dialog open={mostrandoFormulario} onOpenChange={setMostrandoFormulario}>
+            <DialogTrigger className="inline-flex items-center gap-2 h-10 px-5 rounded-full bg-gradient-to-r from-[#E8472A] to-[#FF6B35] text-white text-sm font-semibold hover:from-[#D43D22] hover:to-[#E8472A] transition-all duration-300 shadow-md shadow-[#E8472A]/25 hover:shadow-lg hover:shadow-[#E8472A]/30 active:scale-[0.97]">
+              <Plus className="w-4 h-4" />
+              <span>Nuevo Plato</span>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
+              <FormularioPlato
+                alGuardar={handleCrear}
+                alCancelar={() => setMostrandoFormulario(false)}
+                categorias={categorias}
+              />
+            </DialogContent>
+          </Dialog>
         </div>
 
         {/* Search */}
