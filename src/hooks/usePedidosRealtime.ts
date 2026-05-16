@@ -3,7 +3,14 @@
 import { useCallback } from "react";
 import { crearCliente } from "@/lib/supabase/browser";
 import { useRealtime } from "./useRealtime";
+import type { IServicioRealtime } from "@/lib/servicios/realtimeService";
 import type { PedidoConItems, Pedido, ItemPedidoConPlato } from "@/types";
+
+interface FilaItemPedido {
+  cantidad: number;
+  precio_unitario: number;
+  platos: Array<{ nombre: string }> | null;
+}
 
 async function obtenerItemsPedido(pedidoId: string): Promise<ItemPedidoConPlato[]> {
   const supabase = crearCliente();
@@ -14,56 +21,55 @@ async function obtenerItemsPedido(pedidoId: string): Promise<ItemPedidoConPlato[
 
   if (!data) return [];
 
-  return (data as unknown[]).map((item: unknown) => {
-    const i = item as { cantidad: number; precio_unitario: number; platos: Array<{ nombre: string }> | null };
-    return {
-      plato_nombre: i.platos?.[0]?.nombre ?? "Plato",
-      cantidad: i.cantidad,
-      precio_unitario: i.precio_unitario,
-    };
-  });
+  return (data as unknown as FilaItemPedido[]).map((item: FilaItemPedido) => ({
+    plato_nombre: item.platos?.[0]?.nombre ?? "Plato",
+    cantidad: item.cantidad,
+    precio_unitario: item.precio_unitario,
+  }));
 }
 
-interface CallbacksPedido {
+export interface CallbacksPedido {
   onNuevoPedido: (pedido: PedidoConItems) => void;
   onCambioEstado: (pedidoId: string, nuevoEstado: string) => void;
   onPedidoEntregado: (pedidoId: string) => void;
 }
 
-/**
- * Hook de negocio: Observer completo para pedidos.
- * Suscribe a INSERT, UPDATE y DELETE para reflejar cambios
- * en tiempo real entre múltiples ventanas/dispositivos.
- */
-export function usePedidosRealtime(callbacks: CallbacksPedido) {
+export function usePedidosRealtime(
+  callbacks: CallbacksPedido,
+  servicio?: IServicioRealtime
+) {
   const { onNuevoPedido, onCambioEstado, onPedidoEntregado } = callbacks;
 
-  // INSERT: nuevo pedido creado (desde cualquier cliente/ventana)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const onInsert = useCallback((payload: any) => {
-    const nuevo = payload.new as Pedido;
-    if (nuevo?.estado !== "pendiente") {
-      return;
-    }
+  const onInsert = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (payload: any) => {
+      const nuevo = payload.new as Pedido;
+      if (!nuevo || nuevo.estado !== "pendiente") {
+        return;
+      }
 
-    obtenerItemsPedido(nuevo.id).then((items) => {
-      onNuevoPedido({ ...nuevo, items } as PedidoConItems);
-    });
-  }, [onNuevoPedido]);
+      obtenerItemsPedido(nuevo.id).then((items) => {
+        onNuevoPedido({ ...nuevo, items } as PedidoConItems);
+      });
+    },
+    [onNuevoPedido]
+  );
 
-  // UPDATE: cambio de estado (desde cualquier ventana)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const onUpdate = useCallback((payload: any) => {
-    const nuevo = payload.new as Pedido;
-    if (!nuevo?.estado) return;
+  const onUpdate = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (payload: any) => {
+      const nuevo = payload.new as Pedido;
+      if (!nuevo?.estado) return;
 
-    if (nuevo.estado === "entregado") {
-      onPedidoEntregado(nuevo.id);
-    } else {
-      onCambioEstado(nuevo.id, nuevo.estado);
-    }
-  }, [onCambioEstado, onPedidoEntregado]);
+      if (nuevo.estado === "entregado") {
+        onPedidoEntregado(nuevo.id);
+      } else {
+        onCambioEstado(nuevo.id, nuevo.estado);
+      }
+    },
+    [onCambioEstado, onPedidoEntregado]
+  );
 
-  useRealtime("pedidos", "INSERT", onInsert);
-  useRealtime("pedidos", "UPDATE", onUpdate);
+  useRealtime("pedidos", "INSERT", onInsert, undefined, servicio);
+  useRealtime("pedidos", "UPDATE", onUpdate, undefined, servicio);
 }

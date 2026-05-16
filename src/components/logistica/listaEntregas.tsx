@@ -28,16 +28,15 @@ export function ListaEntregas({ pedidosIniciales }: ListaEntregasProps) {
   const { cambiarEstado } = usePedidos();
 
   // Observer: suscribirse a pedidos que pasan a estado "listo" en tiempo real
+  // El filtro se aplica del lado del servidor (PostgREST filter) para eficiencia
   useRealtime("pedidos", "UPDATE", useCallback((payload) => {
     const actualizado = payload.new as Pedido;
-    if (actualizado.estado === "listo") {
-      setPedidos((prev) => {
-        const existe = prev.find((p) => p.id === actualizado.id);
-        if (existe) return prev;
-        return [...prev, actualizado];
-      });
-    }
-  }, []));
+    setPedidos((prev) => {
+      const existe = prev.find((p) => p.id === actualizado.id);
+      if (existe) return prev;
+      return [...prev, actualizado];
+    });
+  }, []), "estado=eq.listo");
 
   const handleEntregar = async (pedidoId: string) => {
     setConfirmando(null);

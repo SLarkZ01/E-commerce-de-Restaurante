@@ -14,11 +14,14 @@ El proyecto integra **5 patrones de diseño** que operan en distintos niveles de
 
 ### Observer
 ```
-src/hooks/usePedidosRealtime.ts         ← Hook de negocio: INSERT + UPDATE + fetch items
-src/hooks/useRealtime.ts                ← Hook genérico: infraestructura WebSocket
-src/components/cocina/kanbanPedidos.tsx  ← Consumidor UI (kanban)
-src/components/cocina/statsBar.tsx      ← Consumidor UI (contadores)
-src/lib/supabase/browser.ts             ← Cliente WebSocket Supabase
+src/lib/servicios/realtimeService.ts       ← Abstracción DIP: IServicioRealtime + SupabaseRealtimeService
+src/hooks/useRealtime.ts                   ← Hook genérico: infraestructura WebSocket (recibe IServicioRealtime)
+src/hooks/usePedidosRealtime.ts            ← Hook de negocio: INSERT + UPDATE + fetch items de pedidos
+src/hooks/usePlatosRealtime.ts             ← Hook de negocio: INSERT + UPDATE + DELETE de platos
+src/hooks/useMiPedidoRealtime.ts           ← Hook de negocio: UPDATE filtrado por ID del pedido
+src/components/cocina/kanbanPedidos.tsx     ← Consumidor UI (kanban)
+src/components/cocina/statsBar.tsx         ← Consumidor UI (contadores)
+src/components/logistica/listaEntregas.tsx  ← Consumidor UI (entregas con filtro estado=eq.listo)
 ```
 
 ### State

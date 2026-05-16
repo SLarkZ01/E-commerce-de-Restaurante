@@ -1,68 +1,63 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { crearCliente } from "@/lib/supabase/browser";
+import { useEffect, useRef, useState } from "react";
+import { crearRealtimeService } from "@/lib/servicios/realtimeService";
+import type {
+  IServicioRealtime,
+  ISuscripcionRealtime,
+  EventoRealtime,
+} from "@/lib/servicios/realtimeService";
 import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 
-type CallbackCambio = (
-  payload: RealtimePostgresChangesPayload<Record<string, unknown>>
-) => void;
+export type { EventoRealtime };
 
+/**
+ * Hook genérico del patrón Observer.
+ * Suscribe a cambios en una tabla de Supabase vía WebSocket.
+ *
+ * DIP: acepta un IServicioRealtime inyectable. Si no se provee, usa el singleton.
+ */
 export function useRealtime(
   tabla: string,
-  evento: "INSERT" | "UPDATE" | "DELETE" | "*",
-  callback: CallbackCambio,
-  filtro?: string
+  evento: EventoRealtime,
+  callback: (payload: RealtimePostgresChangesPayload<Record<string, unknown>>) => void,
+  filtro?: string,
+  servicio?: IServicioRealtime
 ) {
   const callbackRef = useRef(callback);
-  callbackRef.current = callback;
 
   useEffect(() => {
-    const supabase = crearCliente();
-    const canalNombre = `realtime-${tabla}-${evento}-${filtro ?? "all"}`;
-    let canalActivo = true;
+    callbackRef.current = callback;
+  });
 
-    const channelConfig: Record<string, unknown> = {
-      event: evento,
-      schema: "public",
-      table: tabla,
-    };
+  const [svc] = useState(() => servicio ?? crearRealtimeService());
 
-    if (filtro) {
-      channelConfig.filter = filtro;
-    }
+  useEffect(() => {
+    let activo = true;
+    let suscripcionVigente: ISuscripcionRealtime | null = null;
 
-    // Obtener sesión y configurar auth para realtime
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!canalActivo) return;
-
-      if (session?.access_token) {
-        supabase.realtime.setAuth(session.access_token);
-      }
-
-      const canal = supabase
-        .channel(canalNombre)
-        .on(
-          "postgres_changes" as never,
-          channelConfig,
-          (payload: RealtimePostgresChangesPayload<Record<string, unknown>>) => {
+    svc
+      .suscribir(
+        { tabla, evento, filtro, schema: "public" },
+        (payload) => {
+          if (activo) {
             callbackRef.current(payload);
           }
-        )
-        .subscribe((status: string) => {
-          if (status === "CHANNEL_ERROR") {
-            console.error(`[Observer] Error en canal ${tabla}:`, status);
-          }
-        });
-
-      // Guardar referencia para cleanup
-      (canal as any)._cleanup = () => {
-        supabase.removeChannel(canal).catch(() => {});
-      };
-    });
+        }
+      )
+      .then((suscripcion) => {
+        if (activo) {
+          suscripcionVigente = suscripcion;
+        } else {
+          suscripcion.cancelar();
+        }
+      });
 
     return () => {
-      canalActivo = false;
+      activo = false;
+      if (suscripcionVigente) {
+        suscripcionVigente.cancelar();
+      }
     };
-  }, [tabla, evento, filtro]);
+  }, [svc, tabla, evento, filtro]);
 }

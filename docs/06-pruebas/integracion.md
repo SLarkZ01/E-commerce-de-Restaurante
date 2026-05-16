@@ -37,3 +37,14 @@ Las pruebas de integración requieren una instancia de Supabase local o un proye
 | I-10 | Cliente anónimo no modifica platos | 1. Sin autenticación<br>2. Intentar UPDATE en `platos` | ❌ Error 401/403 (RLS) |
 | I-11 | Mesero no modifica platos | 1. Autenticado como `mesero`<br>2. Intentar INSERT en `platos` | ❌ Error 403 (RLS: solo cocinero/admin) |
 | I-12 | Admin gestiona personal | 1. Autenticado como `admin`<br>2. Crear usuario con rol `cocinero` | ✅ Usuario creado en `perfiles` |
+
+### Flujo 5: Observer — Realtime
+
+| ID | Caso | Pasos | Resultado esperado |
+|---|---|---|---|
+| I-13 | useRealtime suscribe correctamente | 1. Montar hook con tabla="pedidos", evento="INSERT" | `IServicioRealtime.suscribir()` llamado con los parámetros correctos |
+| I-14 | Filtro se propaga al servicio | 1. Montar hook con `filtro="estado=eq.listo"` | El servicio recibe el filtro en la configuración del canal |
+| I-15 | Evento Realtime dispara callback | 1. Hook montado<br>2. Servicio emite payload INSERT | El callback del hook es invocado con el payload |
+| I-16 | Cancelación al desmontar | 1. Montar hook<br>2. Desmontar antes de resolver promesa | `cancelar()` es invocado al resolver la promesa |
+| I-17 | usePedidosRealtime: INSERT pendiente | 1. Emitir INSERT con estado="pendiente" | `onNuevoPedido` llamado con el pedido + items |
+| I-18 | usePedidosRealtime: UPDATE entregado | 1. Emitir UPDATE con estado="entregado" | `onPedidoEntregado` llamado con el ID |

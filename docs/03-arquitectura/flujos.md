@@ -73,4 +73,29 @@ sequenceDiagram
     DB->>RT: Evento: cambio en platos
     RT-->>CL: Menú se actualiza sin recargar
     SA-->>UI: Confirmación
+
+## Flujo 4: Seguimiento del pedido del cliente (Observer)
+
+```mermaid
+sequenceDiagram
+    actor CL as Cliente
+    participant APP as Next.js /mesa/[uuid]
+    participant RT as Supabase Realtime
+    participant DB as Supabase DB
+    participant CK as Chef (Panel Cocina)
+
+    CL->>APP: Pago completado, pedido creado
+    APP->>RT: useMiPedidoRealtime(pedidoId)
+    Note right of APP: Suscrito a UPDATE con filtro id=eq.{pedidoId}
+
+    CK->>DB: UPDATE pedido SET estado = 'preparando'
+    DB->>RT: Evento: cambio de estado
+    RT-->>APP: onEstadoCambiado("preparando")
+    APP-->>CL: "Tu pedido está siendo preparado"
+
+    CK->>DB: UPDATE pedido SET estado = 'listo'
+    DB->>RT: Evento: cambio de estado
+    RT-->>APP: onEstadoCambiado("listo")
+    APP-->>CL: "Tu pedido está listo"
+```
 ```
