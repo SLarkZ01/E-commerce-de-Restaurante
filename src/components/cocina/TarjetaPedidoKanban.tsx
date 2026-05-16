@@ -32,10 +32,10 @@ export function TarjetaPedidoKanban({
         <Button
           onClick={() => onCambiarEstado(pedido.id, "preparando")}
           size="sm"
-          className="w-full bg-primario hover:bg-primario-hover text-primario-texto text-sm font-semibold active:scale-[0.98] h-10 rounded-xl"
+          className="w-full bg-primario hover:bg-primario-hover text-primario-texto text-sm font-medium active:scale-[0.98] h-9"
         >
           Iniciar Preparación
-          <ArrowRight className="w-4 h-4 ml-1.5" />
+          <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
         </Button>
       );
     }
@@ -44,9 +44,9 @@ export function TarjetaPedidoKanban({
         <Button
           onClick={() => onCambiarEstado(pedido.id, "listo")}
           size="sm"
-          className="w-full bg-exito hover:bg-exito/90 text-white text-sm font-semibold active:scale-[0.98] h-10 rounded-xl"
+          className="w-full bg-exito hover:bg-exito/90 text-white text-sm font-medium active:scale-[0.98] h-9"
         >
-          <Check className="w-4 h-4 mr-1.5" />
+          <Check className="w-3.5 h-3.5 mr-1.5" />
           Marcar Listo
         </Button>
       );
@@ -57,9 +57,9 @@ export function TarjetaPedidoKanban({
           onClick={() => onCambiarEstado(pedido.id, "entregado")}
           size="sm"
           variant="outline"
-          className="w-full text-sm font-semibold active:scale-[0.98] h-10 rounded-xl border-borde hover:bg-fondo-oscuro"
+          className="w-full text-sm font-medium active:scale-[0.98] h-9 border-borde/80 hover:bg-fondo-oscuro text-texto"
         >
-          <PackageCheck className="w-4 h-4 mr-1.5" />
+          <PackageCheck className="w-3.5 h-3.5 mr-1.5" />
           Entregar
         </Button>
       );
@@ -67,59 +67,64 @@ export function TarjetaPedidoKanban({
     return null;
   };
 
+  const barraColor = config.border.replace("border-l-", "bg-");
+
   return (
-    <Card className="bg-fondo-card border-0 shadow-[0_1px_3px_rgba(45,42,38,0.06)] hover:shadow-[0_4px_12px_rgba(45,42,38,0.1)] transition-all rounded-2xl overflow-hidden">
-      <div className={`h-1 w-full ${config.border.replace("border-l-", "bg-")}`} />
-      <CardHeader className="pb-2 pt-4 px-4">
+    <Card className="bg-fondo-card border border-borde/40 shadow-sm hover:shadow-md transition-shadow rounded-xl overflow-hidden">
+      <div className={`h-0.5 w-full ${barraColor}`} />
+      <CardHeader className="pb-2 pt-3 px-3.5">
         <div className="flex items-center justify-between">
-          <CardTitle className="font-playfair text-lg font-bold text-texto">
-            Mesa {pedido.mesa_id ? `#${pedido.mesa_id.slice(0, 4)}` : "?"}
-          </CardTitle>
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-[10px] font-medium text-texto-terciario uppercase tracking-wider">Mesa</span>
+            <CardTitle className="font-playfair text-base font-semibold text-texto leading-none">
+              #{pedido.mesa_id ? pedido.mesa_id.slice(0, 4) : "?"}
+            </CardTitle>
+          </div>
           <Badge
             variant="secondary"
-            className={`${config.bg} ${config.color} text-[10px] font-semibold px-2 py-0.5`}
+            className={`${config.bg} ${config.color} text-[10px] font-medium px-2 py-0 shrink-0`}
           >
             {config.label}
           </Badge>
         </div>
-        <div className="flex items-center gap-2 mt-1">
+        <div className="flex items-center gap-1.5 mt-1.5">
           <Timer
-            className={`w-3.5 h-3.5 ${urgente ? "text-advertencia animate-pulse" : "text-texto-terciario"}`}
+            className={`w-3 h-3 ${urgente ? "text-error" : "text-texto-terciario"}`}
           />
           <span
-            className={`text-xs ${urgente ? "text-advertencia font-semibold" : "text-texto-terciario"}`}
+            className={`text-xs ${urgente ? "text-error font-medium" : "text-texto-terciario"}`}
           >
             {formatear(pedido.creado_en)}
           </span>
           {urgente && (
-            <Badge variant="destructive" className="text-[10px] font-semibold px-1.5 py-0 ml-1 animate-pulse">
+            <span className="text-[10px] font-semibold text-error bg-error/10 px-1.5 py-0.5 rounded-md ml-0.5">
               Urgente
-            </Badge>
+            </span>
           )}
         </div>
       </CardHeader>
 
-      <CardContent className="pb-2 px-4">
-        <div className="space-y-1.5 mb-3">
+      <CardContent className="pb-2 px-3.5">
+        <div className="space-y-1 mb-2.5">
           {pedido.items.map((item, i) => (
-            <div key={i} className="flex items-center justify-between text-sm">
-              <span className="text-texto font-medium">
-                <span className="text-primario font-bold mr-2">{item.cantidad}x</span>
-                {item.plato_nombre}
+            <div key={i} className="flex items-start gap-2 text-sm">
+              <span className="text-primario font-semibold text-xs tabular-nums mt-0.5 shrink-0 w-5 text-right">
+                {item.cantidad}x
               </span>
+              <span className="text-texto font-medium leading-snug">{item.plato_nombre}</span>
             </div>
           ))}
         </div>
-        <Separator className="bg-borde/50" />
-        <div className="flex items-center justify-between mt-3">
-          <span className="text-xs text-texto-secundario font-medium">Total</span>
-          <span className="font-playfair text-base font-bold text-primario tabular-nums">
+        <Separator className="bg-borde/40" />
+        <div className="flex items-center justify-between mt-2.5">
+          <span className="text-xs text-texto-terciario font-medium">Total</span>
+          <span className="font-playfair text-sm font-semibold text-texto tabular-nums">
             {formatearPrecio(pedido.total)}
           </span>
         </div>
       </CardContent>
 
-      <CardFooter className="px-4 pb-4 pt-2">
+      <CardFooter className="px-3.5 pb-3 pt-1.5">
         {renderBotonAccion()}
       </CardFooter>
     </Card>

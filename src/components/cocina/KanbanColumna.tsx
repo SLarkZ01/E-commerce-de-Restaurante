@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { TarjetaPedidoKanban } from "./TarjetaPedidoKanban";
 import { EstadoVacio } from "@/components/compartidos/EstadoVacio";
 import type { PedidoConItems } from "@/types";
@@ -20,29 +20,26 @@ export function KanbanColumna({
   onCambiarEstado,
 }: KanbanColumnaProps) {
   return (
-    <div className={`flex-1 min-w-0 md:min-w-[340px] md:max-w-[440px] flex flex-col rounded-2xl overflow-hidden ${config.bgColumna}`}>
-      <CardHeader className="pb-4 pt-5 px-5">
+    <div className={`flex-1 min-w-0 flex flex-col rounded-xl overflow-hidden border border-borde/30 ${config.bgColumna}`}>
+      <CardHeader className="pb-3 pt-3.5 px-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2">
             <span className={config.color}>{config.icon}</span>
-            <CardTitle className="text-sm font-semibold uppercase tracking-wide text-texto-secundario">
+            <CardTitle className="text-xs font-semibold uppercase tracking-wider text-texto-secundario">
               {config.label}
             </CardTitle>
           </div>
           <Badge
             variant="secondary"
-            className={`${config.bg} ${config.color} text-xs font-bold px-2.5 py-1`}
+            className={`${config.bg} ${config.color} text-xs font-semibold px-2 py-0.5`}
           >
             {pedidos.length}
           </Badge>
         </div>
-        <CardDescription className="text-xs mt-1">
-          {pedidos.length} {config.desc}
-        </CardDescription>
       </CardHeader>
 
-      <CardContent className="flex-1 px-4 pb-4">
-        <ScrollArea className="pr-2" style={{ maxHeight: "calc(100dvh - 340px)" }}>
+      <CardContent className="flex-1 px-3 pb-3">
+        <ScrollArea className="pr-1.5" style={{ maxHeight: "calc(100dvh - 280px)" }}>
           {pedidos.length === 0 ? (
             <EstadoVacio
               elementoIcono={
@@ -52,7 +49,7 @@ export function KanbanColumna({
               descripcion="Los pedidos aparecerán aquí"
             />
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               {pedidos.map((pedido) => (
                 <TarjetaPedidoKanban
                   key={pedido.id}
