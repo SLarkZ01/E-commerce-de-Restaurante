@@ -10,46 +10,39 @@ interface TarjetaMesaProps {
 
 export function TarjetaMesa({ mesa, onEliminar, onVerQR }: TarjetaMesaProps) {
   return (
-    <div className="bg-fondo-card rounded-xl border border-borde/60 p-5 shadow-[0_1px_3px_rgba(45,42,38,0.04)] hover:shadow-[0_4px_12px_rgba(45,42,38,0.08)] transition-all group">
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div className="w-14 h-14 rounded-xl bg-primario/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-            <span className="font-playfair text-xl font-bold text-primario">
-              {mesa.numero}
-            </span>
-          </div>
-          <div>
-            <p className="text-xs font-medium text-texto-secundario uppercase tracking-wide">
-              Mesa
-            </p>
-            <p className="font-playfair text-xl font-bold text-texto">
-              #{mesa.numero}
-            </p>
-          </div>
-        </div>
-        <button
-          onClick={() => onEliminar(mesa.id)}
-          className="text-texto-terciario hover:text-error transition-colors p-2 rounded-lg hover:bg-error/10"
-          aria-label={`Eliminar mesa ${mesa.numero}`}
-        >
-          <Trash2 className="w-4 h-4" />
-        </button>
-      </div>
+    <div className="group relative bg-fondo-card rounded-xl border border-borde/50 p-5 shadow-[0_1px_2px_rgba(45,42,38,0.03)] hover:shadow-[0_4px_12px_rgba(45,42,38,0.06)] hover:border-borde transition-all">
+      <button
+        onClick={() => onEliminar(mesa.id)}
+        className="absolute top-3 right-3 text-texto-terciario hover:text-error opacity-0 group-hover:opacity-100 transition-all p-1.5 rounded-lg hover:bg-error/10"
+        aria-label={`Eliminar mesa ${mesa.numero}`}
+      >
+        <Trash2 className="w-3.5 h-3.5" />
+      </button>
 
-      <div className="bg-fondo-oscuro rounded-lg p-2.5 mb-4 border border-borde/30">
-        <p className="text-[10px] text-texto-terciario font-mono truncate">
-          {mesa.codigo_qr}
-        </p>
+      <div className="flex items-center gap-4 mb-4">
+        <div className="w-12 h-12 rounded-lg bg-primario/10 flex items-center justify-center group-hover:bg-primario/15 transition-colors">
+          <span className="font-playfair text-lg font-bold text-primario">
+            {mesa.numero}
+          </span>
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-texto truncate">
+            Mesa {mesa.numero}
+          </p>
+          <p className="text-[11px] text-texto-terciario font-mono truncate mt-0.5">
+            {mesa.codigo_qr}
+          </p>
+        </div>
       </div>
 
       <Button
         onClick={() => onVerQR(mesa)}
         variant="outline"
         size="sm"
-        className="w-full h-10 text-sm font-medium"
+        className="w-full h-9 text-xs font-medium"
       >
-        <QrCode className="w-4 h-4 mr-2" />
-        Ver QR
+        <QrCode className="w-3.5 h-3.5 mr-1.5" />
+        Ver código QR
       </Button>
     </div>
   );

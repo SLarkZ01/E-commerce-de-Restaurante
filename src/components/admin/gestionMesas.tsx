@@ -62,7 +62,17 @@ export function GestionMesas({
       )}
 
       <div className="p-6">
-        <FormularioCrearMesa onCrear={handleCrear} />
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
+          <FormularioCrearMesa onCrear={handleCrear} />
+          {mesas.length > 0 && (
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-fondo-oscuro rounded-lg border border-borde/40 shrink-0">
+              <QrCode className="w-3.5 h-3.5 text-texto-terciario" />
+              <span className="text-xs font-medium text-texto-secundario">
+                {mesas.length} {mesas.length === 1 ? "mesa" : "mesas"}
+              </span>
+            </div>
+          )}
+        </div>
 
         {mesas.length === 0 ? (
           <EstadoVacio

@@ -25,32 +25,32 @@ export function FormularioCrearMesa({ onCrear }: FormularioCrearMesaProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 mb-6">
-      <div className="relative flex-1 sm:flex-none sm:w-48">
+    <form onSubmit={handleSubmit} className="flex items-center gap-2">
+      <div className="relative">
         <Input
           type="number"
           value={numero}
           onChange={(e) => setNumero(e.target.value)}
           required
           min={1}
-          placeholder="Número de mesa"
-          className="h-11 pl-4 pr-4"
+          placeholder="Nº de mesa"
+          className="h-9 w-32 text-sm"
         />
       </div>
       <Button
         type="submit"
         disabled={creando}
-        className="bg-primario hover:bg-primario-hover text-primario-texto rounded-xl h-11 px-6 shadow-sm"
+        className="bg-primario hover:bg-primario-hover text-primario-texto rounded-lg h-9 px-4 text-sm shadow-sm"
       >
         {creando ? (
           <>
-            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
             Creando...
           </>
         ) : (
           <>
-            <Plus className="w-4 h-4 mr-2" />
-            Agregar Mesa
+            <Plus className="w-3.5 h-3.5 mr-1.5" />
+            Agregar
           </>
         )}
       </Button>
