@@ -1,31 +1,28 @@
 "use client";
 
 import { useCallback } from "react";
-import { crearCliente } from "@/lib/supabase/browser";
+import { obtenerItemsPorPedido } from "@/lib/acciones/cocina";
 import { useRealtime } from "./useRealtime";
 import type { IServicioRealtime } from "@/lib/servicios/realtimeService";
 import type { PedidoConItems, Pedido, ItemPedidoConPlato } from "@/types";
 
-interface FilaItemPedido {
-  cantidad: number;
-  precio_unitario: number;
-  platos: Array<{ nombre: string }> | null;
-}
+const RETRASOS_REINTENTO = [200, 400];
+const MAX_REINTENTOS = RETRASOS_REINTENTO.length;
 
-async function obtenerItemsPedido(pedidoId: string): Promise<ItemPedidoConPlato[]> {
-  const supabase = crearCliente();
-  const { data } = await supabase
-    .from("items_pedido")
-    .select("cantidad, precio_unitario, platos(nombre)")
-    .eq("pedido_id", pedidoId);
+async function obtenerItemsConReintento(pedidoId: string): Promise<ItemPedidoConPlato[]> {
+  for (let intento = 0; intento <= MAX_REINTENTOS; intento++) {
+    const items = await obtenerItemsPorPedido(pedidoId);
 
-  if (!data) return [];
+    if (items.length > 0) {
+      return items;
+    }
 
-  return (data as unknown as FilaItemPedido[]).map((item: FilaItemPedido) => ({
-    plato_nombre: item.platos?.[0]?.nombre ?? "Plato",
-    cantidad: item.cantidad,
-    precio_unitario: item.precio_unitario,
-  }));
+    if (intento < MAX_REINTENTOS) {
+      await new Promise((r) => setTimeout(r, RETRASOS_REINTENTO[intento]));
+    }
+  }
+
+  return [];
 }
 
 export interface CallbacksPedido {
@@ -48,7 +45,7 @@ export function usePedidosRealtime(
         return;
       }
 
-      obtenerItemsPedido(nuevo.id).then((items) => {
+      obtenerItemsConReintento(nuevo.id).then((items) => {
         onNuevoPedido({ ...nuevo, items } as PedidoConItems);
       });
     },

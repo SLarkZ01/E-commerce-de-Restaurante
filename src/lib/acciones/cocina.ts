@@ -144,6 +144,28 @@ export async function obtenerPedidosConItems(): Promise<PedidoConItems[]> {
   });
 }
 
+export async function obtenerItemsPorPedido(
+  pedidoId: string
+): Promise<ItemPedidoConPlato[]> {
+  const supabase = await crearCliente();
+  const { data } = await supabase
+    .from("items_pedido")
+    .select("cantidad, precio_unitario, platos(nombre)")
+    .eq("pedido_id", pedidoId);
+
+  if (!data) return [];
+
+  return (data as unknown as Array<{
+    cantidad: number;
+    precio_unitario: number;
+    platos: { nombre: string } | null;
+  }>).map((item) => ({
+    plato_nombre: item.platos?.nombre ?? "Plato",
+    cantidad: item.cantidad,
+    precio_unitario: item.precio_unitario,
+  }));
+}
+
 export async function obtenerStatsCocina(): Promise<StatsCocina> {
   const supabase = await crearCliente();
 

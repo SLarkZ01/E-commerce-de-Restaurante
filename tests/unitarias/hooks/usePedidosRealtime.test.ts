@@ -10,6 +10,15 @@ import { usePedidosRealtime } from "@/hooks/usePedidosRealtime";
 import type { IServicioRealtime } from "@/lib/servicios/realtimeService";
 import type { Pedido } from "@/types";
 
+vi.mock("@/lib/acciones/cocina", () => ({
+  obtenerItemsPorPedido: vi.fn().mockResolvedValue([
+    { plato_nombre: "Pizza", cantidad: 2, precio_unitario: 20000 },
+    { plato_nombre: "Bebida", cantidad: 1, precio_unitario: 5000 },
+  ]),
+}));
+
+import { obtenerItemsPorPedido } from "@/lib/acciones/cocina";
+
 type MockSuscribir = ReturnType<typeof vi.fn>;
 
 function crearMockServicio() {
@@ -43,6 +52,9 @@ describe("usePedidosRealtime", () => {
   beforeEach(() => {
     servicio = crearMockServicio();
     vi.clearAllMocks();
+    vi.mocked(obtenerItemsPorPedido).mockResolvedValue([
+      { plato_nombre: "Pizza", cantidad: 2, precio_unitario: 20000 },
+    ]);
   });
 
   it("suscribe a INSERT y UPDATE en pedidos", () => {
