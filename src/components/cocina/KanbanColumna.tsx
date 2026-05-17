@@ -1,5 +1,4 @@
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { TarjetaPedidoKanban } from "./TarjetaPedidoKanban";
 import { EstadoVacio } from "@/components/compartidos/EstadoVacio";
@@ -38,8 +37,8 @@ export function KanbanColumna({
         </div>
       </CardHeader>
 
-      <CardContent className="flex-1 px-3 pb-3">
-        <ScrollArea className="pr-1.5" style={{ maxHeight: "calc(100dvh - 280px)" }}>
+      <CardContent className="flex-1 min-h-0 px-3 pb-3">
+        <div className="h-full overflow-y-auto pr-1.5">
           {pedidos.length === 0 ? (
             <EstadoVacio
               elementoIcono={
@@ -61,7 +60,7 @@ export function KanbanColumna({
               ))}
             </div>
           )}
-        </ScrollArea>
+        </div>
       </CardContent>
     </div>
   );
