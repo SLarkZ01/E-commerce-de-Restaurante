@@ -29,18 +29,22 @@ export async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const pathname = request.nextUrl.pathname;
+
+  if (user && pathname === "/") {
+    const url = request.nextUrl.clone();
+    url.pathname = "/cocina";
+    return NextResponse.redirect(url);
+  }
+
   const rutasProtegidas = ["/cocina", "/logistica", "/admin"];
-  const esProtegida = rutasProtegidas.some((r) =>
-    request.nextUrl.pathname.startsWith(r)
-  );
+  const esProtegida = rutasProtegidas.some((r) => pathname.startsWith(r));
 
   if (!user && esProtegida) {
     const url = request.nextUrl.clone();
-    url.pathname = "/login";
+    url.pathname = "/";
     return NextResponse.redirect(url);
   }
 
   return respuestaSupabase;
 }
-
-

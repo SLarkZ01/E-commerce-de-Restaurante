@@ -10,19 +10,21 @@ export interface ResultadoPedido {
 }
 
 export function usePedidos() {
-  const cambiarEstado = useCallback(async (
-    pedidoId: string,
-    nuevoEstado: EstadoPedido,
-    rolUsuario: string
-  ): Promise<ResultadoPedido> => {
-    const resultado = await cambiarEstadoPedidoAction(pedidoId, nuevoEstado, rolUsuario);
+  const cambiarEstado = useCallback(
+    async (
+      pedidoId: string,
+      nuevoEstado: EstadoPedido
+    ): Promise<ResultadoPedido> => {
+      const resultado = await cambiarEstadoPedidoAction(pedidoId, nuevoEstado);
 
-    if (resultado.error) {
-      return { exito: false, error: resultado.error };
-    }
+      if (resultado.error) {
+        return { exito: false, error: resultado.error };
+      }
 
-    return { exito: true };
-  }, []);
+      return { exito: true };
+    },
+    []
+  );
 
   return { cambiarEstado };
 }

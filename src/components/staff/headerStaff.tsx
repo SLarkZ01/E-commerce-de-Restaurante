@@ -8,23 +8,31 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { SidebarStaff } from "./sidebarStaff";
 import { obtenerIniciales } from "@/lib/iniciales";
+import type { Rol } from "@/types";
 
 interface HeaderStaffProps {
   userEmail: string;
+  rol: Rol;
   collapsed: boolean;
   onToggle: () => void;
 }
 
-const SECCIONES: Record<string, { titulo: string; descripcion: string; padre?: string }> = {
-  "/cocina": { titulo: "Pedidos", descripcion: "Panel de pedidos en tiempo real" },
-  "/cocina/platos": { titulo: "Gestión de Menú", descripcion: "Administra platos y categorías", padre: "Cocina" },
-  "/logistica": { titulo: "Platos Listos", descripcion: "Panel de entregas pendientes" },
-  "/admin": { titulo: "Dashboard", descripcion: "Vista general del negocio de E-Kitchen" },
-  "/admin/personal": { titulo: "Gestión de Personal", descripcion: "Administra el equipo del restaurante", padre: "Admin" },
-  "/admin/mesas": { titulo: "Gestión de Mesas", descripcion: "Administra mesas y códigos QR", padre: "Admin" },
+const ETIQUETAS_ROL: Record<Rol, string> = {
+  cocinero: "Cocinero",
+  mesero: "Mesero",
+  admin: "Admin",
 };
 
-export function HeaderStaff({ userEmail, collapsed, onToggle }: HeaderStaffProps) {
+const SECCIONES: Record<string, { titulo: string; descripcion: string }> = {
+  "/cocina": { titulo: "Pedidos", descripcion: "Panel de pedidos en tiempo real" },
+  "/cocina/platos": { titulo: "Gestión de Menú", descripcion: "Administra platos y categorías" },
+  "/logistica": { titulo: "Platos Listos", descripcion: "Panel de entregas pendientes" },
+  "/admin": { titulo: "Dashboard", descripcion: "Vista general del negocio" },
+  "/admin/personal": { titulo: "Gestión de Personal", descripcion: "Administra el equipo del restaurante" },
+  "/admin/mesas": { titulo: "Gestión de Mesas", descripcion: "Administra mesas y códigos QR" },
+};
+
+export function HeaderStaff({ userEmail, rol, collapsed, onToggle }: HeaderStaffProps) {
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
   const [hora, setHora] = useState(() => new Date());
@@ -64,7 +72,7 @@ export function HeaderStaff({ userEmail, collapsed, onToggle }: HeaderStaffProps
             <Menu className="w-5 h-5" />
           </SheetTrigger>
           <SheetContent side="left" className="w-[300px] p-0 gap-0">
-            <SidebarStaff userEmail={userEmail} mobile />
+            <SidebarStaff userEmail={userEmail} rol={rol} mobile />
           </SheetContent>
         </Sheet>
 
@@ -81,6 +89,10 @@ export function HeaderStaff({ userEmail, collapsed, onToggle }: HeaderStaffProps
       </div>
 
       <div className="flex items-center gap-4">
+        <span className="hidden sm:inline-flex items-center px-3 py-1.5 rounded-lg bg-fondo-oscuro text-xs font-medium text-texto-secundario">
+          {ETIQUETAS_ROL[rol]}
+        </span>
+
         <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-fondo-oscuro rounded-lg">
           <span className="text-sm font-mono font-medium text-texto-secundario tabular-nums">
             {horaFormateada}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Loader2, User, Mail, Users, ChefHat } from "lucide-react";
+import { Loader2, User, Mail, Users, ChefHat, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -14,6 +14,7 @@ const ROLES = [
 export interface DatosPersonal {
   nombre: string;
   email: string;
+  password: string;
   rol: string;
 }
 
@@ -25,14 +26,16 @@ interface FormularioPersonalProps {
 export function FormularioPersonal({ alGuardar, alCancelar }: FormularioPersonalProps) {
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [rol, setRol] = useState("cocinero");
   const [guardando, setGuardando] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (password.length < 6) return;
     setGuardando(true);
     try {
-      await alGuardar({ nombre, email, rol });
+      await alGuardar({ nombre, email, password, rol });
     } finally {
       setGuardando(false);
     }
@@ -67,6 +70,23 @@ export function FormularioPersonal({ alGuardar, alCancelar }: FormularioPersonal
             onChange={(e) => setEmail(e.target.value)}
             required
             placeholder="juan@ekitchen.com"
+            className="h-10 pl-10"
+          />
+        </div>
+      </div>
+      <div>
+        <label className="block text-xs font-medium text-texto-secundario mb-2">
+          Contraseña
+        </label>
+        <div className="relative">
+          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-texto-terciario" />
+          <Input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            minLength={6}
+            placeholder="Mínimo 6 caracteres"
             className="h-10 pl-10"
           />
         </div>

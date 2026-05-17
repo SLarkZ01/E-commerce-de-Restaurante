@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { SidebarStaff } from "@/components/staff/sidebarStaff";
 import { HeaderStaff } from "@/components/staff/headerStaff";
+import type { Rol } from "@/types";
 
 const STORAGE_KEY = "ekitchen-sidebar-collapsed";
 
@@ -13,9 +14,11 @@ function esMovil() {
 
 export function StaffLayoutClient({
   userEmail,
+  rol,
   children,
 }: {
   userEmail: string;
+  rol: Rol;
   children: React.ReactNode;
 }) {
   const [collapsed, setCollapsed] = useState(() => esMovil());
@@ -54,6 +57,7 @@ export function StaffLayoutClient({
       <div className="hidden md:block">
         <SidebarStaff
           userEmail={userEmail}
+          rol={rol}
           collapsed={collapsed}
           onToggle={toggle}
         />
@@ -61,6 +65,7 @@ export function StaffLayoutClient({
       <div className="flex-1 flex flex-col overflow-hidden">
         <HeaderStaff
           userEmail={userEmail}
+          rol={rol}
           collapsed={collapsed}
           onToggle={toggle}
         />

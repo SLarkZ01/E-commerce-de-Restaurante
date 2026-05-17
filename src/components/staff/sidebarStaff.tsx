@@ -1,17 +1,17 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { Flame } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { NavLink } from "./NavLink";
-import { SeccionAdmin } from "./SeccionAdmin";
 import { PieUsuario } from "./PieUsuario";
 import { useActiveRoute } from "@/hooks/useActiveRoute";
-import { NAV_ITEMS, ADMIN_ITEMS } from "./configNavegacion";
+import { ITEMS_NAVEGACION } from "./configNavegacion";
+import type { Rol } from "@/types";
 
 interface SidebarStaffProps {
   userEmail: string;
+  rol: Rol;
   mobile?: boolean;
   collapsed?: boolean;
   onToggle?: () => void;
@@ -19,63 +19,20 @@ interface SidebarStaffProps {
 
 export function SidebarStaff({
   userEmail,
+  rol,
   mobile,
   collapsed = false,
   onToggle,
 }: SidebarStaffProps) {
-  const [adminOpen, setAdminOpen] = useState(true);
-  const { isActive, isAdminSection } = useActiveRoute();
+  const { isActive } = useActiveRoute();
 
-  if (mobile) {
-    return (
-      <aside className="w-full bg-fondo flex flex-col h-full">
-        <div className="p-5">
-          <Link href="/cocina" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-primario flex items-center justify-center shadow-sm">
-              <Flame className="w-5 h-5 text-primario-texto" />
-            </div>
-            <span className="font-playfair text-xl font-bold text-texto tracking-tight">
-              E-Kitchen
-            </span>
-          </Link>
-        </div>
+  const itemsVisibles = ITEMS_NAVEGACION.filter((item) =>
+    item.roles.includes(rol)
+  );
 
-        <Separator className="mb-3" />
-
-        <nav className="flex-1 px-4 py-3 space-y-1.5 overflow-y-auto">
-          {NAV_ITEMS.map((item) => (
-            <NavLink
-              key={item.href}
-              item={item}
-              isActive={isActive(item.href)}
-            />
-          ))}
-
-          <SeccionAdmin
-            items={ADMIN_ITEMS}
-            isActive={isActive}
-            isAdminSection={isAdminSection}
-            abierto={adminOpen}
-            onToggle={() => setAdminOpen(!adminOpen)}
-          />
-        </nav>
-
-        <Separator className="mb-3" />
-
-        <PieUsuario email={userEmail} />
-      </aside>
-    );
-  }
-
-  const sidebarWidth = collapsed ? "w-[72px]" : "w-[260px]";
-
-  return (
-    <aside
-      className={`${sidebarWidth} bg-fondo border-r border-borde/60 flex flex-col shrink-0 h-dvh sticky top-0 transition-all duration-300 ease-in-out`}
-    >
-      <div
-        className={`flex items-center ${collapsed ? "justify-center" : "gap-3"} p-5`}
-      >
+  const contenido = (
+    <>
+      <div className={mobile ? "p-5" : `flex items-center ${collapsed ? "justify-center" : "gap-3"} p-5`}>
         <Link href="/cocina" className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-primario flex items-center justify-center shadow-sm shrink-0">
             <Flame className="w-5 h-5 text-primario-texto" />
@@ -90,24 +47,26 @@ export function SidebarStaff({
 
       <Separator className="mb-3" />
 
-      <nav className="flex-1 px-3 py-3 space-y-1.5 overflow-y-auto">
-        {NAV_ITEMS.map((item) => (
-          <NavLink
-            key={item.href}
-            item={item}
-            isActive={isActive(item.href)}
-            colapsado={collapsed}
-          />
+      <nav className={`flex-1 ${mobile ? "px-4 py-3" : "px-3 py-3"} space-y-1.5 overflow-y-auto`}>
+        {itemsVisibles.map((item, index) => (
+          <div key={item.href}>
+            {item.separadorAntes && index > 0 && !collapsed && (
+              <div className="my-3 px-3">
+                <Separator />
+              </div>
+            )}
+            {item.separadorAntes && index > 0 && collapsed && (
+              <div className="my-2 px-2">
+                <Separator />
+              </div>
+            )}
+            <NavLink
+              item={item}
+              isActive={isActive(item.href)}
+              colapsado={collapsed}
+            />
+          </div>
         ))}
-
-        <SeccionAdmin
-          items={ADMIN_ITEMS}
-          isActive={isActive}
-          isAdminSection={isAdminSection}
-          abierto={adminOpen}
-          onToggle={() => setAdminOpen(!adminOpen)}
-          colapsado={collapsed}
-        />
       </nav>
 
       <Separator className="mb-3" />
@@ -117,6 +76,24 @@ export function SidebarStaff({
         colapsado={collapsed}
         onToggle={onToggle}
       />
+    </>
+  );
+
+  if (mobile) {
+    return (
+      <aside className="w-full bg-fondo flex flex-col h-full">
+        {contenido}
+      </aside>
+    );
+  }
+
+  const sidebarWidth = collapsed ? "w-[72px]" : "w-[260px]";
+
+  return (
+    <aside
+      className={`${sidebarWidth} bg-fondo border-r border-borde/60 flex flex-col shrink-0 h-dvh sticky top-0 transition-all duration-300 ease-in-out`}
+    >
+      {contenido}
     </aside>
   );
 }

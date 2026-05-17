@@ -77,7 +77,7 @@ export function GestionPersonal({ perfilesIniciales }: { perfilesIniciales: Perf
                 Agregar Personal
               </DialogTitle>
               <DialogDescription className="text-sm text-texto-secundario">
-                Se enviará un correo de invitación para crear contraseña
+                Crea una cuenta para un miembro del staff. Podrá iniciar sesión de inmediato.
               </DialogDescription>
             </DialogHeader>
             <FormularioPersonal

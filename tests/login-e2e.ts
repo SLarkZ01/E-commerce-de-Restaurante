@@ -11,12 +11,12 @@ async function main() {
   page.on("console", (msg) => console.log(`   [Browser ${msg.type()}] ${msg.text()}`));
   page.on("pageerror", (err) => console.log(`   [Browser error] ${err.message}`));
 
-  console.log("1. Navegando a /login...");
-  const res = await page.goto(`${BASE}/login`, { waitUntil: "networkidle" });
+  console.log("1. Navegando a / ...");
+  const res = await page.goto(`${BASE}/`, { waitUntil: "networkidle" });
   console.log(`   Status: ${res?.status()}`);
   console.log(`   URL actual: ${page.url()}`);
 
-  console.log("2. Llenando formulario...");
+  console.log("2. Verificando que se muestra el formulario de login...");
   const emailInput = page.locator('input[type="email"]');
   const passwordInput = page.locator('input[type="password"]');
   const submitBtn = page.locator('button[type="submit"]');
@@ -33,9 +33,9 @@ async function main() {
 
   if (page.url().includes("/cocina")) {
     console.log("✅ Login exitoso — redirigido a /cocina");
-  } else if (page.url().includes("/login")) {
-    console.log("❌ Sigue en /login — revisando el problema...");
-    const bodyText = await page.textContent("body") ?? "";
+  } else if (page.url() === `${BASE}/` || page.url() === `${BASE}`) {
+    console.log("❌ Sigue en / — revisando el problema...");
+    const bodyText = (await page.textContent("body")) ?? "";
     console.log(`   Contenido: ${bodyText.slice(0, 400)}`);
   } else {
     console.log(`   URL final: ${page.url()}`);

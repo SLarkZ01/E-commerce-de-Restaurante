@@ -30,14 +30,30 @@ export interface StatsCocina {
 
 export async function cambiarEstadoPedido(
   pedidoId: string,
-  nuevoEstado: EstadoPedido,
-  rolUsuario: string
+  nuevoEstado: EstadoPedido
 ): Promise<{ exito: boolean; error?: string }> {
+  const supabase = await crearCliente();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { exito: false, error: "No autenticado" };
+  }
+
+  const { data: perfil } = await supabase
+    .from("perfiles")
+    .select("rol")
+    .eq("id", user.id)
+    .single();
+
+  const rolUsuario = perfil?.rol as string | undefined;
+
   if (rolUsuario !== "cocinero" && rolUsuario !== "mesero") {
     return { exito: false, error: "No tienes permiso para cambiar el estado" };
   }
 
-  const supabase = await crearCliente();
   const { data: pedidoActual } = await supabase
     .from("pedidos")
     .select("*")
@@ -70,7 +86,6 @@ export async function cambiarEstadoPedido(
     .update({ estado: nuevoEstado, actualizado_en: new Date().toISOString() })
     .eq("id", pedidoId);
 
-  // Strategy: ejecutar lógica de despacho según tipo (mesa o para llevar)
   if (nuevoEstado === "entregado") {
     const estrategia = crearEstrategiaDespacho(pedidoActual.tipo_despacho as TipoDespacho);
     await estrategia.alEntregar(pedidoActual as Pedido);

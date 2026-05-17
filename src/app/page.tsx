@@ -1,22 +1,25 @@
-import { obtenerPlatosDisponibles } from "@/lib/acciones/platos";
-import { CatalogoPlatos, SkeletonCatalogo } from "@/components/cliente/catalogoPlatos";
-import { BarraSuperior } from "@/components/cliente/barraSuperior";
-import { CarritoSheet } from "@/components/cliente/carritoSheet";
-import { Suspense } from "react";
+import { crearCliente } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
+import { PantallaLogin } from "@/components/auth/PantallaLogin";
+import { RUTA_POR_ROL } from "@/lib/redirecciones";
+import type { Rol } from "@/types";
 
 export default async function PaginaInicio() {
-  const { platos, categorias } = await obtenerPlatosDisponibles();
+  const supabase = await crearCliente();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  return (
-    <div className="flex flex-col min-h-dvh bg-fondo">
-      <BarraSuperior />
-      <Suspense fallback={<SkeletonCatalogo />}>
-          <CatalogoPlatos
-            platos={platos}
-            categorias={categorias}
-          />
-      </Suspense>
-      <CarritoSheet mesaUuid={null} />
-    </div>
-  );
+  if (user) {
+    const { data: perfil } = await supabase
+      .from("perfiles")
+      .select("rol")
+      .eq("id", user.id)
+      .single();
+
+    const destino = RUTA_POR_ROL[(perfil?.rol as Rol) ?? "cocinero"];
+    redirect(destino);
+  }
+
+  return <PantallaLogin />;
 }

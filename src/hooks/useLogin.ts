@@ -3,6 +3,8 @@
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { crearCliente } from "@/lib/supabase/browser";
+import { RUTA_POR_ROL } from "@/lib/redirecciones";
+import type { Rol } from "@/types";
 
 export function useLogin() {
   const [email, setEmail] = useState("");
@@ -23,18 +25,27 @@ export function useLogin() {
       setCargando(true);
 
       const supabase = crearCliente();
-      const { error: err } = await supabase.auth.signInWithPassword({
+      const { data, error: err } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (err) {
+      if (err || !data.user) {
         setError("Correo o contraseña incorrectos");
         setCargando(false);
         return;
       }
 
-      router.push("/cocina");
+      const { data: perfil } = await supabase
+        .from("perfiles")
+        .select("rol")
+        .eq("id", data.user.id)
+        .single();
+
+      const rolUsuario = (perfil as { rol: Rol } | null)?.rol ?? "cocinero";
+      const destino = RUTA_POR_ROL[rolUsuario];
+
+      router.push(destino);
       router.refresh();
     },
     [email, password, router],

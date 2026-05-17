@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { UtensilsCrossed, Lock } from "lucide-react";
 
 export function BarraSuperior() {
@@ -11,13 +12,13 @@ export function BarraSuperior() {
           E-Kitchen
         </span>
       </div>
-      <a
-        href="/login"
+      <Link
+        href="/"
         className="flex items-center gap-1.5 text-xs font-medium text-texto-secundario hover:text-primario transition-colors px-3 py-1.5 rounded-lg hover:bg-primario/5"
       >
         <Lock className="w-3.5 h-3.5" />
         Staff
-      </a>
+      </Link>
     </header>
   );
 }

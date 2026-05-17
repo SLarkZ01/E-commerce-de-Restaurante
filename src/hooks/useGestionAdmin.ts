@@ -17,29 +17,40 @@ export interface ResultadoMesa {
 }
 
 export function useGestionAdmin() {
-  const crearPerfilFn = useCallback(async (datos: { nombre: string; email: string; rol: string }): Promise<ResultadoPerfil> => {
-    try {
-      const nuevo = await crearPerfil(datos);
-      return { exito: true, perfil: nuevo as Perfil };
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "Error desconocido";
-      return { exito: false, error: msg };
-    }
-  }, []);
+  const crearPerfilFn = useCallback(
+    async (datos: {
+      nombre: string;
+      email: string;
+      password: string;
+      rol: string;
+    }): Promise<ResultadoPerfil> => {
+      try {
+        const nuevo = await crearPerfil(datos);
+        return { exito: true, perfil: nuevo as Perfil };
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : "Error desconocido";
+        return { exito: false, error: msg };
+      }
+    },
+    []
+  );
 
   const eliminarPerfilFn = useCallback(async (id: string) => {
     await eliminarPerfil(id);
   }, []);
 
-  const crearMesaFn = useCallback(async (numero: number): Promise<ResultadoMesa> => {
-    try {
-      const nueva = await crearMesa(numero);
-      return { exito: true, mesa: nueva as Mesa };
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "Error desconocido";
-      return { exito: false, error: msg };
-    }
-  }, []);
+  const crearMesaFn = useCallback(
+    async (numero: number): Promise<ResultadoMesa> => {
+      try {
+        const nueva = await crearMesa(numero);
+        return { exito: true, mesa: nueva as Mesa };
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : "Error desconocido";
+        return { exito: false, error: msg };
+      }
+    },
+    []
+  );
 
   const eliminarMesaFn = useCallback(async (id: string) => {
     await eliminarMesa(id);

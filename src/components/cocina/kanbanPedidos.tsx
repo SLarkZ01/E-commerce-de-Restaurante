@@ -51,8 +51,7 @@ export function KanbanPedidos({ pedidosIniciales }: KanbanPedidosProps) {
     setMensaje("");
     const resultado = await cambiarEstado(
       pedidoId,
-      nuevoEstado as "preparando" | "listo" | "entregado",
-      "cocinero"
+      nuevoEstado as "preparando" | "listo" | "entregado"
     );
 
     if (resultado.error) {

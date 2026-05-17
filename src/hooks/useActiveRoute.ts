@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export function useActiveRoute() {
@@ -12,7 +11,5 @@ export function useActiveRoute() {
     return pathname.startsWith(href);
   };
 
-  const isAdminSection = pathname.startsWith("/admin");
-
-  return { isActive, isAdminSection, pathname };
+  return { isActive, pathname };
 }

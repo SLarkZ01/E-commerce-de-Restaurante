@@ -7,21 +7,53 @@ import {
   Users,
   Armchair,
 } from "lucide-react";
+import type { Rol } from "@/types";
 
 export interface ItemNavegacion {
   href: string;
   label: string;
   icon: LucideIcon;
+  roles: Rol[];
+  separadorAntes?: boolean;
 }
 
-export const NAV_ITEMS: ItemNavegacion[] = [
-  { href: "/cocina", label: "Pedidos", icon: ClipboardList },
-  { href: "/cocina/platos", label: "Gestión de Menú", icon: UtensilsCrossed },
-  { href: "/logistica", label: "Platos Listos", icon: PackageCheck },
-];
-
-export const ADMIN_ITEMS: ItemNavegacion[] = [
-  { href: "/admin", label: "Inicio", icon: LayoutDashboard },
-  { href: "/admin/personal", label: "Personal", icon: Users },
-  { href: "/admin/mesas", label: "Mesas", icon: Armchair },
+export const ITEMS_NAVEGACION: ItemNavegacion[] = [
+  {
+    href: "/admin",
+    label: "Dashboard",
+    icon: LayoutDashboard,
+    roles: ["admin"],
+  },
+  {
+    href: "/cocina",
+    label: "Pedidos",
+    icon: ClipboardList,
+    roles: ["cocinero", "admin"],
+    separadorAntes: true,
+  },
+  {
+    href: "/cocina/platos",
+    label: "Gestión de Menú",
+    icon: UtensilsCrossed,
+    roles: ["cocinero", "admin"],
+  },
+  {
+    href: "/logistica",
+    label: "Platos Listos",
+    icon: PackageCheck,
+    roles: ["mesero", "admin"],
+  },
+  {
+    href: "/admin/personal",
+    label: "Personal",
+    icon: Users,
+    roles: ["admin"],
+    separadorAntes: true,
+  },
+  {
+    href: "/admin/mesas",
+    label: "Mesas",
+    icon: Armchair,
+    roles: ["admin"],
+  },
 ];

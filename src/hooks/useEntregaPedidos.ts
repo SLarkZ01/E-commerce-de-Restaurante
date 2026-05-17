@@ -33,7 +33,7 @@ export function useEntregaPedidos(pedidosIniciales: PedidoConDetalles[]) {
 
   const handleEntregar = async (pedidoId: string) => {
     setConfirmando(null);
-    const resultado = await cambiarEstado(pedidoId, "entregado", "mesero");
+    const resultado = await cambiarEstado(pedidoId, "entregado");
 
     if (resultado.error) {
       setMensaje(resultado.error);
