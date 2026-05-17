@@ -17,11 +17,12 @@ interface DialogoQRMesaProps {
   mesa: Mesa | null;
   onClose: () => void;
   construirUrl: (codigoQr: string) => string;
+  construirUrlQR: (codigoQr: string) => string;
   onMensaje: (mensaje: string, tipo: "exito" | "error") => void;
 }
 
-export function DialogoQRMesa({ mesa, onClose, construirUrl, onMensaje }: DialogoQRMesaProps) {
-  const { qrDataUrl, generando } = useQRMesa(mesa, construirUrl);
+export function DialogoQRMesa({ mesa, onClose, construirUrl, construirUrlQR, onMensaje }: DialogoQRMesaProps) {
+  const { qrDataUrl, generando } = useQRMesa(mesa, construirUrlQR);
   const [copiado, setCopiado] = useState(false);
   const [imprimiendo, setImprimiendo] = useState(false);
 

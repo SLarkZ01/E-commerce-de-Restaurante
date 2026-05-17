@@ -24,8 +24,16 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-const FormularioPlato = dynamic(() => import("./FormularioPlato").then((m) => ({ default: m.FormularioPlato })), { ssr: false });
-const GestorCategorias = dynamic(() => import("./GestorCategorias").then((m) => ({ default: m.GestorCategorias })), { ssr: false });
+const FormularioPlato = dynamic(
+  () =>
+    import("./FormularioPlato").then((m) => ({ default: m.FormularioPlato })),
+  { ssr: false }
+);
+const GestorCategorias = dynamic(
+  () =>
+    import("./GestorCategorias").then((m) => ({ default: m.GestorCategorias })),
+  { ssr: false }
+);
 
 export { SkeletonTablaPlatos } from "./SkeletonTablaPlatos";
 
@@ -34,11 +42,14 @@ interface TablaPlatosProps {
   categorias: Categoria[];
 }
 
-export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }: TablaPlatosProps) {
+export function TablaPlatos({
+  platosIniciales,
+  categorias: categoriasIniciales,
+}: TablaPlatosProps) {
   const [platos, setPlatos] = useState(platosIniciales);
   const [categorias, setCategorias] = useState(categoriasIniciales);
 
-  const { crear, actualizar, eliminar } = useGestionPlatos();
+  const { crear, actualizar, toggleDisponible, eliminar } = useGestionPlatos();
   const { crear: crearCat, eliminar: eliminarCat } = useGestionCategorias();
 
   const {
@@ -57,9 +68,13 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
     setMensaje,
     mostrandoFormulario,
     setMostrandoFormulario,
+    platoEditando,
     handleCrear,
-    handleActualizar,
+    handleGuardarEdicion,
+    handleToggleDisponible,
     handleEliminarPlato,
+    handleEditar,
+    handleCancelarFormulario,
     handleCrearCategoria,
     handleEliminarCategoria,
   } = useAccionesPlatos(
@@ -67,6 +82,7 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
     setCategorias,
     crear,
     actualizar,
+    toggleDisponible,
     eliminar,
     crearCat,
     eliminarCat
@@ -75,16 +91,32 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
   const tabs = useMemo(
     () => [
       { key: "todos" as const, label: "Todos", count: platos.length },
-      { key: "disponibles" as const, label: "Disponibles", count: platos.filter((p) => p.disponible).length },
-      { key: "agotados" as const, label: "Agotados", count: platos.filter((p) => !p.disponible).length },
+      {
+        key: "disponibles" as const,
+        label: "Disponibles",
+        count: platos.filter((p) => p.disponible).length,
+      },
+      {
+        key: "agotados" as const,
+        label: "Agotados",
+        count: platos.filter((p) => !p.disponible).length,
+      },
     ],
     [platos]
   );
 
+  const alCerrarDialog = () => {
+    handleCancelarFormulario();
+  };
+
   return (
     <div className="flex-1 flex flex-col overflow-hidden bg-fondo">
       {mensaje && (
-        <MensajeToast mensaje={mensaje} variante={tipoMensaje} onClose={() => setMensaje("")} />
+        <MensajeToast
+          mensaje={mensaje}
+          variante={tipoMensaje}
+          onClose={() => setMensaje("")}
+        />
       )}
 
       <div className="px-6 pt-6 pb-0 space-y-4">
@@ -106,16 +138,27 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
             </SheetContent>
           </Sheet>
 
-          <Dialog open={mostrandoFormulario} onOpenChange={setMostrandoFormulario}>
-            <DialogTrigger className="inline-flex items-center gap-2 h-10 px-5 rounded-full bg-primario text-primario-texto text-sm font-semibold hover:bg-primario-hover transition-all duration-300 shadow-sm hover:shadow-md active:scale-[0.97]">
+          <Dialog open={mostrandoFormulario} onOpenChange={(abierto) => {
+            if (!abierto) alCerrarDialog();
+            else setMostrandoFormulario(true);
+          }}>
+            <DialogTrigger
+              onClick={() => {
+                /* platoEditando ya es null por defecto — modo crear */
+              }}
+              className="inline-flex items-center gap-2 h-10 px-5 rounded-full bg-primario text-primario-texto text-sm font-semibold hover:bg-primario-hover transition-all duration-300 shadow-sm hover:shadow-md active:scale-[0.97]"
+            >
               <Plus className="w-4 h-4" />
               <span>Nuevo Plato</span>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
               <FormularioPlato
-                alGuardar={handleCrear}
-                alCancelar={() => setMostrandoFormulario(false)}
+                alGuardar={
+                  platoEditando ? handleGuardarEdicion : handleCrear
+                }
+                alCancelar={alCerrarDialog}
                 categorias={categorias}
+                platoInicial={platoEditando}
               />
             </DialogContent>
           </Dialog>
@@ -125,13 +168,18 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
 
         <TabsPlatos tabs={tabs} activa={tabActiva} onCambio={setTabActiva} />
 
-        <PillsCategorias categorias={categorias} activa={categoriaActiva} onCambio={setCategoriaActiva} />
+        <PillsCategorias
+          categorias={categorias}
+          activa={categoriaActiva}
+          onCambio={setCategoriaActiva}
+        />
       </div>
 
       <GridPlatos
         platos={platosFiltrados}
         onEliminar={handleEliminarPlato}
-        onToggleDisponible={handleActualizar}
+        onToggleDisponible={handleToggleDisponible}
+        onEditar={handleEditar}
       />
     </div>
   );

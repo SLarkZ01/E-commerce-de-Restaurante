@@ -13,10 +13,16 @@ import { FormularioCrearMesa } from "./FormularioCrearMesa";
 export { SkeletonGestionMesas } from "./SkeletonGestionMesas";
 
 const BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  (typeof window !== "undefined" ? window.location.origin : "");
+  typeof window !== "undefined"
+    ? window.location.origin
+    : process.env.NEXT_PUBLIC_SITE_URL || "";
+
+const URL_PRODUCCION =
+  process.env.NEXT_PUBLIC_SITE_URL || BASE_URL;
 
 const construirUrl = (codigoQr: string) => `${BASE_URL}/mesa/${codigoQr}`;
+
+const construirUrlQR = (codigoQr: string) => `${URL_PRODUCCION}/mesa/${codigoQr}`;
 
 export function GestionMesas({
   mesasIniciales,
@@ -97,6 +103,7 @@ export function GestionMesas({
           mesa={mostrandoQR}
           onClose={() => setMostrandoQR(null)}
           construirUrl={construirUrl}
+          construirUrlQR={construirUrlQR}
           onMensaje={(msg, tipo) => {
             setMensaje(msg);
             setTipoMensaje(tipo);

@@ -8,9 +8,15 @@ interface GridPlatosProps {
   platos: Plato[];
   onEliminar: (id: string) => void;
   onToggleDisponible: (id: string, datos: { disponible: boolean }) => void;
+  onEditar: (plato: Plato) => void;
 }
 
-export const GridPlatos = memo(function GridPlatos({ platos, onEliminar, onToggleDisponible }: GridPlatosProps) {
+export const GridPlatos = memo(function GridPlatos({
+  platos,
+  onEliminar,
+  onToggleDisponible,
+  onEditar,
+}: GridPlatosProps) {
   return (
     <div className="flex-1 overflow-y-auto px-6 pb-6">
       {platos.length === 0 ? (
@@ -27,6 +33,7 @@ export const GridPlatos = memo(function GridPlatos({ platos, onEliminar, onToggl
               plato={plato}
               onEliminar={onEliminar}
               onToggleDisponible={onToggleDisponible}
+              onEditar={onEditar}
             />
           ))}
         </div>

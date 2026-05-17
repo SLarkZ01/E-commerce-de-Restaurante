@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2, AlertCircle, Sparkles, ImagePlus, DollarSign } from "lucide-react";
-import type { Categoria } from "@/types";
+import { Loader2, AlertCircle, Sparkles, ImagePlus, DollarSign, Pencil } from "lucide-react";
+import type { Categoria, Plato } from "@/types";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +25,7 @@ type TipoPlatoValor = "plato_fuerte" | "bebida" | "combo";
 const TAMANO_MAXIMO_IMG = 5;
 
 export interface DatosFormularioPlato {
+  id?: string;
   nombre: string;
   descripcion?: string;
   precio: number;
@@ -32,6 +33,7 @@ export interface DatosFormularioPlato {
   categoriaId?: string;
   ingredientes?: string[];
   archivoImagen?: File;
+  imagenUrlActual?: string;
 }
 
 export interface ResultadoGuardado {
@@ -43,21 +45,28 @@ interface FormularioPlatoProps {
   alGuardar: (datos: DatosFormularioPlato) => Promise<ResultadoGuardado>;
   alCancelar: () => void;
   categorias: Categoria[];
+  platoInicial?: Plato | null;
 }
 
 export function FormularioPlato({
   alGuardar,
   alCancelar,
   categorias,
+  platoInicial,
 }: FormularioPlatoProps) {
-  const [nombre, setNombre] = useState("");
-  const [descripcion, setDescripcion] = useState("");
-  const [precio, setPrecio] = useState("");
-  const [tipoPlato, setTipoPlato] = useState<TipoPlatoValor>("plato_fuerte");
-  const [categoriaId, setCategoriaId] = useState("");
+  const esEdicion = !!platoInicial;
+
+  const [nombre, setNombre] = useState(platoInicial?.nombre ?? "");
+  const [descripcion, setDescripcion] = useState(platoInicial?.descripcion ?? "");
+  const [precio, setPrecio] = useState(platoInicial ? String(platoInicial.precio) : "");
+  const [tipoPlato, setTipoPlato] = useState<TipoPlatoValor>(
+    (platoInicial?.tipo_plato as TipoPlatoValor) ?? "plato_fuerte"
+  );
+  const [categoriaId, setCategoriaId] = useState(platoInicial?.categoria_id ?? "");
   const [ingrediente, setIngrediente] = useState("");
-  const [ingredientes, setIngredientes] = useState<string[]>([]);
+  const [ingredientes, setIngredientes] = useState<string[]>(platoInicial?.ingredientes ?? []);
   const [archivoImagen, setArchivoImagen] = useState<File | null>(null);
+  const [cambiandoImagen, setCambiandoImagen] = useState(false);
   const [guardando, setGuardando] = useState(false);
   const [errorFormulario, setErrorFormulario] = useState("");
 
@@ -89,6 +98,7 @@ export function FormularioPlato({
     setGuardando(true);
     try {
       const resultado = await alGuardar({
+        id: platoInicial?.id,
         nombre,
         descripcion: descripcion || undefined,
         precio: Number(precio),
@@ -96,6 +106,7 @@ export function FormularioPlato({
         categoriaId: categoriaId || undefined,
         ingredientes: ingredientes.length > 0 ? ingredientes : undefined,
         archivoImagen: archivoImagen || undefined,
+        imagenUrlActual: platoInicial?.imagen_url ?? undefined,
       });
 
       if (!resultado.exito && resultado.error) {
@@ -107,16 +118,41 @@ export function FormularioPlato({
   };
 
   const esPlatoFuerte = tipoPlato === "plato_fuerte";
-  const titulo = esPlatoFuerte ? "Nuevo Plato" : tipoPlato === "bebida" ? "Nueva Bebida" : "Nuevo Combo";
-  const subtitulo = esPlatoFuerte ? "Agrega un plato fuerte o entrada al menú" : tipoPlato === "bebida" ? "Agrega una bebida al menú" : "Agrega un combo al menú";
+
+  const iconoHeader = esEdicion ? (
+    <div className="w-9 h-9 rounded-xl bg-info/10 flex items-center justify-center shrink-0">
+      <Pencil className="w-4 h-4 text-info" />
+    </div>
+  ) : (
+    <div className="w-9 h-9 rounded-xl bg-primario/10 flex items-center justify-center shrink-0">
+      <Sparkles className="w-4 h-4 text-primario" />
+    </div>
+  );
+
+  const titulo = esEdicion
+    ? `Editar ${platoInicial?.nombre ?? ""}`
+    : esPlatoFuerte
+      ? "Nuevo Plato"
+      : tipoPlato === "bebida"
+        ? "Nueva Bebida"
+        : "Nuevo Combo";
+
+  const subtitulo = esEdicion
+    ? "Modifica los campos y guarda los cambios"
+    : esPlatoFuerte
+      ? "Agrega un plato fuerte o entrada al menú"
+      : tipoPlato === "bebida"
+        ? "Agrega una bebida al menú"
+        : "Agrega un combo al menú";
+
+  const tieneImagenActual = esEdicion && platoInicial?.imagen_url && !cambiandoImagen;
+  const categoriaNombre = categorias.find((c) => c.id === categoriaId)?.nombre;
 
   return (
     <form onSubmit={handleSubmit}>
       <DialogHeader className="mb-6">
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-primario/10 flex items-center justify-center shrink-0">
-            <Sparkles className="w-4 h-4 text-primario" />
-          </div>
+          {iconoHeader}
           <div>
             <DialogTitle className="font-playfair text-lg font-bold text-texto leading-tight">
               {titulo}
@@ -150,13 +186,35 @@ export function FormularioPlato({
               Foto
             </label>
           </div>
-          <ImageDropzone
-            archivo={archivoImagen}
-            onArchivoSeleccionado={setArchivoImagen}
-            onEliminar={() => setArchivoImagen(null)}
-            etiqueta={""}
-            maxTamañoMB={TAMANO_MAXIMO_IMG}
-          />
+          {tieneImagenActual ? (
+            <div className="space-y-2">
+              <div className="rounded-xl border border-borde/40 overflow-hidden bg-white">
+                <img
+                  src={platoInicial!.imagen_url!}
+                  alt={platoInicial!.nombre}
+                  className="w-full h-40 object-contain p-2"
+                />
+              </div>
+              <div className="flex justify-center">
+                <button
+                  type="button"
+                  onClick={() => setCambiandoImagen(true)}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-fondo-oscuro text-xs font-medium text-texto-secundario hover:text-primario hover:bg-primario/10 border border-borde/40 transition-colors"
+                >
+                  <ImagePlus className="w-3.5 h-3.5" />
+                  Cambiar imagen
+                </button>
+              </div>
+            </div>
+          ) : (
+            <ImageDropzone
+              archivo={archivoImagen}
+              onArchivoSeleccionado={(f) => { setArchivoImagen(f); setCambiandoImagen(true); }}
+              onEliminar={() => { setArchivoImagen(null); setCambiandoImagen(false); }}
+              etiqueta=""
+              maxTamañoMB={TAMANO_MAXIMO_IMG}
+            />
+          )}
         </section>
 
         <section className="bg-fondo-oscuro/50 rounded-xl p-4 border border-borde/30 space-y-4">
@@ -173,24 +231,26 @@ export function FormularioPlato({
                 className="h-10 bg-fondo-card"
               />
             </div>
-          <div>
-            <label className="block text-[10px] font-semibold text-texto-secundario uppercase tracking-wider mb-1.5">
-              Categoría
-            </label>
-            <Select value={categoriaId} onValueChange={(v) => setCategoriaId(v ?? "")}>
-              <SelectTrigger className="h-10 bg-fondo-card text-sm">
-                <SelectValue placeholder="Sin categoría" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="">Sin categoría</SelectItem>
-                {categorias.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>
-                    {c.nombre}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+            <div>
+              <label className="block text-[10px] font-semibold text-texto-secundario uppercase tracking-wider mb-1.5">
+                Categoría
+              </label>
+              <Select value={categoriaId} onValueChange={(v) => setCategoriaId(v ?? "")}>
+                <SelectTrigger className="h-10 bg-fondo-card text-sm">
+                  <SelectValue>
+                    {categoriaNombre || "Sin categoría"}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Sin categoría</SelectItem>
+                  {categorias.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.nombre}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div>
@@ -261,6 +321,8 @@ export function FormularioPlato({
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
               Guardando...
             </>
+          ) : esEdicion ? (
+            "Guardar Cambios"
           ) : (
             "Guardar"
           )}
