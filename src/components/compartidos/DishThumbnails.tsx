@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { Utensils, Coffee, Package } from "lucide-react";
 import type { ItemPedidoConImagen, TipoPlato } from "@/types";
 
@@ -13,15 +14,17 @@ interface DishThumbnailsProps {
   items: ItemPedidoConImagen[];
 }
 
-export function DishThumbnails({ items }: DishThumbnailsProps) {
+export const DishThumbnails = memo(function DishThumbnails({
+  items,
+}: DishThumbnailsProps) {
   return (
-    <div className="grid grid-cols-2 gap-2">
+    <div className="grid grid-cols-2 gap-2.5">
       {items.map((item, i) => (
         <div
           key={i}
-          className="flex items-center gap-2 rounded-lg bg-fondo-oscuro/50 border border-borde/30 px-2 py-1.5"
+          className="flex items-center gap-2.5 rounded-lg bg-fondo/60 border border-borde/20 px-2 py-2"
         >
-          <div className="w-10 h-10 rounded-md overflow-hidden bg-fondo-oscuro flex-shrink-0 border border-borde/40">
+          <div className="w-11 h-11 rounded-lg overflow-hidden bg-fondo-oscuro flex-shrink-0">
             {item.plato_imagen_url ? (
               <img
                 src={item.plato_imagen_url}
@@ -30,13 +33,13 @@ export function DishThumbnails({ items }: DishThumbnailsProps) {
                 loading="lazy"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-texto-terciario">
+              <div className="w-full h-full flex items-center justify-center text-texto-terciario/50">
                 {ICONOS_POR_TIPO[item.plato_tipo]}
               </div>
             )}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-xs font-medium text-texto truncate leading-tight">
+            <p className="text-[13px] font-medium text-texto truncate leading-tight">
               {item.plato_nombre}
             </p>
             {item.cantidad > 1 && (
@@ -49,4 +52,4 @@ export function DishThumbnails({ items }: DishThumbnailsProps) {
       ))}
     </div>
   );
-}
+});

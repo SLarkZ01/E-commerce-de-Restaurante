@@ -1,4 +1,4 @@
-import { PackageCheck, AlertTriangle } from "lucide-react";
+import { PackageCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface PanelHeaderProps {
@@ -8,27 +8,26 @@ interface PanelHeaderProps {
 
 export function PanelHeader({ totalPedidos, urgentes }: PanelHeaderProps) {
   return (
-    <div className="flex items-center justify-between px-1 mb-4">
-      <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2">
-          <PackageCheck className="w-5 h-5 text-exito" />
-          <h2 className="font-playfair text-xl font-bold text-texto">
-            Platos Listos
-          </h2>
+    <div className="flex items-end justify-between mb-5">
+      <div>
+        <div className="flex items-center gap-1.5 mb-1">
+          <PackageCheck className="w-3.5 h-3.5 text-texto-terciario" />
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-texto-terciario">
+            Pedidos para entregar
+          </span>
         </div>
-        <Badge className="bg-exito/10 text-exito text-xs font-semibold">
+      </div>
+      <div className="flex items-center gap-2">
+        <Badge className="bg-fondo-oscuro/60 text-texto-secundario border-borde/30 text-xs font-medium">
           {totalPedidos} {totalPedidos === 1 ? "pedido" : "pedidos"}
         </Badge>
+        {urgentes > 0 && (
+          <Badge className="bg-advertencia/10 text-advertencia border-advertencia/20 text-xs font-medium">
+            <span className="w-1.5 h-1.5 rounded-full bg-advertencia mr-1.5" />
+            {urgentes} {urgentes === 1 ? "urgente" : "urgentes"}
+          </Badge>
+        )}
       </div>
-      {urgentes > 0 && (
-        <Badge
-          variant="destructive"
-          className="text-xs font-semibold animate-pulse"
-        >
-          <AlertTriangle className="w-3.5 h-3.5 mr-1" />
-          {urgentes} {urgentes === 1 ? "urgente" : "urgentes"}
-        </Badge>
-      )}
     </div>
   );
 }

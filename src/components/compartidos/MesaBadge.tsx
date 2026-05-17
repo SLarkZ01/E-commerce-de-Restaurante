@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { UtensilsCrossed } from "lucide-react";
 
 interface MesaBadgeProps {
@@ -5,22 +6,22 @@ interface MesaBadgeProps {
   urgente?: boolean;
 }
 
-export function MesaBadge({ numero, urgente }: MesaBadgeProps) {
+export const MesaBadge = memo(function MesaBadge({ numero, urgente }: MesaBadgeProps) {
   return (
     <div
-      className={`flex items-center gap-2 px-3 py-2 rounded-xl border transition-colors ${
+      className={`inline-flex items-baseline gap-1.5 px-2.5 py-1.5 rounded-lg transition-colors ${
         urgente
-          ? "bg-advertencia/10 border-advertencia/30 text-advertencia"
-          : "bg-fondo-oscuro border-borde text-texto"
+          ? "bg-advertencia/10 text-advertencia"
+          : "bg-fondo-oscuro text-texto"
       }`}
     >
-      <UtensilsCrossed className="w-4 h-4 flex-shrink-0" />
-      <span className="text-xs font-semibold uppercase tracking-wider">
+      <UtensilsCrossed className="w-3.5 h-3.5 flex-shrink-0 self-center" />
+      <span className="text-[10px] font-semibold uppercase tracking-wider opacity-60">
         Mesa
       </span>
-      <span className="font-playfair text-2xl font-bold leading-none">
+      <span className="font-playfair text-xl font-bold leading-none">
         {numero}
       </span>
     </div>
   );
-}
+});
