@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useDeferredValue, useMemo, useCallback } from "react";
-import { Plus, Tags, Search, Trash2 } from "lucide-react";
+import { Plus, Tags, Search } from "lucide-react";
 import type { Categoria } from "@/types";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";

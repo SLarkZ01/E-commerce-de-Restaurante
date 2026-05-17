@@ -19,9 +19,9 @@ const ETIQUETAS_POR_TIPO: Record<string, string> = {
 };
 
 const BADGE_STYLES: Record<string, { bg: string; text: string; border: string; cardTint: string }> = {
-  plato_fuerte: { bg: "bg-[#FFF3E0]", text: "text-[#E65100]", border: "border-[#FFE0B2]", cardTint: "hover:border-[#FFE0B2]" },
-  bebida: { bg: "bg-[#E3F2FD]", text: "text-[#1565C0]", border: "border-[#BBDEFB]", cardTint: "hover:border-[#BBDEFB]" },
-  combo: { bg: "bg-[#E8F5E9]", text: "text-[#2E7D32]", border: "border-[#C8E6C9]", cardTint: "hover:border-[#C8E6C9]" },
+  plato_fuerte: { bg: "bg-acento/15", text: "text-acento", border: "border-acento/30", cardTint: "hover:border-acento/40" },
+  bebida: { bg: "bg-info/10", text: "text-info", border: "border-info/30", cardTint: "hover:border-info/40" },
+  combo: { bg: "bg-exito/10", text: "text-exito", border: "border-exito/30", cardTint: "hover:border-exito/40" },
 };
 
 interface TarjetaPlatoCocinaProps {
@@ -39,80 +39,73 @@ export const TarjetaPlatoCocina = memo(function TarjetaPlatoCocina({
 
   return (
     <div
-      className={`group flex flex-col bg-white rounded-2xl overflow-hidden border transition-all duration-500 ease-out ${
+      className={`group flex flex-col bg-fondo-card rounded-xl overflow-hidden border transition-all duration-300 ${
         !plato.disponible
-          ? "border-[#AAAAAA] shadow-sm grayscale"
-          : `border-[#C0C0C0] shadow-[0_4px_16px_rgba(0,0,0,0.06)] hover:shadow-[0_16px_48px_rgba(0,0,0,0.10)] hover:-translate-y-[4px] ${badge.cardTint}`
+          ? "border-borde/40 shadow-sm opacity-75"
+          : `border-borde/50 shadow-[0_1px_3px_rgba(45,42,38,0.04)] hover:shadow-[0_4px_12px_rgba(45,42,38,0.08)] hover:-translate-y-0.5 ${badge.cardTint}`
       }`}
     >
-      {/* Área de imagen */}
       <div className="relative px-4 pt-4 pb-0">
-        {/* Fila superior: check pulsante + eliminar */}
         <div className="flex items-center justify-between mb-3 px-1">
-          {/* Check con badge pulsante */}
           <div className="relative">
             <div
-              className={`flex items-center justify-center w-7 h-7 rounded-xl border-2 transition-all duration-300 ${
+              className={`flex items-center justify-center w-7 h-7 rounded-lg border transition-all duration-300 ${
                 plato.disponible
-                  ? "bg-gradient-to-br from-[#E8472A] to-[#FF6B35] border-transparent shadow-md shadow-[#E8472A]/25"
-                  : "bg-white border-[#E2E8F0]"
+                  ? "bg-primario/10 border-primario/20"
+                  : "bg-fondo-oscuro border-borde/40"
               }`}
             >
               {plato.disponible && (
-                <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                <Check className="w-3.5 h-3.5 text-primario" strokeWidth={3} />
               )}
             </div>
-            {/* Led pulsante para disponible */}
             {plato.disponible && (
               <span className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#16A34A] opacity-75" />
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#16A34A]" />
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-exito opacity-75" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-exito" />
               </span>
             )}
           </div>
 
-          {/* Botón eliminar hover */}
           <button
             onClick={() => onEliminar(plato.id)}
-            className="flex items-center justify-center w-8 h-8 rounded-xl text-[#9CA3AF] hover:text-[#DC2626] hover:bg-[#DC2626]/8 transition-all duration-200 opacity-0 group-hover:opacity-100"
+            className="flex items-center justify-center w-8 h-8 rounded-lg text-texto-terciario hover:text-error hover:bg-error/10 transition-all duration-200 opacity-0 group-hover:opacity-100"
             aria-label="Eliminar plato"
           >
             <Trash2 className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Contenedor de imagen con hover "Ver detalles" */}
-        <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-gradient-to-br from-[#F8F9FC] to-[#F1F3F8]">
+        <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-fondo-oscuro">
           {plato.imagen_url ? (
             <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={plato.imagen_url}
                 alt={plato.nombre}
-                className="w-full h-full object-contain p-5 transition-all duration-700 ease-out group-hover:scale-105 group-hover:brightness-95"
+                className="w-full h-full object-contain p-4 transition-all duration-500 group-hover:scale-105"
                 loading="lazy"
                 width="400"
                 height="300"
               />
-              {/* Overlay hover con "Ver detalles" */}
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-500 flex items-center justify-center">
-                <div className="flex items-center gap-2 bg-white/90 backdrop-blur-sm text-[#1A1A2E] text-xs font-semibold px-4 py-2 rounded-full opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-500 shadow-lg">
-                  <Eye className="w-3.5 h-3.5" />
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-all duration-300 flex items-center justify-center">
+                <div className="flex items-center gap-1.5 bg-fondo-card/90 backdrop-blur-sm text-texto text-xs font-medium px-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-300 shadow-sm border border-borde/30">
+                  <Eye className="w-3 h-3" />
                   <span>Ver detalles</span>
                 </div>
               </div>
             </>
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-[#D1D5DB]">
+            <div className="w-full h-full flex items-center justify-center text-texto-terciario/40">
               {ICONOS_POR_TIPO[plato.tipo_plato] || (
                 <Utensils className="w-14 h-14" />
               )}
             </div>
           )}
 
-          {/* Badge "Agotado" */}
           {!plato.disponible && (
-            <div className="absolute inset-0 bg-white/50 flex items-center justify-center backdrop-blur-sm">
-              <span className="bg-gradient-to-r from-[#DC2626] to-[#EF4444] text-white text-[11px] font-bold px-5 py-2 rounded-full tracking-wider shadow-lg shadow-[#DC2626]/20 uppercase">
+            <div className="absolute inset-0 bg-fondo/60 flex items-center justify-center backdrop-blur-sm">
+              <span className="bg-error text-primario-texto text-[11px] font-bold px-4 py-1.5 rounded-full tracking-wider shadow-sm uppercase">
                 Agotado
               </span>
             </div>
@@ -120,64 +113,57 @@ export const TarjetaPlatoCocina = memo(function TarjetaPlatoCocina({
         </div>
       </div>
 
-      {/* Contenido de la card */}
-      <div className="flex flex-col flex-1 p-5 pt-4">
-        {/* Nombre y descripción */}
+      <div className="flex flex-col flex-1 p-4 pt-3">
         <div className="flex-1 min-w-0">
-          <h3 className="font-playfair text-[17px] font-bold text-[#1A1A2E] leading-snug tracking-tight truncate">
+          <h3 className="font-playfair text-base font-bold text-texto leading-snug tracking-tight truncate">
             {plato.nombre}
           </h3>
           {plato.descripcion && (
-            <div className="mt-3 pl-3 border-l-2 border-[#E2E8F0]">
-              <p className="text-[13px] text-[#78716C] line-clamp-2 leading-relaxed italic font-medium">
+            <div className="mt-2 pl-2.5 border-l-2 border-borde/40">
+              <p className="text-xs text-texto-secundario line-clamp-2 leading-relaxed italic">
                 {plato.descripcion}
               </p>
             </div>
           )}
         </div>
 
-        {/* Badge de categoría con color por tipo */}
-        <div className="mt-4 mb-4">
-          <span className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider ${badge.bg} ${badge.text} border ${badge.border}`}>
+        <div className="mt-3 mb-3">
+          <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${badge.bg} ${badge.text} border ${badge.border}`}>
             {ETIQUETAS_POR_TIPO[plato.tipo_plato] ?? plato.tipo_plato}
           </span>
         </div>
 
-        {/* Footer: precio + acciones */}
-        <div className="flex items-center justify-between pt-4 border-t border-[#F1F5F9]">
-          {/* Precio destacado */}
-          <p className="font-playfair text-[28px] font-extrabold bg-gradient-to-r from-[#E8472A] to-[#FF6B35] bg-clip-text text-transparent tabular-nums leading-none tracking-tight drop-shadow-sm">
+        <div className="flex items-center justify-between pt-3 border-t border-borde/30">
+          <p className="font-playfair text-xl font-extrabold text-primario tabular-nums leading-none tracking-tight">
             {formatearPrecio(plato.precio)}
           </p>
 
-          {/* Acciones: switch + basurita */}
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2">
               <Switch
                 checked={plato.disponible}
                 onCheckedChange={() =>
                   onToggleDisponible(plato.id, { disponible: !plato.disponible })
                 }
-                className={`h-5 w-10 transition-all duration-300 ${
+                className={`h-5 w-9 transition-all duration-300 ${
                   plato.disponible
-                    ? "bg-[#E8472A]"
-                    : "bg-[#9CA3AF]"
+                    ? "bg-primario"
+                    : "bg-borde"
                 }`}
               />
-              <span className={`text-[11px] font-bold uppercase tracking-wider leading-none ${
-                plato.disponible ? "text-[#16A34A]" : "text-[#6B7280]"
+              <span className={`text-[10px] font-bold uppercase tracking-wider leading-none ${
+                plato.disponible ? "text-exito" : "text-texto-terciario"
               }`}>
                 {plato.disponible ? "Activo" : "Inactivo"}
               </span>
             </div>
 
-            {/* Botón basurita en footer */}
             <button
               onClick={() => onEliminar(plato.id)}
-              className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#FFF3E0] text-[#E8472A] hover:bg-[#DC2626] hover:text-white transition-all duration-300 shadow-sm hover:shadow-md hover:shadow-[#DC2626]/20 active:scale-95"
+              className="flex items-center justify-center w-8 h-8 rounded-lg bg-error/10 text-error hover:bg-error hover:text-primario-texto transition-all duration-200 active:scale-95"
               aria-label="Eliminar plato"
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash2 className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>

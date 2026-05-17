@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 type TabActiva = "todos" | "disponibles" | "agotados";
 
 interface TabItem {
@@ -12,26 +14,26 @@ interface TabsPlatosProps {
   onCambio: (key: TabActiva) => void;
 }
 
-export function TabsPlatos({ tabs, activa, onCambio }: TabsPlatosProps) {
+export const TabsPlatos = memo(function TabsPlatos({ tabs, activa, onCambio }: TabsPlatosProps) {
   return (
-    <div className="flex items-center gap-8">
+    <div className="flex items-center gap-6">
       {tabs.map((tab) => (
         <button
           key={tab.key}
           onClick={() => onCambio(tab.key)}
           className="relative pb-3 text-sm font-semibold transition-colors group"
         >
-          <span className={activa === tab.key ? "text-[#1A1A2E]" : "text-[#9CA3AF] group-hover:text-[#6B7280]"}>
+          <span className={activa === tab.key ? "text-texto" : "text-texto-terciario group-hover:text-texto-secundario"}>
             {tab.label}
           </span>
-          <span className={`ml-1.5 text-xs ${activa === tab.key ? "text-[#6B7280]" : "text-[#D1D5DB]"}`}>
+          <span className={`ml-1.5 text-xs ${activa === tab.key ? "text-texto-secundario" : "text-texto-terciario/50"}`}>
             {tab.count}
           </span>
           {activa === tab.key && (
-            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-[#E8472A] rounded-full" />
+            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-primario rounded-full" />
           )}
         </button>
       ))}
     </div>
   );
-}
+});

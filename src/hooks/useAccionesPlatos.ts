@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import type { Plato, Categoria } from "@/types";
 import type { DatosFormularioPlato, ResultadoGuardado } from "@/components/cocina/FormularioPlato";
 
@@ -17,9 +17,7 @@ interface UseAccionesPlatosReturn {
 }
 
 export function useAccionesPlatos(
-  platos: Plato[],
   setPlatos: React.Dispatch<React.SetStateAction<Plato[]>>,
-  categorias: Categoria[],
   setCategorias: React.Dispatch<React.SetStateAction<Categoria[]>>,
   crear: (datos: DatosFormularioPlato) => Promise<{ exito: boolean; plato?: Plato; error?: string }>,
   actualizar: (id: string, datos: { disponible: boolean }) => Promise<void>,
@@ -31,7 +29,7 @@ export function useAccionesPlatos(
   const [mensaje, setMensaje] = useState("");
   const [tipoMensaje, setTipoMensaje] = useState<"exito" | "error">("exito");
 
-  const handleCrear = async (datos: DatosFormularioPlato): Promise<ResultadoGuardado> => {
+  const handleCrear = useCallback(async (datos: DatosFormularioPlato): Promise<ResultadoGuardado> => {
     const resultado = await crear(datos);
     const platoCreado = resultado.plato;
 
@@ -44,9 +42,9 @@ export function useAccionesPlatos(
     setMensaje("Plato creado correctamente");
     setTipoMensaje("exito");
     return { exito: true };
-  };
+  }, [crear, setPlatos]);
 
-  const handleActualizar = async (id: string, datos: { disponible: boolean }) => {
+  const handleActualizar = useCallback(async (id: string, datos: { disponible: boolean }) => {
     try {
       await actualizar(id, datos);
       setPlatos((prev) =>
@@ -58,9 +56,9 @@ export function useAccionesPlatos(
       setMensaje("Error al actualizar el plato");
       setTipoMensaje("error");
     }
-  };
+  }, [actualizar, setPlatos]);
 
-  const handleEliminarPlato = async (id: string) => {
+  const handleEliminarPlato = useCallback(async (id: string) => {
     if (!confirm("¿Eliminar este plato?")) return;
     try {
       await eliminar(id);
@@ -71,9 +69,9 @@ export function useAccionesPlatos(
       setMensaje("Error al eliminar el plato");
       setTipoMensaje("error");
     }
-  };
+  }, [eliminar, setPlatos]);
 
-  const handleCrearCategoria = async (nombre: string, slug: string) => {
+  const handleCrearCategoria = useCallback(async (nombre: string, slug: string) => {
     const resultadoCat = await crearCat(nombre, slug);
     const catCreada = resultadoCat.categoria;
     if (resultadoCat.exito && catCreada) {
@@ -84,9 +82,9 @@ export function useAccionesPlatos(
       setMensaje("Error al crear la categoría");
       setTipoMensaje("error");
     }
-  };
+  }, [crearCat, setCategorias]);
 
-  const handleEliminarCategoria = async (id: string) => {
+  const handleEliminarCategoria = useCallback(async (id: string) => {
     if (!confirm("¿Eliminar esta categoría? Los platos asociados quedarán sin categoría."))
       return;
     try {
@@ -98,7 +96,7 @@ export function useAccionesPlatos(
       setMensaje("Error al eliminar la categoría");
       setTipoMensaje("error");
     }
-  };
+  }, [eliminarCat, setCategorias]);
 
   return {
     mensaje,

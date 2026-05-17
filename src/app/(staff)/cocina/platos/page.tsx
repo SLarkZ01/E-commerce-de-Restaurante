@@ -1,12 +1,12 @@
 import { obtenerTodosPlatos } from "@/lib/acciones/catalogo";
-import { obtenerPlatosDisponibles } from "@/lib/acciones/platos";
+import { obtenerCategorias } from "@/lib/acciones/categorias";
 import { TablaPlatos, SkeletonTablaPlatos } from "@/components/cocina/tablaPlatos";
 import { Suspense } from "react";
 
 export default async function PaginaPlatos() {
-  const [platos, { categorias }] = await Promise.all([
+  const [platos, categorias] = await Promise.all([
     obtenerTodosPlatos(),
-    obtenerPlatosDisponibles(),
+    obtenerCategorias(),
   ]);
 
   return (

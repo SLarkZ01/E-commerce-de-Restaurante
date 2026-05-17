@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Plus, Tags } from "lucide-react";
 import dynamic from "next/dynamic";
 import type { Plato, Categoria } from "@/types";
@@ -9,7 +9,6 @@ import { useFiltrosPlatos } from "@/hooks/useFiltrosPlatos";
 import { useAccionesPlatos } from "@/hooks/useAccionesPlatos";
 import { useGestionPlatos } from "@/hooks/useGestionPlatos";
 import { useGestionCategorias } from "@/hooks/useGestionCategorias";
-import { CabeceraPlatos } from "./CabeceraPlatos";
 import { BarraBusqueda } from "./BarraBusqueda";
 import { TabsPlatos } from "./TabsPlatos";
 import { PillsCategorias } from "./PillsCategorias";
@@ -65,9 +64,7 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
     handleCrearCategoria,
     handleEliminarCategoria,
   } = useAccionesPlatos(
-    platos,
     setPlatos,
-    categorias,
     setCategorias,
     crear,
     actualizar,
@@ -76,26 +73,25 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
     eliminarCat
   );
 
-  const tabs = [
-    { key: "todos" as const, label: "Todos", count: platos.length },
-    { key: "disponibles" as const, label: "Disponibles", count: platos.filter((p) => p.disponible).length },
-    { key: "agotados" as const, label: "Agotados", count: platos.filter((p) => !p.disponible).length },
-  ];
+  const tabs = useMemo(
+    () => [
+      { key: "todos" as const, label: "Todos", count: platos.length },
+      { key: "disponibles" as const, label: "Disponibles", count: platos.filter((p) => p.disponible).length },
+      { key: "agotados" as const, label: "Agotados", count: platos.filter((p) => !p.disponible).length },
+    ],
+    [platos]
+  );
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden bg-[#F7F8FC]">
+    <div className="flex-1 flex flex-col overflow-hidden bg-fondo">
       {mensaje && (
-        <div className="mx-6 mt-4">
-          <MensajeToast mensaje={mensaje} variante={tipoMensaje} onClose={() => setMensaje("")} />
-        </div>
+        <MensajeToast mensaje={mensaje} variante={tipoMensaje} onClose={() => setMensaje("")} />
       )}
 
-      <div className="px-6 pt-6 pb-0 space-y-5">
-        <CabeceraPlatos platosDisponibles={platosDisponibles} />
-
+      <div className="px-6 pt-6 pb-0 space-y-4">
         <div className="flex items-center gap-3">
           <Sheet>
-            <SheetTrigger className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-white text-[#6B7280] text-sm font-semibold hover:text-[#E8472A] hover:border-[#E8472A]/30 transition-all duration-200 border border-[#E2E8F0] shadow-sm">
+            <SheetTrigger className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-fondo-card text-texto-secundario text-sm font-semibold hover:text-primario hover:border-primario/30 transition-all duration-200 border border-borde shadow-sm">
               <Tags className="w-4 h-4" />
               <span>Categorías</span>
             </SheetTrigger>
@@ -112,7 +108,7 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
           </Sheet>
 
           <Dialog open={mostrandoFormulario} onOpenChange={setMostrandoFormulario}>
-            <DialogTrigger className="inline-flex items-center gap-2 h-10 px-5 rounded-full bg-gradient-to-r from-[#E8472A] to-[#FF6B35] text-white text-sm font-semibold hover:from-[#D43D22] hover:to-[#E8472A] transition-all duration-300 shadow-md shadow-[#E8472A]/25 hover:shadow-lg hover:shadow-[#E8472A]/30 active:scale-[0.97]">
+            <DialogTrigger className="inline-flex items-center gap-2 h-10 px-5 rounded-full bg-primario text-primario-texto text-sm font-semibold hover:bg-primario-hover transition-all duration-300 shadow-sm hover:shadow-md active:scale-[0.97]">
               <Plus className="w-4 h-4" />
               <span>Nuevo Plato</span>
             </DialogTrigger>

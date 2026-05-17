@@ -23,6 +23,8 @@ const TIPOS_PLATO: {
   { valor: "combo", etiqueta: "Combo", icono: <Sandwich className="w-3.5 h-3.5" /> },
 ];
 
+const TAMANO_MAXIMO_IMG = 5;
+
 export interface DatosFormularioPlato {
   nombre: string;
   descripcion?: string;
@@ -43,8 +45,6 @@ interface FormularioPlatoProps {
   alCancelar: () => void;
   categorias: Categoria[];
 }
-
-const TAMANO_MAXIMO_IMG = 5; // MB
 
 export function FormularioPlato({
   alGuardar,
