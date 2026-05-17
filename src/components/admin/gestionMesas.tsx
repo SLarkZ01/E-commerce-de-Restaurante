@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { QrCode, Trash2, Copy, Plus } from "lucide-react";
+import { QrCode, Trash2, Copy, Plus, Printer } from "lucide-react";
 import QRCode from "qrcode";
 import type { Mesa } from "@/types";
 import { useGestionAdmin } from "@/hooks/useGestionAdmin";
@@ -59,16 +59,83 @@ export function GestionMesas({
     }
   };
 
-  const urlMesa = (qr: string) => `/mesa/${qr}`;
+  const BASE_URL =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    (typeof window !== "undefined" ? window.location.origin : "");
+
+  const urlMesa = (qr: string) => `${BASE_URL}/mesa/${qr}`;
 
   useEffect(() => {
     if (mostrandoQR) {
-      const url = `${window.location.origin}${urlMesa(mostrandoQR.codigo_qr)}`;
-      QRCode.toDataURL(url, { width: 200, margin: 2 }).then(setQrDataUrl);
+      const url = urlMesa(mostrandoQR.codigo_qr);
+      QRCode.toDataURL(url, { width: 200, margin: 2 })
+        .then(setQrDataUrl)
+        .catch(() => {
+          setMensaje("Error al generar el código QR");
+          setTipoMensaje("error");
+          setQrDataUrl("");
+        });
     } else {
       setQrDataUrl("");
     }
   }, [mostrandoQR]);
+
+  const imprimirQR = () => {
+    if (!qrDataUrl || !mostrandoQR) return;
+    const url = urlMesa(mostrandoQR.codigo_qr);
+    const ventana = window.open("", "_blank");
+    if (!ventana) {
+      setMensaje("Permite las ventanas emergentes para imprimir el QR");
+      setTipoMensaje("error");
+      return;
+    }
+
+    const doc = ventana.document;
+    doc.open();
+    doc.write(
+      "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Mesa " +
+        mostrandoQR.numero +
+        " — QR</title></head><body></body></html>"
+    );
+    doc.close();
+
+    const style = doc.createElement("style");
+    style.textContent = `
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; font-family: system-ui, sans-serif; padding: 2rem; }
+      .qr-img { width: 280px; height: 280px; margin-bottom: 1.5rem; background: white; padding: 10px; }
+      h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
+      p { font-size: 0.75rem; color: #555; word-break: break-all; text-align: center; max-width: 320px; }
+      @media print { body { padding: 0; } }
+    `;
+    doc.head.appendChild(style);
+
+    const img = doc.createElement("img");
+    img.src = qrDataUrl;
+    img.alt = "QR Mesa " + mostrandoQR.numero;
+    img.className = "qr-img";
+    doc.body.appendChild(img);
+
+    const h1 = doc.createElement("h1");
+    h1.textContent = "Mesa " + mostrandoQR.numero;
+    doc.body.appendChild(h1);
+
+    const p = doc.createElement("p");
+    p.textContent = url;
+    doc.body.appendChild(p);
+
+    let impreso = false;
+    const ejecutarImpresion = () => {
+      if (!impreso) {
+        impreso = true;
+        ventana.print();
+      }
+    };
+
+    img.onload = ejecutarImpresion;
+    if (img.complete) ejecutarImpresion();
+    setTimeout(ejecutarImpresion, 500);
+  };
 
   return (
     <div className="flex-1 overflow-y-auto">
@@ -178,8 +245,10 @@ export function GestionMesas({
                   onClick={() => {
                     if (mostrandoQR) {
                       navigator.clipboard.writeText(
-                        window.location.origin + urlMesa(mostrandoQR.codigo_qr)
+                        urlMesa(mostrandoQR.codigo_qr)
                       );
+                      setMensaje("URL copiada al portapapeles");
+                      setTipoMensaje("exito");
                     }
                   }}
                   variant="outline"
@@ -187,6 +256,15 @@ export function GestionMesas({
                 >
                   <Copy className="w-4 h-4 mr-1.5" />
                   Copiar URL
+                </Button>
+                <Button
+                  onClick={imprimirQR}
+                  disabled={!qrDataUrl}
+                  variant="outline"
+                  className="flex-1 h-10"
+                >
+                  <Printer className="w-4 h-4 mr-1.5" />
+                  Imprimir QR
                 </Button>
                 <Button
                   onClick={() => setMostrandoQR(null)}
