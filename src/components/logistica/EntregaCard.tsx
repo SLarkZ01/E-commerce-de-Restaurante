@@ -26,7 +26,6 @@ export function EntregaCard({
   onRequestConfirm,
 }: EntregaCardProps) {
   const urgente = useUrgencia(pedido.creado_en, 15);
-  const totalPlatos = (pedido.items ?? []).reduce((sum, item) => sum + item.cantidad, 0);
   const mesaNumero = pedido.mesa_numero;
 
   return (
@@ -77,12 +76,9 @@ export function EntregaCard({
           </Badge>
         )}
 
-        {/* Thumbnails de platos */}
-        <div className="flex items-center justify-between mb-3">
+        {/* Lista de platos */}
+        <div className="mb-3">
           <DishThumbnails items={pedido.items ?? []} />
-          <span className="text-xs text-texto-secundario font-medium ml-2 flex-shrink-0">
-            {totalPlatos} {totalPlatos === 1 ? "plato" : "platos"}
-          </span>
         </div>
 
         <Separator className="mb-3" />
