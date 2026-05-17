@@ -82,7 +82,6 @@ export function GestionMesas({
 
   const imprimirQR = () => {
     if (!qrDataUrl || !mostrandoQR) return;
-    const url = urlMesa(mostrandoQR.codigo_qr);
     const ventana = window.open("", "_blank");
     if (!ventana) {
       setMensaje("Permite las ventanas emergentes para imprimir el QR");
@@ -102,11 +101,38 @@ export function GestionMesas({
     const style = doc.createElement("style");
     style.textContent = `
       * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; font-family: system-ui, sans-serif; padding: 2rem; }
-      .qr-img { width: 280px; height: 280px; margin-bottom: 1.5rem; background: white; padding: 10px; }
-      h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
-      p { font-size: 0.75rem; color: #555; word-break: break-all; text-align: center; max-width: 320px; }
-      @media print { body { padding: 0; } }
+      html, body {
+        width: 100%;
+        height: 100%;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-family: system-ui, sans-serif;
+        overflow: hidden;
+      }
+      .qr-img {
+        width: 60vmin;
+        height: 60vmin;
+        max-width: 500px;
+        max-height: 500px;
+        background: white;
+      }
+      h1 {
+        font-size: 10vmin;
+        font-weight: 700;
+        margin-top: 3vmin;
+        letter-spacing: 0.05em;
+      }
+      @media print {
+        @page { margin: 0; size: A4; }
+        html, body { width: 100%; height: 100%; }
+        body { min-height: 100vh; }
+        .qr-img { width: 55vmin; height: 55vmin; max-width: none; max-height: none; }
+        h1 { font-size: 8vmin; margin-top: 4vmin; }
+      }
     `;
     doc.head.appendChild(style);
 
@@ -119,10 +145,6 @@ export function GestionMesas({
     const h1 = doc.createElement("h1");
     h1.textContent = "Mesa " + mostrandoQR.numero;
     doc.body.appendChild(h1);
-
-    const p = doc.createElement("p");
-    p.textContent = url;
-    doc.body.appendChild(p);
 
     let impreso = false;
     const ejecutarImpresion = () => {
