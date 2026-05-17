@@ -10,7 +10,7 @@ export default async function PaginaCocina() {
   ]);
 
   return (
-    <>
+    <div className="flex flex-col h-[calc(100dvh-4rem)]">
       <Suspense fallback={<SkeletonStatsBar />}>
         <StatsBar stats={stats} />
       </Suspense>
@@ -18,6 +18,6 @@ export default async function PaginaCocina() {
       <Suspense fallback={<SkeletonKanban />}>
         <KanbanPedidos pedidosIniciales={pedidos} />
       </Suspense>
-    </>
+    </div>
   );
 }
