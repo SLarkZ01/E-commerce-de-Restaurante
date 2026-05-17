@@ -61,6 +61,14 @@ Todas las operaciones de lectura/escritura se hacen mediante Server Actions. Cad
 - **Devuelve:** `PedidoConItems[]` (incluye items con nombre del plato)
 - **Qué hace:** Join de pedidos + items_pedido + platos. Útil para mostrar detalle completo
 
+### `obtenerItemsPorPedido(pedidoId)`
+- **Archivo:** `src/lib/acciones/cocina.ts`
+- **Quién:** Cocinero, admin (requiere sesión)
+- **Parámetros:** `pedidoId: string`
+- **Devuelve:** `ItemPedidoConPlato[]`
+- **Qué hace:** Consulta los items de un pedido específico con JOIN a `platos(nombre)`. Usada por `usePedidosRealtime` para resolver la race condition entre INSERT pedido e INSERT items_pedido. Corre del lado del servidor para garantizar que la sesión del staff esté disponible y RLS permita el SELECT anidado en `platos`
+- **Nota técnica:** PostgREST devuelve `platos` como objeto (no array) porque la FK es many-to-one. Se accede como `item.platos?.nombre`, no como `item.platos?.[0]?.nombre`
+
 ### `obtenerStatsCocina()`
 - **Archivo:** `src/lib/acciones/cocina.ts`
 - **Quién:** Cocinero, admin

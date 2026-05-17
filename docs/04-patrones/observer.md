@@ -130,6 +130,21 @@ export class SupabaseRealtimeService implements IServicioRealtime {
 
 Sin Observer, los paneles de cocina y logística necesitarían **polling** (recargar la página cada N segundos). Con Realtime, los cambios aparecen instantáneamente sin recarga manual, eliminando latencia entre que el cliente pide y el cocinero ve.
 
+### Race condition: pedido vs items_pedido
+
+Cuando un cliente paga, `crearPedidoWompi` ejecuta dos INSERT secuenciales:
+
+```
+1. INSERT INTO pedidos ...       ← Realtime emite evento inmediatamente
+2. INSERT INTO items_pedido ...  ← ~50-200ms después (latencia de red)
+```
+
+El hook `usePedidosRealtime` recibe el evento en el paso 1, pero los items aún no existen. Para resolverlo:
+
+1. **Retry con backoff**: `obtenerItemsConReintento()` reintenta hasta 2 veces (200ms, 400ms) si los items no están disponibles
+2. **Server Action**: La consulta de items se delegó a `obtenerItemsPorPedido()` (Server Action) que corre del lado del servidor, donde la sesión del staff está garantizada y RLS permite el SELECT anidado en `platos`
+3. **PostgREST FK embedding**: Como `items_pedido → platos` es many-to-one, PostgREST devuelve `platos` como objeto `{ nombre: "..." }`, no como array. Se accede con `item.platos?.nombre`, nunca con `item.platos?.[0]?.nombre`
+
 ### SOLID aplicado
 
 - **SRP**: `useRealtime` solo maneja ciclo de vida React; `SupabaseRealtimeService` solo maneja canales Supabase
