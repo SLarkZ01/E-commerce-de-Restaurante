@@ -10,25 +10,28 @@ import {
 import type { ItemPedidoConImagen, TipoPlato } from "@/types";
 
 const ICONOS_POR_TIPO: Record<TipoPlato, React.ReactNode> = {
-  plato_fuerte: <Utensils className="w-4 h-4" />,
-  bebida: <Coffee className="w-4 h-4" />,
-  combo: <Package className="w-4 h-4" />,
+  plato_fuerte: <Utensils className="w-5 h-5" />,
+  bebida: <Coffee className="w-5 h-5" />,
+  combo: <Package className="w-5 h-5" />,
 };
 
 interface DishThumbnailsProps {
   items: ItemPedidoConImagen[];
 }
 
+const MAX_VISIBLE = 3;
+
 export function DishThumbnails({ items }: DishThumbnailsProps) {
-  if (items.length === 0) return null;
+  const visibles = items.slice(0, MAX_VISIBLE);
+  const restantes = items.length - MAX_VISIBLE;
 
   return (
     <TooltipProvider>
-      <div className="flex flex-wrap gap-1.5">
-        {items.map((item, i) => (
-          <Tooltip key={`${item.plato_nombre}-${i}`}>
+      <div className="flex gap-1.5">
+        {visibles.map((item, i) => (
+          <Tooltip key={i}>
             <TooltipTrigger>
-              <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-fondo-oscuro flex-shrink-0 border border-borde/50 cursor-default transition-transform hover:scale-105">
+              <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-fondo-oscuro flex-shrink-0 border border-borde/50 cursor-default transition-transform hover:scale-105">
                 {item.plato_imagen_url ? (
                   <img
                     src={item.plato_imagen_url}
@@ -51,6 +54,13 @@ export function DishThumbnails({ items }: DishThumbnailsProps) {
             </TooltipContent>
           </Tooltip>
         ))}
+        {restantes > 0 && (
+          <div className="w-14 h-14 rounded-xl bg-fondo-oscuro/80 border border-borde/50 flex items-center justify-center flex-shrink-0 backdrop-blur-sm">
+            <span className="text-sm font-bold text-texto-secundario">
+              +{restantes}
+            </span>
+          </div>
+        )}
       </div>
     </TooltipProvider>
   );

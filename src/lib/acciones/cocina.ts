@@ -207,6 +207,59 @@ export async function obtenerStatsCocina(): Promise<StatsCocina> {
   };
 }
 
+export async function obtenerPedidoConDetalles(pedidoId: string): Promise<PedidoConDetalles | null> {
+  const supabase = await crearCliente();
+  const { data } = await supabase
+    .from("pedidos")
+    .select(`
+      *,
+      mesas (
+        numero
+      ),
+      items_pedido (
+        cantidad,
+        precio_unitario,
+        platos (
+          nombre,
+          imagen_url,
+          tipo_plato
+        )
+      )
+    `)
+    .eq("id", pedidoId)
+    .single();
+
+  if (!data) return null;
+
+  const mesaData = (data.mesas as Record<string, unknown> | null) ?? null;
+  const itemsRaw = (data.items_pedido as Record<string, unknown>[]) ?? [];
+  const items = itemsRaw.map((item) => {
+    const plato = (item.platos as Record<string, unknown>) ?? {};
+    return {
+      plato_nombre: (plato.nombre as string) ?? "Plato",
+      plato_imagen_url: (plato.imagen_url as string) ?? null,
+      plato_tipo: (plato.tipo_plato as TipoPlato) ?? "plato_fuerte",
+      cantidad: (item.cantidad as number) ?? 1,
+      precio_unitario: Number(item.precio_unitario ?? 0),
+    };
+  });
+
+  return {
+    id: data.id as string,
+    mesa_id: (data.mesa_id as string) ?? null,
+    mesa_numero: mesaData ? (mesaData.numero as number | null) : null,
+    tipo_despacho: (data.tipo_despacho as "mesa" | "para_llevar") ?? "mesa",
+    estado: data.estado as EstadoPedido,
+    correo_cliente: (data.correo_cliente as string) ?? null,
+    total: Number(data.total ?? 0),
+    paypal_pedido_id: (data.paypal_pedido_id as string) ?? null,
+    cocinero_id: (data.cocinero_id as string) ?? null,
+    creado_en: data.creado_en as string,
+    actualizado_en: data.actualizado_en as string,
+    items,
+  };
+}
+
 export async function obtenerPedidosListosConDetalles(): Promise<PedidoConDetalles[]> {
   const supabase = await crearCliente();
   const { data } = await supabase

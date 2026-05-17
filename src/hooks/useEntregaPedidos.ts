@@ -4,6 +4,7 @@ import { useState, useCallback, useMemo } from "react";
 import { usePedidos } from "@/hooks/usePedidos";
 import { useRealtime } from "@/hooks/useRealtime";
 import { useTiempoTranscurrido } from "@/hooks/useTiempoTranscurrido";
+import { obtenerPedidoConDetalles } from "@/lib/acciones/cocina";
 import type { PedidoConDetalles } from "@/types";
 
 export function useEntregaPedidos(pedidosIniciales: PedidoConDetalles[]) {
@@ -14,12 +15,19 @@ export function useEntregaPedidos(pedidosIniciales: PedidoConDetalles[]) {
   const { cambiarEstado } = usePedidos();
   const { esUrgente } = useTiempoTranscurrido();
 
-  useRealtime("pedidos", "UPDATE", useCallback((payload) => {
-    const actualizado = payload.new as PedidoConDetalles;
+  useRealtime("pedidos", "UPDATE", useCallback(async (payload) => {
+    const id = (payload.new as { id: string }).id;
+    const pedidoCompleto = await obtenerPedidoConDetalles(id);
+    if (!pedidoCompleto) return;
+
     setPedidos((prev) => {
-      const existe = prev.find((p) => p.id === actualizado.id);
-      if (existe) return prev;
-      return [...prev, actualizado];
+      const existe = prev.find((p) => p.id === id);
+      if (existe) {
+        return prev.map((p) =>
+          p.id === id ? { ...p, ...pedidoCompleto } : p
+        );
+      }
+      return [...prev, pedidoCompleto];
     });
   }, []), "estado=eq.listo");
 
