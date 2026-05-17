@@ -40,7 +40,7 @@ export async function crearPerfil(datos: {
       email: datos.email,
       password: datos.password,
       email_confirm: true,
-      user_metadata: { nombre: datos.nombre },
+      user_metadata: { nombre: datos.nombre, rol: datos.rol },
     });
 
   if (authError) {

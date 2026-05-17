@@ -1,5 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { RUTA_POR_ROL, RUTAS_POR_ROL } from "@/lib/redirecciones";
+import type { Rol } from "@/types";
 
 export async function proxy(request: NextRequest) {
   let respuestaSupabase = NextResponse.next({ request });
@@ -33,7 +35,7 @@ export async function proxy(request: NextRequest) {
 
   if (user && pathname === "/") {
     const url = request.nextUrl.clone();
-    url.pathname = "/cocina";
+    url.pathname = RUTA_POR_ROL.cocinero;
     return NextResponse.redirect(url);
   }
 
@@ -44,6 +46,28 @@ export async function proxy(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = "/";
     return NextResponse.redirect(url);
+  }
+
+  if (user && esProtegida) {
+    let rolUsuario = user.user_metadata?.rol as Rol | undefined;
+
+    if (!rolUsuario) {
+      const { data: perfil } = await supabase
+        .from("perfiles")
+        .select("rol")
+        .eq("id", user.id)
+        .single();
+      rolUsuario = (perfil as { rol: Rol } | null)?.rol ?? "cocinero";
+    }
+
+    const rutasPermitidas = RUTAS_POR_ROL[rolUsuario] ?? RUTAS_POR_ROL.cocinero;
+    const tieneAcceso = rutasPermitidas.some((r) => pathname.startsWith(r));
+
+    if (!tieneAcceso) {
+      const url = request.nextUrl.clone();
+      url.pathname = RUTA_POR_ROL[rolUsuario];
+      return NextResponse.redirect(url);
+    }
   }
 
   return respuestaSupabase;
