@@ -6,12 +6,12 @@ import { KanbanColumna } from "./KanbanColumna";
 import { ESTADOS, CONFIG_ESTADO } from "./configEstados";
 import { usePedidos } from "@/hooks/usePedidos";
 import { usePedidosRealtime } from "@/hooks/usePedidosRealtime";
-import type { PedidoConItems } from "@/types";
+import type { PedidoConDetalles } from "@/types";
 
 export { SkeletonKanban } from "./SkeletonKanban";
 
 interface KanbanPedidosProps {
-  pedidosIniciales: PedidoConItems[];
+  pedidosIniciales: PedidoConDetalles[];
 }
 
 export function KanbanPedidos({ pedidosIniciales }: KanbanPedidosProps) {
@@ -24,9 +24,8 @@ export function KanbanPedidos({ pedidosIniciales }: KanbanPedidosProps) {
     [pedidos]
   );
 
-  // Observer: INSERT + UPDATE + DELETE en tiempo real (multiventana)
   usePedidosRealtime({
-    onNuevoPedido: useCallback((nuevoPedido: PedidoConItems) => {
+    onNuevoPedido: useCallback((nuevoPedido: PedidoConDetalles) => {
       setPedidos((prev) => {
         if (prev.some((p) => p.id === nuevoPedido.id)) return prev;
         return [nuevoPedido, ...prev];
@@ -37,7 +36,7 @@ export function KanbanPedidos({ pedidosIniciales }: KanbanPedidosProps) {
       setPedidos((prev) =>
         prev.map((p) =>
           p.id === pedidoId
-            ? { ...p, estado: nuevoEstado as PedidoConItems["estado"] }
+            ? { ...p, estado: nuevoEstado as PedidoConDetalles["estado"] }
             : p
         )
       );
@@ -61,14 +60,13 @@ export function KanbanPedidos({ pedidosIniciales }: KanbanPedidosProps) {
       return;
     }
 
-    // Optimistic update local + Realtime lo replicará en otras ventanas
     if (nuevoEstado === "entregado") {
       setPedidos((prev) => prev.filter((p) => p.id !== pedidoId));
     } else {
       setPedidos((prev) =>
         prev.map((p) =>
           p.id === pedidoId
-            ? { ...p, estado: nuevoEstado as PedidoConItems["estado"] }
+            ? { ...p, estado: nuevoEstado as PedidoConDetalles["estado"] }
             : p
         )
       );

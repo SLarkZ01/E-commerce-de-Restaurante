@@ -2,7 +2,7 @@
 
 import { crearCliente } from "@/lib/supabase/server";
 import { crearEstrategiaDespacho } from "@/lib/servicios/estrategiaDespacho";
-import type { EstadoPedido, Pedido, TipoDespacho, TipoPlato, PedidoConDetalles } from "@/types";
+import type { EstadoPedido, Pedido, TipoDespacho, TipoPlato, PedidoConDetalles, ItemPedidoConImagen } from "@/types";
 
 const TRANSICIONES_VALIDAS: Record<EstadoPedido, EstadoPedido[]> = {
   pendiente: ["preparando"],
@@ -146,11 +146,11 @@ export async function obtenerPedidosConItems(): Promise<PedidoConItems[]> {
 
 export async function obtenerItemsPorPedido(
   pedidoId: string
-): Promise<ItemPedidoConPlato[]> {
+): Promise<ItemPedidoConImagen[]> {
   const supabase = await crearCliente();
   const { data } = await supabase
     .from("items_pedido")
-    .select("cantidad, precio_unitario, platos(nombre)")
+    .select("cantidad, precio_unitario, platos(nombre, imagen_url, tipo_plato)")
     .eq("pedido_id", pedidoId);
 
   if (!data) return [];
@@ -158,9 +158,11 @@ export async function obtenerItemsPorPedido(
   return (data as unknown as Array<{
     cantidad: number;
     precio_unitario: number;
-    platos: { nombre: string } | null;
+    platos: { nombre: string; imagen_url: string | null; tipo_plato: TipoPlato } | null;
   }>).map((item) => ({
     plato_nombre: item.platos?.nombre ?? "Plato",
+    plato_imagen_url: item.platos?.imagen_url ?? null,
+    plato_tipo: item.platos?.tipo_plato ?? "plato_fuerte",
     cantidad: item.cantidad,
     precio_unitario: item.precio_unitario,
   }));
@@ -258,6 +260,60 @@ export async function obtenerPedidoConDetalles(pedidoId: string): Promise<Pedido
     actualizado_en: data.actualizado_en as string,
     items,
   };
+}
+
+export async function obtenerTodosPedidosConImagenes(): Promise<PedidoConDetalles[]> {
+  const supabase = await crearCliente();
+  const { data } = await supabase
+    .from("pedidos")
+    .select(`
+      *,
+      mesas (
+        numero
+      ),
+      items_pedido (
+        cantidad,
+        precio_unitario,
+        platos (
+          nombre,
+          imagen_url,
+          tipo_plato
+        )
+      )
+    `)
+    .order("creado_en", { ascending: false });
+
+  if (!data) return [];
+
+  return data.map((pedido: Record<string, unknown>) => {
+    const mesaData = (pedido.mesas as Record<string, unknown> | null) ?? null;
+    const itemsRaw = (pedido.items_pedido as Record<string, unknown>[]) ?? [];
+    const items = itemsRaw.map((item) => {
+      const plato = (item.platos as Record<string, unknown>) ?? {};
+      return {
+        plato_nombre: (plato.nombre as string) ?? "Plato",
+        plato_imagen_url: (plato.imagen_url as string) ?? null,
+        plato_tipo: (plato.tipo_plato as TipoPlato) ?? "plato_fuerte",
+        cantidad: (item.cantidad as number) ?? 1,
+        precio_unitario: Number(item.precio_unitario ?? 0),
+      };
+    });
+
+    return {
+      id: pedido.id as string,
+      mesa_id: (pedido.mesa_id as string) ?? null,
+      mesa_numero: mesaData ? (mesaData.numero as number | null) : null,
+      tipo_despacho: (pedido.tipo_despacho as "mesa" | "para_llevar") ?? "mesa",
+      estado: pedido.estado as EstadoPedido,
+      correo_cliente: (pedido.correo_cliente as string) ?? null,
+      total: Number(pedido.total ?? 0),
+      paypal_pedido_id: (pedido.paypal_pedido_id as string) ?? null,
+      cocinero_id: (pedido.cocinero_id as string) ?? null,
+      creado_en: pedido.creado_en as string,
+      actualizado_en: pedido.actualizado_en as string,
+      items,
+    };
+  });
 }
 
 export async function obtenerPedidosListosConDetalles(): Promise<PedidoConDetalles[]> {

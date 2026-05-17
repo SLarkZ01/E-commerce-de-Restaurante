@@ -5,9 +5,9 @@ import { formatearPrecio } from "@/lib/formato";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { MesaBadge } from "./MesaBadge";
+import { MesaBadge } from "@/components/compartidos/MesaBadge";
 import { PedidoTimer, useUrgencia } from "./PedidoTimer";
-import { DishThumbnails } from "./DishThumbnails";
+import { DishThumbnails } from "@/components/compartidos/DishThumbnails";
 import type { PedidoConDetalles } from "@/types";
 
 interface EntregaCardProps {
