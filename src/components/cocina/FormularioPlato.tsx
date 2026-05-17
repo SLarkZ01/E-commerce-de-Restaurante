@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2, AlertCircle, Sparkles } from "lucide-react";
+import { Loader2, AlertCircle, Sparkles, ImagePlus, DollarSign } from "lucide-react";
 import type { Categoria } from "@/types";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -99,23 +99,26 @@ export function FormularioPlato({
     }
   };
 
-  const titulo = tipoPlato === "plato_fuerte" ? "Nuevo Plato" : tipoPlato === "bebida" ? "Nueva Bebida" : "Nuevo Combo";
-  const tituloGuardar = tipoPlato === "plato_fuerte" ? "Guardar Plato" : tipoPlato === "bebida" ? "Guardar Bebida" : "Guardar Combo";
+  const esPlatoFuerte = tipoPlato === "plato_fuerte";
+  const titulo = esPlatoFuerte ? "Nuevo Plato" : tipoPlato === "bebida" ? "Nueva Bebida" : "Nuevo Combo";
+  const subtitulo = esPlatoFuerte ? "Agrega un plato fuerte o entrada al menú" : tipoPlato === "bebida" ? "Agrega una bebida al menú" : "Agrega un combo al menú";
 
   return (
     <form onSubmit={handleSubmit}>
-      <DialogHeader className="mb-5">
-        <div className="flex items-center gap-2 mb-1">
-          <div className="w-8 h-8 rounded-lg bg-primario/10 flex items-center justify-center">
+      <DialogHeader className="mb-6">
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-xl bg-primario/10 flex items-center justify-center shrink-0">
             <Sparkles className="w-4 h-4 text-primario" />
           </div>
-          <DialogTitle className="font-playfair text-lg font-bold text-texto">
-            {titulo}
-          </DialogTitle>
+          <div>
+            <DialogTitle className="font-playfair text-lg font-bold text-texto leading-tight">
+              {titulo}
+            </DialogTitle>
+            <p className="text-[11px] text-texto-secundario mt-0.5">
+              {subtitulo}
+            </p>
+          </div>
         </div>
-        <p className="text-xs text-texto-secundario ml-10">
-          Completa los datos del {tipoPlato === "plato_fuerte" ? "plato" : tipoPlato === "bebida" ? "bebida" : "combo"} para agregarlo al menú
-        </p>
       </DialogHeader>
 
       {errorFormulario && (
@@ -126,110 +129,123 @@ export function FormularioPlato({
       )}
 
       <div className="space-y-5">
-        <div>
-          <label className="block text-xs font-medium text-texto-secundario mb-2">
-            Tipo
+        <section className="bg-fondo-oscuro/50 rounded-xl p-4 border border-borde/30">
+          <label className="block text-[10px] font-semibold text-texto-secundario uppercase tracking-wider mb-2.5">
+            Tipo de ítem
           </label>
           <SelectorTipoPlato valor={tipoPlato} onChange={setTipoPlato} />
-        </div>
+        </section>
 
-        <ImageDropzone
-          archivo={archivoImagen}
-          onArchivoSeleccionado={setArchivoImagen}
-          onEliminar={() => setArchivoImagen(null)}
-          etiqueta={`Imagen (máx. ${TAMANO_MAXIMO_IMG}MB)`}
-          maxTamañoMB={TAMANO_MAXIMO_IMG}
-        />
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-medium text-texto-secundario mb-1.5">
-              Nombre
+        <section>
+          <div className="flex items-center gap-1.5 mb-2">
+            <ImagePlus className="w-3.5 h-3.5 text-texto-secundario" />
+            <label className="text-[10px] font-semibold text-texto-secundario uppercase tracking-wider">
+              Foto
             </label>
-            <Input
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
-              required
-              placeholder="Ej: Lomo Saltado"
-              className="h-10"
+          </div>
+          <ImageDropzone
+            archivo={archivoImagen}
+            onArchivoSeleccionado={setArchivoImagen}
+            onEliminar={() => setArchivoImagen(null)}
+            etiqueta={""}
+            maxTamañoMB={TAMANO_MAXIMO_IMG}
+          />
+        </section>
+
+        <section className="bg-fondo-oscuro/50 rounded-xl p-4 border border-borde/30 space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-[10px] font-semibold text-texto-secundario uppercase tracking-wider mb-1.5">
+                Nombre
+              </label>
+              <Input
+                value={nombre}
+                onChange={(e) => setNombre(e.target.value)}
+                required
+                placeholder="Ej: Lomo Saltado"
+                className="h-10 bg-fondo-card"
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-semibold text-texto-secundario uppercase tracking-wider mb-1.5">
+                Categoría
+              </label>
+              <select
+                value={categoriaId}
+                onChange={(e) => setCategoriaId(e.target.value)}
+                className="w-full h-10 px-3 text-sm rounded-lg border border-borde bg-fondo-card text-texto focus:outline-none focus:ring-2 focus:ring-primario/30 focus:border-primario"
+              >
+                <option value="">Sin categoría</option>
+                {categorias.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.nombre}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-[10px] font-semibold text-texto-secundario uppercase tracking-wider mb-1.5">
+              Descripción
+            </label>
+            <textarea
+              value={descripcion}
+              onChange={(e) => setDescripcion(e.target.value)}
+              rows={2}
+              placeholder="Breve descripción del plato..."
+              className="w-full px-3 py-2 text-sm rounded-lg border border-borde bg-fondo-card text-texto placeholder:text-texto-terciario/70 focus:outline-none focus:ring-2 focus:ring-primario/30 focus:border-primario resize-none"
             />
           </div>
+
           <div>
-            <label className="block text-xs font-medium text-texto-secundario mb-1.5">
-              Categoría
+            <label className="block text-[10px] font-semibold text-texto-secundario uppercase tracking-wider mb-1.5">
+              Precio
             </label>
-            <select
-              value={categoriaId}
-              onChange={(e) => setCategoriaId(e.target.value)}
-              className="w-full h-10 px-3 text-sm rounded-lg border border-borde bg-fondo-card text-texto focus:outline-none focus:ring-2 focus:ring-primario/30 focus:border-primario"
-            >
-              <option value="">Sin categoría</option>
-              {categorias.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.nombre}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-texto-terciario" />
+              <Input
+                type="number"
+                value={precio}
+                onChange={(e) => setPrecio(e.target.value)}
+                required
+                min={0}
+                placeholder="0"
+                className="h-10 pl-10 bg-fondo-card"
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-medium text-texto-terciario uppercase">
+                COP
+              </span>
+            </div>
           </div>
-        </div>
+        </section>
 
-        <div>
-          <label className="block text-xs font-medium text-texto-secundario mb-1.5">
-            Descripción
-          </label>
-          <textarea
-            value={descripcion}
-            onChange={(e) => setDescripcion(e.target.value)}
-            rows={2}
-            placeholder="Breve descripción"
-            className="w-full px-3 py-2 text-sm rounded-lg border border-borde bg-fondo-card text-texto placeholder:text-texto-terciario focus:outline-none focus:ring-2 focus:ring-primario/30 focus:border-primario resize-none"
-          />
-        </div>
-
-        <div>
-          <label className="block text-xs font-medium text-texto-secundario mb-1.5">
-            Precio (COP)
-          </label>
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-texto-secundario">
-              $
-            </span>
-            <Input
-              type="number"
-              value={precio}
-              onChange={(e) => setPrecio(e.target.value)}
-              required
-              min={0}
-              placeholder="0"
-              className="h-10 pl-8"
+        {esPlatoFuerte && (
+          <section className="bg-fondo-oscuro/50 rounded-xl p-4 border border-borde/30">
+            <IngredientesInput
+              ingrediente={ingrediente}
+              onChangeIngrediente={setIngrediente}
+              onAgregar={agregarIngrediente}
+              ingredientes={ingredientes}
+              onEliminar={(i) => setIngredientes((prev) => prev.filter((_, j) => j !== i))}
             />
-          </div>
-        </div>
-
-        {tipoPlato === "plato_fuerte" && (
-          <IngredientesInput
-            ingrediente={ingrediente}
-            onChangeIngrediente={setIngrediente}
-            onAgregar={agregarIngrediente}
-            ingredientes={ingredientes}
-            onEliminar={(i) => setIngredientes((prev) => prev.filter((_, j) => j !== i))}
-          />
+          </section>
         )}
       </div>
 
-      <div className="flex gap-3 mt-6 pt-4 border-t border-borde/40">
+      <div className="flex gap-2.5 mt-6 pt-5 border-t border-borde/30">
         <Button
           type="button"
           onClick={alCancelar}
           variant="outline"
-          className="flex-1 h-10"
+          className="flex-1 h-10 text-sm font-medium"
           disabled={guardando}
         >
           Cancelar
         </Button>
         <Button
           type="submit"
-          className="flex-1 h-10 bg-primario hover:bg-primario-hover text-primario-texto shadow-sm"
+          className="flex-1 h-10 bg-primario hover:bg-primario-hover text-primario-texto text-sm font-semibold shadow-sm"
           disabled={guardando}
         >
           {guardando ? (
@@ -238,7 +254,7 @@ export function FormularioPlato({
               Guardando...
             </>
           ) : (
-            tituloGuardar
+            "Guardar"
           )}
         </Button>
       </div>

@@ -15,9 +15,9 @@ function FilasSkeleton() {
   return (
     <div className="space-y-2">
       {[1, 2, 3, 4].map((i) => (
-        <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-fondo-oscuro">
-          <div className="h-3.5 w-28 bg-borde rounded animate-pulse" />
-          <div className="h-3.5 w-3.5 bg-borde rounded animate-pulse" />
+        <div key={i} className="flex items-center justify-between p-3.5 rounded-lg bg-fondo-oscuro">
+          <div className="h-4 w-32 bg-borde rounded animate-pulse" />
+          <div className="h-4 w-4 bg-borde rounded animate-pulse" />
         </div>
       ))}
     </div>
@@ -81,61 +81,60 @@ export function GestorCategorias({
     setPagina(1);
   }, []);
 
-  const mostrarBusqueda = categorias.length > 5;
-
   return (
     <div className="flex flex-col flex-1 min-h-0 bg-fondo-card">
-      <div className="px-5 py-4 border-b border-borde/50 shrink-0">
-        <div className="flex items-center gap-2.5 mb-3">
-          <div className="w-8 h-8 rounded-lg bg-primario/10 flex items-center justify-center">
-            <Tags className="w-4 h-4 text-primario" />
+      {/* Header compacto */}
+      <div className="px-5 py-3 border-b border-borde/40 shrink-0">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg bg-primario/10 flex items-center justify-center">
+              <Tags className="w-3.5 h-3.5 text-primario" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-texto leading-tight">Categorías</h3>
+              <p className="text-[10px] text-texto-secundario">Organiza tu menú</p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-sm font-bold text-texto">Gestión de Categorías</h3>
-            <p className="text-[11px] text-texto-secundario">Organiza tu menú</p>
-          </div>
+          <span className="text-[11px] font-medium text-texto-terciario tabular-nums">
+            {categoriasFiltradas.length}
+          </span>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex items-center gap-2">
-          <div className="relative flex-1">
-            <Input
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
-              required
-              placeholder="Nombre de la categoría..."
-              className="h-9 pl-3 pr-3 text-sm"
-            />
-          </div>
+        {/* Form inline compacto */}
+        <form onSubmit={handleSubmit} className="flex items-center gap-2 mt-3">
+          <Input
+            value={nombre}
+            onChange={(e) => setNombre(e.target.value)}
+            required
+            placeholder="Nueva categoría..."
+            className="h-9 text-sm bg-fondo"
+          />
           <Button
             type="submit"
             disabled={!nombre.trim()}
             size="sm"
-            className="h-9 bg-primario hover:bg-primario-hover text-primario-texto text-xs font-semibold disabled:opacity-40 shrink-0"
+            className="h-9 bg-primario hover:bg-primario-hover text-primario-texto text-xs font-semibold disabled:opacity-40 px-3 shrink-0"
           >
-            <Plus className="w-3.5 h-3.5 mr-1" />
-            Agregar
+            <Plus className="w-3.5 h-3.5" />
           </Button>
         </form>
       </div>
 
-      <div className="flex-1 flex flex-col min-h-0 px-5 py-4 overflow-hidden">
-        <div className="flex items-center justify-between mb-3 shrink-0">
-          <span className="text-xs font-medium text-texto-secundario">
-            {categoriasFiltradas.length} {categoriasFiltradas.length === 1 ? "categoría" : "categorías"}
-          </span>
-          {mostrarBusqueda && (
-            <div className="relative w-44">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-texto-terciario" />
-              <Input
-                value={busqueda}
-                onChange={(e) => handleBusqueda(e.target.value)}
-                placeholder="Buscar..."
-                className="h-8 pl-8 text-xs"
-              />
-            </div>
-          )}
+      {/* Toolbar listado */}
+      <div className="px-5 pt-3 pb-2 shrink-0">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-texto-terciario" />
+          <Input
+            value={busqueda}
+            onChange={(e) => handleBusqueda(e.target.value)}
+            placeholder="Buscar categoría..."
+            className="h-9 pl-9 text-xs bg-fondo"
+          />
         </div>
+      </div>
 
+      {/* Listado */}
+      <div className="flex-1 flex flex-col min-h-0 px-5 pb-4 overflow-hidden">
         {categorias.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center">
             <FilasSkeleton />
@@ -150,7 +149,7 @@ export function GestorCategorias({
           </div>
         ) : (
           <>
-            <div className="flex-1 overflow-y-auto space-y-1.5 min-h-0 pr-1">
+            <div className="flex-1 overflow-y-auto space-y-1 min-h-0 pr-1">
               {categoriasPaginadas.map((cat) => (
                 <FilaCategoria
                   key={cat.id}

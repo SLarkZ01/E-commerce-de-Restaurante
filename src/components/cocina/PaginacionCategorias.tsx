@@ -1,13 +1,5 @@
 import { useCallback } from "react";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface PaginacionCategoriasProps {
   pagina: number;
@@ -47,43 +39,50 @@ export function PaginacionCategorias({
   })();
 
   return (
-    <Pagination className="mt-4 pt-4 border-t border-borde/30 justify-between shrink-0">
-      <p className="text-[11px] text-texto-terciario self-center tabular-nums">
-        Pág. {pagina} de {totalPaginas}
-      </p>
-      <PaginationContent>
-        <PaginationItem>
-          <PaginationPrevious
-            onClick={anterior}
-            disabled={pagina === 1}
-            className="disabled:opacity-30 disabled:cursor-not-allowed"
-          />
-        </PaginationItem>
-        {paginas.map((item, idx) =>
-          item === "ellipsis" ? (
-            <PaginationItem key={`e-${idx}`}>
-              <PaginationEllipsis />
-            </PaginationItem>
-          ) : (
-            <PaginationItem key={item}>
-              <PaginationLink
+    <div className="mt-3 pt-3 border-t border-borde/30 flex items-center justify-between shrink-0">
+      <span className="text-[11px] text-texto-terciario tabular-nums">
+        {pagina} / {totalPaginas}
+      </span>
+
+      <div className="flex items-center gap-1">
+        <button
+          onClick={anterior}
+          disabled={pagina === 1}
+          className="w-8 h-8 flex items-center justify-center rounded-lg text-texto-secundario hover:bg-fondo-oscuro hover:text-texto disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+
+        <div className="flex items-center gap-0.5">
+          {paginas.map((item, idx) =>
+            item === "ellipsis" ? (
+              <span key={`e-${idx}`} className="w-8 h-8 flex items-center justify-center text-[11px] text-texto-terciario">
+                ...
+              </span>
+            ) : (
+              <button
+                key={item}
                 onClick={() => onCambiarPagina(item)}
-                isActive={item === pagina}
-                size="sm"
+                className={`w-8 h-8 flex items-center justify-center rounded-lg text-xs font-medium transition-colors ${
+                  item === pagina
+                    ? "bg-primario text-primario-texto"
+                    : "text-texto-secundario hover:bg-fondo-oscuro hover:text-texto"
+                }`}
               >
                 {item}
-              </PaginationLink>
-            </PaginationItem>
-          )
-        )}
-        <PaginationItem>
-          <PaginationNext
-            onClick={siguiente}
-            disabled={pagina === totalPaginas}
-            className="disabled:opacity-30 disabled:cursor-not-allowed"
-          />
-        </PaginationItem>
-      </PaginationContent>
-    </Pagination>
+              </button>
+            )
+          )}
+        </div>
+
+        <button
+          onClick={siguiente}
+          disabled={pagina === totalPaginas}
+          className="w-8 h-8 flex items-center justify-center rounded-lg text-texto-secundario hover:bg-fondo-oscuro hover:text-texto disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
   );
 }

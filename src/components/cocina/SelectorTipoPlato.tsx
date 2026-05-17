@@ -7,25 +7,25 @@ const TIPOS_PLATO: {
   valor: TipoPlatoValor;
   etiqueta: string;
   icono: React.ReactNode;
-  subtitulo: string;
+  color: string;
 }[] = [
   {
     valor: "plato_fuerte",
     etiqueta: "Plato Fuerte",
-    icono: <Utensils className="w-4 h-4" />,
-    subtitulo: "Entrada o principal",
+    icono: <Utensils className="w-5 h-5" />,
+    color: "bg-acento/10 text-acento border-acento/20",
   },
   {
     valor: "bebida",
     etiqueta: "Bebida",
-    icono: <Coffee className="w-4 h-4" />,
-    subtitulo: "Refresco o licor",
+    icono: <Coffee className="w-5 h-5" />,
+    color: "bg-info/10 text-info border-info/20",
   },
   {
     valor: "combo",
     etiqueta: "Combo",
-    icono: <Sandwich className="w-4 h-4" />,
-    subtitulo: "Paquete especial",
+    icono: <Sandwich className="w-5 h-5" />,
+    color: "bg-exito/10 text-exito border-exito/20",
   },
 ];
 
@@ -39,7 +39,7 @@ export const SelectorTipoPlato = memo(function SelectorTipoPlato({
   onChange,
 }: SelectorTipoPlatoProps) {
   return (
-    <div className="flex gap-2">
+    <div className="grid grid-cols-3 gap-2">
       {TIPOS_PLATO.map((tipo) => {
         const activo = valor === tipo.valor;
         return (
@@ -47,14 +47,18 @@ export const SelectorTipoPlato = memo(function SelectorTipoPlato({
             key={tipo.valor}
             type="button"
             onClick={() => onChange(tipo.valor)}
-            className={`flex-1 flex flex-col items-center gap-1 py-3 px-2 rounded-xl text-xs font-semibold transition-all ${
+            className={`flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border-2 transition-all duration-200 ${
               activo
-                ? "bg-primario text-primario-texto shadow-sm"
-                : "bg-fondo-oscuro text-texto-secundario hover:bg-borde/60"
+                ? `bg-primario text-primario-texto border-primario shadow-sm`
+                : `bg-fondo-card text-texto-secundario border-borde/50 hover:border-primario/30 hover:text-texto`
             }`}
           >
-            {tipo.icono}
-            <span>{tipo.etiqueta}</span>
+            <span className={activo ? "text-primario-texto" : tipo.color.split(" ")[1]}>
+              {tipo.icono}
+            </span>
+            <span className="text-[11px] font-semibold leading-tight">
+              {tipo.etiqueta}
+            </span>
           </button>
         );
       })}

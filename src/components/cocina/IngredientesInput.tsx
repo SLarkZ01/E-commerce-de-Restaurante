@@ -19,10 +19,10 @@ export function IngredientesInput({
 }: IngredientesInputProps) {
   return (
     <div>
-      <label className="block text-xs font-medium text-texto-secundario mb-1.5">
+      <label className="block text-[10px] font-semibold text-texto-secundario uppercase tracking-wider mb-2.5">
         Ingredientes
       </label>
-      <div className="flex gap-2 mb-2">
+      <div className="flex gap-2 mb-3">
         <Input
           value={ingrediente}
           onChange={(e) => onChangeIngrediente(e.target.value)}
@@ -32,15 +32,14 @@ export function IngredientesInput({
               onAgregar();
             }
           }}
-          placeholder="Ej: Tomate"
-          className="h-9 text-sm"
+          placeholder="Ej: Tomate fresco"
+          className="h-10 bg-fondo-card text-sm"
         />
         <Button
           type="button"
           onClick={onAgregar}
-          variant="secondary"
           size="sm"
-          className="h-9 px-3 shrink-0"
+          className="h-10 px-3 bg-primario/10 text-primario hover:bg-primario hover:text-primario-texto border border-primario/20 transition-colors shrink-0"
         >
           <Plus className="w-4 h-4" />
         </Button>
@@ -50,13 +49,13 @@ export function IngredientesInput({
           {ingredientes.map((ing, i) => (
             <span
               key={i}
-              className="inline-flex items-center gap-1 px-2.5 py-1 bg-fondo-oscuro text-texto rounded-full text-xs"
+              className="inline-flex items-center gap-1.5 pl-3 pr-1.5 py-1.5 bg-fondo-card text-texto rounded-full text-xs font-medium border border-borde/50"
             >
               {ing}
               <button
                 type="button"
                 onClick={() => onEliminar(i)}
-                className="text-texto-terciario hover:text-error transition-colors"
+                className="text-texto-terciario hover:text-error hover:bg-error/10 rounded-full p-0.5 transition-colors"
               >
                 <X className="w-3 h-3" />
               </button>
