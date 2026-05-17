@@ -49,7 +49,6 @@ export function TablaPlatos({ platosIniciales, categorias: categoriasIniciales }
     categoriaActiva,
     setCategoriaActiva,
     platosFiltrados,
-    platosDisponibles,
   } = useFiltrosPlatos(platos);
 
   const {
