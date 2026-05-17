@@ -205,8 +205,8 @@ export function DialogoQRMesa({ mesa, onClose, construirUrl, onMensaje }: Dialog
 
           <Button
             onClick={onClose}
-            variant="ghost"
-            className="w-full h-10 text-texto-secundario hover:text-texto"
+            variant="outline"
+            className="w-full h-10 text-texto hover:bg-fondo-oscuro border-borde/60"
           >
             Cerrar
           </Button>

@@ -62,15 +62,6 @@ export function GestionMesas({
       )}
 
       <div className="p-6">
-        <div className="mb-6">
-          <h1 className="font-playfair text-2xl font-bold text-texto">
-            Gestión de Mesas
-          </h1>
-          <p className="text-sm text-texto-secundario mt-1">
-            Administra las mesas y sus códigos QR
-          </p>
-        </div>
-
         <FormularioCrearMesa onCrear={handleCrear} />
 
         {mesas.length === 0 ? (
