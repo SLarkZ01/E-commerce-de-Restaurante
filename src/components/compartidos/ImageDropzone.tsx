@@ -119,26 +119,30 @@ export function ImageDropzone({
         onDragOver={handleDragOver}
         onDragLeave={() => setArrastrando(false)}
         onClick={() => inputRef.current?.click()}
-        className={`w-full rounded-lg border-2 border-dashed transition-all flex flex-col items-center justify-center gap-2 cursor-pointer ${
+        className={`w-full rounded-xl border-2 border-dashed transition-all flex flex-col items-center justify-center gap-3 cursor-pointer ${
           arrastrando
             ? "border-primario bg-primario/5"
-            : "border-borde bg-fondo-oscuro hover:border-primario/50 hover:bg-fondo-card"
+            : "border-borde/60 bg-fondo-oscuro hover:border-primario/50 hover:bg-fondo-card"
         } ${error ? "border-error/50 bg-error/5" : ""}`}
         style={{ aspectRatio: relacionAspecto }}
       >
-        <ImageIcon
-          className={`w-8 h-8 ${arrastrando ? "text-primario" : "text-texto-terciario"}`}
-        />
-        <span
-          className={`text-xs font-medium ${arrastrando ? "text-primario" : "text-texto-secundario"}`}
-        >
-          {arrastrando
-            ? "Suelta la imagen aquí"
-            : "Arrastra una imagen o haz clic para seleccionar"}
-        </span>
-        <span className="text-[10px] text-texto-terciario">
-          JPG, PNG, WebP (max {maxTamañoMB}MB)
-        </span>
+        <div className={`w-12 h-12 rounded-full flex items-center justify-center ${arrastrando ? "bg-primario/10" : "bg-borde/30"}`}>
+          <ImageIcon
+            className={`w-6 h-6 ${arrastrando ? "text-primario" : "text-texto-terciario"}`}
+          />
+        </div>
+        <div className="text-center space-y-1">
+          <span
+            className={`block text-sm font-semibold ${arrastrando ? "text-primario" : "text-texto-secundario"}`}
+          >
+            {arrastrando
+              ? "Suelta la imagen aquí"
+              : "Arrastra una imagen o haz clic"}
+          </span>
+          <span className="text-[11px] text-texto-terciario">
+            JPG, PNG, WebP (máx. {maxTamañoMB}MB)
+          </span>
+        </div>
       </div>
       <input
         ref={inputRef}

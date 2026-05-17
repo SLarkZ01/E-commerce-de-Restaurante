@@ -5,6 +5,13 @@ import { Loader2, AlertCircle, Sparkles, ImagePlus, DollarSign } from "lucide-re
 import type { Categoria } from "@/types";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ImageDropzone } from "@/components/compartidos/ImageDropzone";
 import { SelectorTipoPlato } from "./SelectorTipoPlato";
 import { IngredientesInput } from "./IngredientesInput";
@@ -166,23 +173,24 @@ export function FormularioPlato({
                 className="h-10 bg-fondo-card"
               />
             </div>
-            <div>
-              <label className="block text-[10px] font-semibold text-texto-secundario uppercase tracking-wider mb-1.5">
-                Categoría
-              </label>
-              <select
-                value={categoriaId}
-                onChange={(e) => setCategoriaId(e.target.value)}
-                className="w-full h-10 px-3 text-sm rounded-lg border border-borde bg-fondo-card text-texto focus:outline-none focus:ring-2 focus:ring-primario/30 focus:border-primario"
-              >
-                <option value="">Sin categoría</option>
+          <div>
+            <label className="block text-[10px] font-semibold text-texto-secundario uppercase tracking-wider mb-1.5">
+              Categoría
+            </label>
+            <Select value={categoriaId} onValueChange={(v) => setCategoriaId(v ?? "")}>
+              <SelectTrigger className="h-10 bg-fondo-card text-sm">
+                <SelectValue placeholder="Sin categoría" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Sin categoría</SelectItem>
                 {categorias.map((c) => (
-                  <option key={c.id} value={c.id}>
+                  <SelectItem key={c.id} value={c.id}>
                     {c.nombre}
-                  </option>
+                  </SelectItem>
                 ))}
-              </select>
-            </div>
+              </SelectContent>
+            </Select>
+          </div>
           </div>
 
           <div>
@@ -194,7 +202,7 @@ export function FormularioPlato({
               onChange={(e) => setDescripcion(e.target.value)}
               rows={2}
               placeholder="Breve descripción del plato..."
-              className="w-full px-3 py-2 text-sm rounded-lg border border-borde bg-fondo-card text-texto placeholder:text-texto-terciario/70 focus:outline-none focus:ring-2 focus:ring-primario/30 focus:border-primario resize-none"
+              className="w-full px-3 py-2 text-sm rounded-lg border border-borde bg-fondo-card text-texto placeholder:text-texto-terciario/70 focus:outline-none focus:ring-2 focus:ring-primario/30 focus:border-primario focus-visible:ring-2 focus-visible:ring-primario/30 focus-visible:border-primario transition-all resize-none"
             />
           </div>
 
