@@ -26,19 +26,21 @@ export function FormularioCrearMesa({ onCrear }: FormularioCrearMesaProps) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 mb-6">
-      <Input
-        type="number"
-        value={numero}
-        onChange={(e) => setNumero(e.target.value)}
-        required
-        min={1}
-        placeholder="Número de mesa"
-        className="w-full sm:w-48 h-10"
-      />
+      <div className="relative flex-1 sm:flex-none sm:w-48">
+        <Input
+          type="number"
+          value={numero}
+          onChange={(e) => setNumero(e.target.value)}
+          required
+          min={1}
+          placeholder="Número de mesa"
+          className="h-11 pl-4 pr-4"
+        />
+      </div>
       <Button
         type="submit"
         disabled={creando}
-        className="bg-primario hover:bg-primario-hover text-primario-texto rounded-xl h-10 px-5"
+        className="bg-primario hover:bg-primario-hover text-primario-texto rounded-xl h-11 px-6 shadow-sm"
       >
         {creando ? (
           <>

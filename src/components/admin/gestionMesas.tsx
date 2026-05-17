@@ -57,12 +57,19 @@ export function GestionMesas({
 
   return (
     <div className="flex-1 overflow-y-auto">
+      {mensaje && (
+        <MensajeToast mensaje={mensaje} variante={tipoMensaje} onClose={() => setMensaje("")} />
+      )}
+
       <div className="p-6">
-        {mensaje && (
-          <div className="mb-5">
-            <MensajeToast mensaje={mensaje} variante={tipoMensaje} onClose={() => setMensaje("")} />
-          </div>
-        )}
+        <div className="mb-6">
+          <h1 className="font-playfair text-2xl font-bold text-texto">
+            Gestión de Mesas
+          </h1>
+          <p className="text-sm text-texto-secundario mt-1">
+            Administra las mesas y sus códigos QR
+          </p>
+        </div>
 
         <FormularioCrearMesa onCrear={handleCrear} />
 
@@ -70,7 +77,7 @@ export function GestionMesas({
           <EstadoVacio
             icono={QrCode}
             titulo="No hay mesas registradas"
-            descripcion="Agrega tu primera mesa"
+            descripcion="Agrega tu primera mesa para comenzar"
           />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

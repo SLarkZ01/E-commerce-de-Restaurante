@@ -47,16 +47,18 @@ export function MensajeToast({
   const estilo = ESTILOS[variante];
 
   return (
-    <div
-      className={`px-4 py-3 rounded-xl text-sm flex items-center gap-2 ${estilo.bg} ${estilo.text}`}
-    >
-      {estilo.icono}
-      <span className="flex-1">{mensaje}</span>
-      {onClose && (
-        <button onClick={onClose} className="opacity-60 hover:opacity-100 transition-opacity shrink-0">
-          <X className="w-4 h-4" />
-        </button>
-      )}
+    <div className="fixed top-4 right-4 z-[100] animate-in slide-in-from-top-2 fade-in duration-200">
+      <div
+        className={`px-4 py-3 rounded-xl text-sm flex items-center gap-2 shadow-lg border backdrop-blur-sm ${estilo.bg} ${estilo.text} border-borde/50`}
+      >
+        {estilo.icono}
+        <span className="flex-1 font-medium">{mensaje}</span>
+        {onClose && (
+          <button onClick={onClose} className="opacity-60 hover:opacity-100 transition-opacity shrink-0">
+            <X className="w-4 h-4" />
+          </button>
+        )}
+      </div>
     </div>
   );
 }

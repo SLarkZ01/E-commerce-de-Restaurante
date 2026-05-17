@@ -11,7 +11,7 @@ interface TarjetaMesaProps {
 export function TarjetaMesa({ mesa, onEliminar, onVerQR }: TarjetaMesaProps) {
   return (
     <div className="bg-fondo-card rounded-xl border border-borde/60 p-5 shadow-[0_1px_3px_rgba(45,42,38,0.04)] hover:shadow-[0_4px_12px_rgba(45,42,38,0.08)] transition-all group">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="w-14 h-14 rounded-xl bg-primario/10 flex items-center justify-center group-hover:scale-110 transition-transform">
             <span className="font-playfair text-xl font-bold text-primario">
@@ -19,7 +19,9 @@ export function TarjetaMesa({ mesa, onEliminar, onVerQR }: TarjetaMesaProps) {
             </span>
           </div>
           <div>
-            <p className="text-xs font-medium text-texto-secundario">Mesa</p>
+            <p className="text-xs font-medium text-texto-secundario uppercase tracking-wide">
+              Mesa
+            </p>
             <p className="font-playfair text-xl font-bold text-texto">
               #{mesa.numero}
             </p>
@@ -28,12 +30,13 @@ export function TarjetaMesa({ mesa, onEliminar, onVerQR }: TarjetaMesaProps) {
         <button
           onClick={() => onEliminar(mesa.id)}
           className="text-texto-terciario hover:text-error transition-colors p-2 rounded-lg hover:bg-error/10"
+          aria-label={`Eliminar mesa ${mesa.numero}`}
         >
           <Trash2 className="w-4 h-4" />
         </button>
       </div>
 
-      <div className="bg-fondo-oscuro rounded-lg p-3 mb-4">
+      <div className="bg-fondo-oscuro rounded-lg p-2.5 mb-4 border border-borde/30">
         <p className="text-[10px] text-texto-terciario font-mono truncate">
           {mesa.codigo_qr}
         </p>

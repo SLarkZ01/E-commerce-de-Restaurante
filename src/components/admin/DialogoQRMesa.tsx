@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback } from "react";
-import { QrCode, Copy, Printer } from "lucide-react";
+import { useCallback, useState } from "react";
+import { QrCode, Copy, Printer, Check, Loader2 } from "lucide-react";
 import type { Mesa } from "@/types";
 import { Button } from "@/components/ui/button";
 import { useQRMesa } from "@/hooks/useQRMesa";
@@ -22,13 +22,18 @@ interface DialogoQRMesaProps {
 
 export function DialogoQRMesa({ mesa, onClose, construirUrl, onMensaje }: DialogoQRMesaProps) {
   const { qrDataUrl, generando } = useQRMesa(mesa, construirUrl);
+  const [copiado, setCopiado] = useState(false);
+  const [imprimiendo, setImprimiendo] = useState(false);
 
   const imprimirQR = useCallback(() => {
     if (!qrDataUrl || !mesa) return;
 
+    setImprimiendo(true);
+
     const ventana = window.open("", "_blank");
     if (!ventana) {
       onMensaje("Permite las ventanas emergentes para imprimir el QR", "error");
+      setImprimiendo(false);
       return;
     }
 
@@ -90,6 +95,7 @@ export function DialogoQRMesa({ mesa, onClose, construirUrl, onMensaje }: Dialog
     const ejecutarImpresion = () => {
       if (!impreso) {
         impreso = true;
+        setImprimiendo(false);
         ventana.print();
       }
     };
@@ -112,52 +118,98 @@ export function DialogoQRMesa({ mesa, onClose, construirUrl, onMensaje }: Dialog
       document.execCommand("copy");
       document.body.removeChild(textarea);
     });
-    onMensaje("URL copiada al portapapeles", "exito");
-  }, [mesa, construirUrl, onMensaje]);
+    setCopiado(true);
+    setTimeout(() => setCopiado(false), 2000);
+  }, [mesa, construirUrl]);
+
+  if (!mesa) return null;
+
+  const url = construirUrl(mesa.codigo_qr);
 
   return (
     <Dialog open={!!mesa} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-sm">
-        <DialogHeader>
-          <DialogTitle className="font-playfair text-lg font-bold text-texto text-center">
-            Mesa {mesa?.numero}
-          </DialogTitle>
-          <DialogDescription className="text-sm text-texto-secundario text-center">
-            Escanea este QR para acceder al menú
-          </DialogDescription>
-        </DialogHeader>
-        <div className="flex flex-col items-center space-y-5 pt-2">
-          <div className="w-48 h-48 bg-white rounded-2xl flex items-center justify-center p-2">
+      <DialogContent className="sm:max-w-md p-0 overflow-hidden">
+        <div className="bg-fondo-oscuro px-6 py-5 border-b border-borde/50">
+          <DialogHeader className="text-center">
+            <DialogTitle className="font-playfair text-xl font-bold text-texto">
+              Mesa {mesa.numero}
+            </DialogTitle>
+            <DialogDescription className="text-sm text-texto-secundario">
+              Escanea este QR para acceder al menú digital
+            </DialogDescription>
+          </DialogHeader>
+        </div>
+
+        <div className="px-6 py-6 flex flex-col items-center space-y-5">
+          <div className="w-52 h-52 bg-white rounded-2xl flex items-center justify-center p-3 shadow-sm border border-borde/30">
             {qrDataUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={qrDataUrl} alt={`QR Mesa ${mesa?.numero}`} className="w-full h-full object-contain" />
+              <img src={qrDataUrl} alt={`QR Mesa ${mesa.numero}`} className="w-full h-full object-contain" />
+            ) : generando ? (
+              <div className="flex flex-col items-center gap-3 text-texto-terciario">
+                <Loader2 className="w-8 h-8 animate-spin" />
+                <span className="text-xs">Generando QR...</span>
+              </div>
             ) : (
               <QrCode className="w-20 h-20 text-texto-terciario" />
             )}
           </div>
-          <div className="bg-fondo-oscuro rounded-lg p-3 w-full">
-            <p className="text-[10px] text-texto-terciario font-mono text-center break-all">
-              {mesa && construirUrl(mesa.codigo_qr)}
+
+          <div className="w-full bg-fondo-oscuro rounded-xl p-3 border border-borde/30">
+            <p className="text-xs text-texto-secundario font-mono text-center break-all leading-relaxed">
+              {url}
             </p>
           </div>
-          <div className="flex gap-3 w-full">
-            <Button onClick={copiarUrl} variant="outline" className="flex-1 h-10">
-              <Copy className="w-4 h-4 mr-1.5" />
-              Copiar URL
+
+          <div className="flex gap-2 w-full">
+            <Button
+              onClick={copiarUrl}
+              variant="outline"
+              className={`flex-1 h-11 transition-all ${
+                copiado
+                  ? "bg-exito/10 text-exito border-exito/30"
+                  : ""
+              }`}
+            >
+              {copiado ? (
+                <>
+                  <Check className="w-4 h-4 mr-1.5" />
+                  Copiado
+                </>
+              ) : (
+                <>
+                  <Copy className="w-4 h-4 mr-1.5" />
+                  Copiar
+                </>
+              )}
             </Button>
             <Button
               onClick={imprimirQR}
-              disabled={!qrDataUrl || generando}
+              disabled={!qrDataUrl || generando || imprimiendo}
               variant="outline"
-              className="flex-1 h-10"
+              className="flex-1 h-11"
             >
-              <Printer className="w-4 h-4 mr-1.5" />
-              Imprimir QR
-            </Button>
-            <Button onClick={onClose} className="flex-1 bg-primario hover:bg-primario-hover text-primario-texto h-10">
-              Cerrar
+              {imprimiendo ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
+                  Imprimiendo...
+                </>
+              ) : (
+                <>
+                  <Printer className="w-4 h-4 mr-1.5" />
+                  Imprimir
+                </>
+              )}
             </Button>
           </div>
+
+          <Button
+            onClick={onClose}
+            variant="ghost"
+            className="w-full h-10 text-texto-secundario hover:text-texto"
+          >
+            Cerrar
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
