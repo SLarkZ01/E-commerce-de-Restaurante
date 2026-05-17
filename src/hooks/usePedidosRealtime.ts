@@ -1,20 +1,20 @@
 "use client";
 
 import { useCallback } from "react";
-import { obtenerItemsPorPedido } from "@/lib/acciones/cocina";
+import { obtenerPedidoConDetalles } from "@/lib/acciones/cocina";
 import { useRealtime } from "./useRealtime";
 import type { IServicioRealtime } from "@/lib/servicios/realtimeService";
-import type { PedidoConItems, Pedido, ItemPedidoConPlato } from "@/types";
+import type { PedidoConDetalles, Pedido } from "@/types";
 
 const RETRASOS_REINTENTO = [200, 400];
 const MAX_REINTENTOS = RETRASOS_REINTENTO.length;
 
-async function obtenerItemsConReintento(pedidoId: string): Promise<ItemPedidoConPlato[]> {
+async function obtenerPedidoConReintento(pedidoId: string): Promise<PedidoConDetalles | null> {
   for (let intento = 0; intento <= MAX_REINTENTOS; intento++) {
-    const items = await obtenerItemsPorPedido(pedidoId);
+    const pedido = await obtenerPedidoConDetalles(pedidoId);
 
-    if (items.length > 0) {
-      return items;
+    if (pedido && pedido.items.length > 0) {
+      return pedido;
     }
 
     if (intento < MAX_REINTENTOS) {
@@ -22,11 +22,11 @@ async function obtenerItemsConReintento(pedidoId: string): Promise<ItemPedidoCon
     }
   }
 
-  return [];
+  return null;
 }
 
 export interface CallbacksPedido {
-  onNuevoPedido: (pedido: PedidoConItems) => void;
+  onNuevoPedido: (pedido: PedidoConDetalles) => void;
   onCambioEstado: (pedidoId: string, nuevoEstado: string) => void;
   onPedidoEntregado: (pedidoId: string) => void;
 }
@@ -45,8 +45,10 @@ export function usePedidosRealtime(
         return;
       }
 
-      obtenerItemsConReintento(nuevo.id).then((items) => {
-        onNuevoPedido({ ...nuevo, items } as PedidoConItems);
+      obtenerPedidoConReintento(nuevo.id).then((pedidoCompleto) => {
+        if (pedidoCompleto) {
+          onNuevoPedido(pedidoCompleto);
+        }
       });
     },
     [onNuevoPedido]

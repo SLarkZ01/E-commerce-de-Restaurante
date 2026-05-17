@@ -11,13 +11,26 @@ import type { IServicioRealtime } from "@/lib/servicios/realtimeService";
 import type { Pedido } from "@/types";
 
 vi.mock("@/lib/acciones/cocina", () => ({
-  obtenerItemsPorPedido: vi.fn().mockResolvedValue([
-    { plato_nombre: "Pizza", cantidad: 2, precio_unitario: 20000 },
-    { plato_nombre: "Bebida", cantidad: 1, precio_unitario: 5000 },
-  ]),
+  obtenerPedidoConDetalles: vi.fn().mockResolvedValue({
+    id: "ped-1",
+    mesa_id: "mesa-1",
+    mesa_numero: 5,
+    tipo_despacho: "mesa",
+    estado: "pendiente",
+    correo_cliente: "cliente@test.com",
+    total: 45000,
+    paypal_pedido_id: null,
+    cocinero_id: null,
+    creado_en: new Date().toISOString(),
+    actualizado_en: new Date().toISOString(),
+    items: [
+      { plato_nombre: "Pizza", plato_imagen_url: null, plato_tipo: "plato_fuerte", cantidad: 2, precio_unitario: 20000 },
+      { plato_nombre: "Bebida", plato_imagen_url: null, plato_tipo: "bebida", cantidad: 1, precio_unitario: 5000 },
+    ],
+  }),
 }));
 
-import { obtenerItemsPorPedido } from "@/lib/acciones/cocina";
+import { obtenerPedidoConDetalles } from "@/lib/acciones/cocina";
 
 type MockSuscribir = ReturnType<typeof vi.fn>;
 
@@ -52,9 +65,22 @@ describe("usePedidosRealtime", () => {
   beforeEach(() => {
     servicio = crearMockServicio();
     vi.clearAllMocks();
-    vi.mocked(obtenerItemsPorPedido).mockResolvedValue([
-      { plato_nombre: "Pizza", cantidad: 2, precio_unitario: 20000 },
-    ]);
+    vi.mocked(obtenerPedidoConDetalles).mockResolvedValue({
+      id: "ped-1",
+      mesa_id: "mesa-1",
+      mesa_numero: 5,
+      tipo_despacho: "mesa",
+      estado: "pendiente",
+      correo_cliente: "cliente@test.com",
+      total: 45000,
+      paypal_pedido_id: null,
+      cocinero_id: null,
+      creado_en: new Date().toISOString(),
+      actualizado_en: new Date().toISOString(),
+      items: [
+        { plato_nombre: "Pizza", plato_imagen_url: null, plato_tipo: "plato_fuerte", cantidad: 2, precio_unitario: 20000 },
+      ],
+    });
   });
 
   it("suscribe a INSERT y UPDATE en pedidos", () => {

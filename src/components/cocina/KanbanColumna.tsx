@@ -3,13 +3,13 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { TarjetaPedidoKanban } from "./TarjetaPedidoKanban";
 import { EstadoVacio } from "@/components/compartidos/EstadoVacio";
-import type { PedidoConItems } from "@/types";
+import type { PedidoConDetalles } from "@/types";
 import type { EstadoKanban, EstadoConfig } from "./configEstados";
 
 interface KanbanColumnaProps {
   estado: EstadoKanban;
   config: EstadoConfig;
-  pedidos: PedidoConItems[];
+  pedidos: PedidoConDetalles[];
   onCambiarEstado: (pedidoId: string, nuevoEstado: string) => void;
 }
 
@@ -20,10 +20,10 @@ export function KanbanColumna({
   onCambiarEstado,
 }: KanbanColumnaProps) {
   return (
-    <div className={`flex-1 min-w-0 flex flex-col rounded-xl overflow-hidden border border-borde/30 ${config.bgColumna}`}>
-      <CardHeader className="pb-3 pt-3.5 px-4">
+    <div className={`flex-1 min-w-0 flex flex-col rounded-2xl overflow-hidden border border-borde/20 shadow-sm ${config.bgColumna} backdrop-blur-[2px]`}>
+      <CardHeader className="pb-3 pt-3.5 px-5 border-b border-borde/20">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <span className={config.color}>{config.icon}</span>
             <CardTitle className="text-xs font-semibold uppercase tracking-wider text-texto-secundario">
               {config.label}
@@ -31,7 +31,7 @@ export function KanbanColumna({
           </div>
           <Badge
             variant="secondary"
-            className={`${config.bg} ${config.color} text-xs font-semibold px-2 py-0.5`}
+            className={`${config.bg} ${config.color} text-sm font-bold px-3 py-1 rounded-full`}
           >
             {pedidos.length}
           </Badge>
@@ -43,13 +43,13 @@ export function KanbanColumna({
           {pedidos.length === 0 ? (
             <EstadoVacio
               elementoIcono={
-                <span className={config.color}>{config.icon}</span>
+                <span className={`${config.color} opacity-50`}>{config.icon}</span>
               }
               titulo="Sin pedidos"
               descripcion="Los pedidos aparecerán aquí"
             />
           ) : (
-            <div className="space-y-2.5">
+            <div className="space-y-3">
               {pedidos.map((pedido) => (
                 <TarjetaPedidoKanban
                   key={pedido.id}
