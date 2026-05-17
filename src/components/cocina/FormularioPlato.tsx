@@ -228,7 +228,7 @@ export function FormularioPlato({
                 onChange={(e) => setNombre(e.target.value)}
                 required
                 placeholder="Ej: Lomo Saltado"
-                className="h-10 bg-fondo-card"
+                className="h-9 bg-fondo-card"
               />
             </div>
             <div>
@@ -236,7 +236,7 @@ export function FormularioPlato({
                 Categoría
               </label>
               <Select value={categoriaId} onValueChange={(v) => setCategoriaId(v ?? "")}>
-                <SelectTrigger className="h-10 bg-fondo-card text-sm">
+                <SelectTrigger className="h-10 bg-fondo-card text-sm [&>span]:line-clamp-1">
                   <SelectValue>
                     {categoriaNombre || "Sin categoría"}
                   </SelectValue>
