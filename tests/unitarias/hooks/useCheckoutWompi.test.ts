@@ -97,12 +97,34 @@ describe("useCheckoutWompi", () => {
       "mesa-uuid",
       mockStore.items,
       mockStore.total(),
-      "txn-001"
+      "txn-001",
+      undefined
     );
     expect(mockStore.vaciarCarrito).toHaveBeenCalled();
     expect(result.current.estado).toBe("exito");
     expect(result.current.mensaje).toContain("ped-xyz");
     expect(result.current.esExito).toBe(true);
+  });
+
+  it("manejarExito pasa email del cliente al confirmarPedido", async () => {
+    mockConfirmarPedido.mockResolvedValue({ exito: true, pedidoId: "ped-email" });
+
+    const { result } = renderHook(() =>
+      useCheckoutWompi("mesa-uuid", false)
+    );
+
+    await act(async () => {
+      await result.current.manejarExito("txn-email", "cliente@wompi.com");
+    });
+
+    expect(mockConfirmarPedido).toHaveBeenCalledWith(
+      "mesa-uuid",
+      mockStore.items,
+      mockStore.total(),
+      "txn-email",
+      "cliente@wompi.com"
+    );
+    expect(result.current.estado).toBe("exito");
   });
 
   it("manejarExito muestra error si el pago falla", async () => {

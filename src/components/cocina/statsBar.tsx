@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { Clock, AlertTriangle, CheckCircle2, Timer } from "lucide-react";
 import { useRealtime } from "@/hooks/useRealtime";
 import type { StatsCocina, Pedido } from "@/types";
@@ -15,60 +15,46 @@ export function StatsBar({ stats: statsIniciales }: StatsBarProps) {
 
   // Observer: actualizar contadores en tiempo real
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const onInsert = useCallback((payload: any) => {
-    const nuevo = payload.new as Pedido | undefined;
-    if (!nuevo) return;
-
-    setStats((prev) => {
-      const next = { ...prev };
-      if (nuevo.estado === "pendiente") next.pendientes++;
-      else if (nuevo.estado === "preparando") next.preparando++;
-      else if (nuevo.estado === "listo") next.listos++;
-      return next;
-    });
-  }, []);
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const onUpdate = useCallback((payload: any) => {
+  useRealtime("pedidos", "*", (payload: any) => {
+    const eventType = payload.eventType as string;
     const nuevo = payload.new as Pedido | undefined;
     const viejo = payload.old as Pedido | undefined;
-    if (!nuevo) return;
 
     setStats((prev) => {
       const next = { ...prev };
-      if (viejo?.estado === "pendiente") next.pendientes--;
-      else if (viejo?.estado === "preparando") next.preparando--;
-      else if (viejo?.estado === "listo") next.listos--;
-      if (nuevo.estado === "pendiente") next.pendientes++;
-      else if (nuevo.estado === "preparando") next.preparando++;
-      else if (nuevo.estado === "listo") next.listos++;
+
+      if (eventType === "INSERT" && nuevo) {
+        if (nuevo.estado === "pendiente") next.pendientes++;
+        else if (nuevo.estado === "preparando") next.preparando++;
+        else if (nuevo.estado === "listo") next.listos++;
+      }
+
+      if (eventType === "UPDATE" && nuevo) {
+        // Decrementar estado anterior
+        if (viejo?.estado === "pendiente") next.pendientes--;
+        else if (viejo?.estado === "preparando") next.preparando--;
+        else if (viejo?.estado === "listo") next.listos--;
+        // Incrementar nuevo estado
+        if (nuevo.estado === "pendiente") next.pendientes++;
+        else if (nuevo.estado === "preparando") next.preparando++;
+        else if (nuevo.estado === "listo") next.listos++;
+        // Si se entregó (entregado), no incrementamos ningún contador
+      }
+
+      if (eventType === "DELETE" && viejo) {
+        if (viejo.estado === "pendiente") next.pendientes--;
+        else if (viejo.estado === "preparando") next.preparando--;
+        else if (viejo.estado === "listo") next.listos--;
+      }
+
+      // No permitir negativos
       next.pendientes = Math.max(0, next.pendientes);
       next.preparando = Math.max(0, next.preparando);
       next.listos = Math.max(0, next.listos);
+
       return next;
     });
-  }, []);
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const onDelete = useCallback((payload: any) => {
-    const viejo = payload.old as Pedido | undefined;
-    if (!viejo) return;
-
-    setStats((prev) => {
-      const next = { ...prev };
-      if (viejo.estado === "pendiente") next.pendientes--;
-      else if (viejo.estado === "preparando") next.preparando--;
-      else if (viejo.estado === "listo") next.listos--;
-      next.pendientes = Math.max(0, next.pendientes);
-      next.preparando = Math.max(0, next.preparando);
-      next.listos = Math.max(0, next.listos);
-      return next;
-    });
-  }, []);
-
-  useRealtime("pedidos", "INSERT", onInsert);
-  useRealtime("pedidos", "UPDATE", onUpdate);
-  useRealtime("pedidos", "DELETE", onDelete);
+  });
 
   return (
     <div className="sticky top-16 z-20 bg-fondo/95 backdrop-blur-sm border-b border-borde/60 px-3 sm:px-6 py-3 sm:py-4">

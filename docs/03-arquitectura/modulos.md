@@ -93,12 +93,14 @@ src/
 │   ├── useGestionPlatos.ts       CRUD platos + imagen (Factory Method)
 │   ├── useGestionCategorias.ts   CRUD categorías
 │   ├── useGestionAdmin.ts        CRUD personal + mesas
+│   ├── useDashboardAdmin.ts      Paginación del dashboard (Admin)
 │   ├── usePedidos.ts             Cambio de estado de pedidos (State Pattern)
 │   ├── usePago.ts                Crear pedido (DIP)
 │   ├── useCheckoutWompi.ts       Flujo completo de pago Wompi
-│   usePedidosRealtime.ts     Observer: INSERT + UPDATE pedidos (DIP)
+│   ├── usePedidosRealtime.ts     Observer: INSERT + UPDATE pedidos (DIP)
 │   ├── usePlatosRealtime.ts       Observer: INSERT + UPDATE + DELETE platos
 │   ├── useMiPedidoRealtime.ts     Observer: UPDATE pedido por ID (cliente)
+│   ├── useEntregaPedidos.ts       Observer: UPDATE pedidos filtrado (logística)
 │   ├── useRealtime.ts            Observer genérico (WebSocket + DIP)
 │   ├── useWompiScript.ts         Carga del script Wompi
 │   ├── useActiveRoute.ts        Ruta activa (sidebar)

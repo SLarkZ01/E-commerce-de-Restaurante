@@ -14,10 +14,12 @@ function esMovil() {
 
 export function StaffLayoutClient({
   userEmail,
+  userName,
   rol,
   children,
 }: {
   userEmail: string;
+  userName: string;
   rol: Rol;
   children: React.ReactNode;
 }) {
@@ -57,6 +59,7 @@ export function StaffLayoutClient({
       <div className="hidden md:block">
         <SidebarStaff
           userEmail={userEmail}
+          userName={userName}
           rol={rol}
           collapsed={collapsed}
           onToggle={toggle}
@@ -65,6 +68,7 @@ export function StaffLayoutClient({
       <div className="flex-1 flex flex-col overflow-hidden">
         <HeaderStaff
           userEmail={userEmail}
+          userName={userName}
           rol={rol}
           collapsed={collapsed}
           onToggle={toggle}

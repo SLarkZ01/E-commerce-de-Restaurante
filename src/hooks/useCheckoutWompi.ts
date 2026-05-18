@@ -61,10 +61,10 @@ export function useCheckoutWompi(mesaUuid: string | null, abierto: boolean) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [abierto, itemsLength, total, tieneMesa]);
 
-  const manejarExito = useCallback(async (transactionId: string) => {
+  const manejarExito = useCallback(async (transactionId: string, customerEmail?: string) => {
     if (!tieneMesa) return;
     setEstado("pagando");
-    const resultado = await confirmarPedido(mesaUuid!, items, total, transactionId);
+    const resultado = await confirmarPedido(mesaUuid!, items, total, transactionId, customerEmail);
     vaciarCarrito();
 
     if (!resultado.exito) {

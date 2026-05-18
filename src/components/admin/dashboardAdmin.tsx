@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { TrendingUp, ShoppingCart, CheckCircle2, Clock } from "lucide-react";
-import { useDashboardAdminRealtime } from "@/hooks/useDashboardAdminRealtime";
+import { useDashboardAdmin } from "@/hooks/useDashboardAdmin";
 import { formatearPrecio } from "@/lib/formato";
 import { TarjetaEstadistica } from "./tarjetaEstadistica";
 import { TablaPedidosAdmin } from "./tablaPedidosAdmin";
@@ -41,7 +41,7 @@ export function DashboardAdmin({ statsIniciales }: DashboardAdminProps) {
     totalPaginas,
     cambiarPagina,
     totalPedidos,
-  } = useDashboardAdminRealtime(statsIniciales);
+  } = useDashboardAdmin(statsIniciales);
 
   return (
     <div className="flex-1 overflow-y-auto">

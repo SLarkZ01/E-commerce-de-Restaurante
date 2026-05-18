@@ -19,9 +19,10 @@ src/hooks/useRealtime.ts                   ← Hook genérico: infraestructura W
 src/hooks/usePedidosRealtime.ts            ← Hook de negocio: INSERT + UPDATE + fetch items de pedidos
 src/hooks/usePlatosRealtime.ts             ← Hook de negocio: INSERT + UPDATE + DELETE de platos
 src/hooks/useMiPedidoRealtime.ts           ← Hook de negocio: UPDATE filtrado por ID del pedido
+src/hooks/useEntregaPedidos.ts             ← Hook de negocio: UPDATE con filtro estado=eq.listo (logística)
 src/components/cocina/kanbanPedidos.tsx     ← Consumidor UI (kanban)
-src/components/cocina/statsBar.tsx         ← Consumidor UI (contadores)
-src/components/logistica/listaEntregas.tsx  ← Consumidor UI (entregas con filtro estado=eq.listo)
+src/components/cocina/statsBar.tsx         ← Consumidor UI (contadores, INSERT+UPDATE+DELETE)
+src/components/logistica/listaEntregas.tsx  ← Consumidor UI (entregas)
 ```
 
 ### State

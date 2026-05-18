@@ -11,12 +11,12 @@ Supabase Realtime actúa como el **sujeto observable**. Cada cambio en la base d
 ### ¿Qué observa cada módulo?
 
 | Observador | Suscripción | Evento | Hook | Implementado |
-|---|---|---|---|---|
+|---|---|---|---|---|---|
 | Panel Cocina | `pedidos` | Nuevos pedidos + cambios de estado | `usePedidosRealtime` | ✅ `INSERT` + `UPDATE` |
-| Panel Mesero | `pedidos` | Pedidos listos (`estado = listo`) | `useRealtime` con filtro `estado=eq.listo` | ✅ |
-| Stats Bar | `pedidos` | Todos los cambios (contadores) | `useRealtime("*")` | ✅ |
-| Menú Cliente | `platos` | Cambios en el catálogo (precio, disponibilidad, nuevo plato) | `usePlatosRealtime` | ✅ |
-| Cliente (estado) | `pedidos` (filtrado por ID) | Cambio de estado de su propio pedido | `useMiPedidoRealtime` | ✅ |
+| Panel Mesero | `pedidos` | Pedidos listos (`estado = listo`) | `useEntregaPedidos` | ✅ `UPDATE` con filtro `estado=eq.listo` |
+| Stats Bar | `pedidos` | Todos los cambios (contadores) | `useRealtime` en `statsBar.tsx` | ✅ `INSERT` + `UPDATE` + `DELETE` |
+| Menú Cliente | `platos` | Cambios en el catálogo (precio, disponibilidad, nuevo plato) | `usePlatosRealtime` | ✅ `INSERT` + `UPDATE` + `DELETE` |
+| Cliente (estado) | `pedidos` (filtrado por ID) | Cambio de estado de su propio pedido | `useMiPedidoRealtime` | ✅ `UPDATE` con filtro `id=eq.{pedidoId}` |
 
 ### Referencia en el código
 
@@ -27,9 +27,10 @@ Supabase Realtime actúa como el **sujeto observable**. Cada cambio en la base d
 | **Hook de negocio (pedidos)** | `src/hooks/usePedidosRealtime.ts` | Suscribe INSERT + UPDATE en pedidos, fetchea items automáticamente. Callbacks: `onNuevoPedido`, `onCambioEstado`, `onPedidoEntregado` |
 | **Hook de negocio (platos)** | `src/hooks/usePlatosRealtime.ts` | Suscribe INSERT + UPDATE + DELETE en platos. Callbacks: `onNuevoPlato`, `onPlatoActualizado`, `onPlatoEliminado` |
 | **Hook de negocio (mi pedido)** | `src/hooks/useMiPedidoRealtime.ts` | Suscribe UPDATE en pedidos filtrado por ID. Callback: `onEstadoCambiado` |
-| **Panel Cocina** | `src/components/cocina/kanbanPedidos.tsx:28` | Usa `usePedidosRealtime()` para recibir nuevos pedidos y cambios de estado |
-| **Stats Bar** | `src/components/cocina/statsBar.tsx:18` | Usa `useRealtime("*")` para actualizar contadores en tiempo real |
-| **Panel Logística** | `src/components/logistica/listaEntregas.tsx:31` | Usa `useRealtime("UPDATE", filtro: estado=eq.listo)` para recibir pedidos listos |
+| **Hook de negocio (logística)** | `src/hooks/useEntregaPedidos.ts` | Suscribe UPDATE en pedidos con filtro `estado=eq.listo`. Callback: actualiza lista de entregas |
+| **Panel Cocina** | `src/components/cocina/kanbanPedidos.tsx` | Usa `usePedidosRealtime()` para recibir nuevos pedidos y cambios de estado |
+| **Stats Bar** | `src/components/cocina/statsBar.tsx` | Usa `useRealtime` con INSERT + UPDATE + DELETE para actualizar contadores |
+| **Panel Logística** | `src/components/logistica/listaEntregas.tsx` | Usa `useEntregaPedidos()` para recibir pedidos listos y confirmar entregas |
 
 ### Diagrama
 
@@ -92,10 +93,16 @@ export function useRealtime(
 
 El hook:
 1. Crea un canal WebSocket con Supabase a través de `IServicioRealtime` (DIP)
-2. Obtiene la sesión y configura `setAuth()` antes de suscribir (sin race condition)
+2. Obtiene la sesión y configura `setAuth()` manualmente antes de crear el canal, difiriendo al próximo macrotask para mitigar el race condition con `onAuthStateChange` interno de Supabase
 3. Se suscribe a cambios en la tabla especificada (`postgres_changes`) con filtro opcional
 4. Ejecuta el callback cada vez que ocurre un cambio (usando ref para evitar re-suscripciones)
 5. Limpia la suscripción al desmontar el componente, incluso si la promesa no se ha resuelto
+
+### Race condition conocido: `setAuth()` y `onAuthStateChange`
+
+Supabase internamente escucha `onAuthStateChange` y dispara `realtime.setAuth()` de forma asíncrona. Si esto ocurre después de que los canales ya fueron creados, el WebSocket se desconecta/reconecta, cerrando los canales (`CLOSED`). La mitigación implementada en `SupabaseRealtimeService.suscribir()`:
+1. Llama `getSession()` + `setAuth()` manualmente antes de crear el canal
+2. Usa un contador atómico en el nombre del canal (`rt-{tabla}-{evento}-{contador}-{timestamp}`) para evitar colisiones entre mounts de Strict Mode
 
 ### Servicio de Realtime (DIP)
 
@@ -113,11 +120,17 @@ export interface ISuscripcionRealtime {
 export class SupabaseRealtimeService implements IServicioRealtime {
   async suscribir<TRow>(opciones, callback): Promise<ISuscripcionRealtime> {
     const supabase = crearCliente();
+
+    // Forzar carga de sesión y mitigar race condition con onAuthStateChange
     const { data: { session } } = await supabase.auth.getSession();
-    if (session?.access_token) supabase.realtime.setAuth(session.access_token);  // auth antes del canal
+    if (session?.access_token) supabase.realtime.setAuth(session.access_token);
+
+    // Nombre único con contador para evitar colisiones entre mounts
+    this.contadorCanales++;
+    const nombre = `rt-${opciones.tabla}-${opciones.evento}-${this.contadorCanales}-${Date.now()}`;
 
     const canal = supabase
-      .channel(`rt-${opciones.tabla}-${opciones.evento}-${Date.now()}`)
+      .channel(nombre)
       .on("postgres_changes", { event, schema, table, filter }, callback)
       .subscribe();
 
@@ -141,7 +154,7 @@ Cuando un cliente paga, `crearPedidoWompi` ejecuta dos INSERT secuenciales:
 
 El hook `usePedidosRealtime` recibe el evento en el paso 1, pero los items aún no existen. Para resolverlo:
 
-1. **Retry con backoff**: `obtenerItemsConReintento()` reintenta hasta 2 veces (200ms, 400ms) si los items no están disponibles
+1. **Retry con backoff**: `obtenerPedidoConReintento()` reintenta hasta 2 veces (200ms, 400ms) si los items no están disponibles
 2. **Server Action**: La consulta de items se delegó a `obtenerItemsPorPedido()` (Server Action) que corre del lado del servidor, donde la sesión del staff está garantizada y RLS permite el SELECT anidado en `platos`
 3. **PostgREST FK embedding**: Como `items_pedido → platos` es many-to-one, PostgREST devuelve `platos` como objeto `{ nombre: "..." }`, no como array. Se accede con `item.platos?.nombre`, nunca con `item.platos?.[0]?.nombre`
 

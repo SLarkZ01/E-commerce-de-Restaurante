@@ -11,18 +11,22 @@ import type { Rol } from "@/types";
 
 interface SidebarStaffProps {
   userEmail: string;
+  userName?: string;
   rol: Rol;
   mobile?: boolean;
   collapsed?: boolean;
   onToggle?: () => void;
+  onNavigate?: () => void;
 }
 
 export function SidebarStaff({
   userEmail,
+  userName,
   rol,
   mobile,
   collapsed = false,
   onToggle,
+  onNavigate,
 }: SidebarStaffProps) {
   const { isActive } = useActiveRoute();
 
@@ -64,6 +68,7 @@ export function SidebarStaff({
               item={item}
               isActive={isActive(item.href)}
               colapsado={collapsed}
+              onNavigate={onNavigate}
             />
           </div>
         ))}
@@ -73,6 +78,7 @@ export function SidebarStaff({
 
       <PieUsuario
         email={userEmail}
+        nombre={userName}
         colapsado={collapsed}
         onToggle={onToggle}
       />

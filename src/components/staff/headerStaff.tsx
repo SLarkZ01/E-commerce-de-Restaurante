@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import { Menu, PanelLeft, PanelLeftClose } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -12,6 +12,7 @@ import type { Rol } from "@/types";
 
 interface HeaderStaffProps {
   userEmail: string;
+  userName?: string;
   rol: Rol;
   collapsed: boolean;
   onToggle: () => void;
@@ -32,10 +33,13 @@ const SECCIONES: Record<string, { titulo: string; descripcion: string }> = {
   "/admin/mesas": { titulo: "Gestión de Mesas", descripcion: "Administra mesas y códigos QR" },
 };
 
-export function HeaderStaff({ userEmail, rol, collapsed, onToggle }: HeaderStaffProps) {
+export function HeaderStaff({ userEmail, userName, rol, collapsed, onToggle }: HeaderStaffProps) {
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
   const [hora, setHora] = useState(() => new Date());
+  const [sheetOpen, setSheetOpen] = useState(false);
+
+  const cerrarSheet = useCallback(() => setSheetOpen(false), []);
 
   useEffect(() => {
     setMounted(true);
@@ -67,12 +71,12 @@ export function HeaderStaff({ userEmail, rol, collapsed, onToggle }: HeaderStaff
           )}
         </button>
 
-        <Sheet>
+        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
           <SheetTrigger className="md:hidden p-2 rounded-lg text-texto-secundario hover:bg-fondo-oscuro hover:text-texto transition-colors" aria-label="Abrir menú">
             <Menu className="w-5 h-5" />
           </SheetTrigger>
           <SheetContent side="left" className="w-[300px] p-0 gap-0">
-            <SidebarStaff userEmail={userEmail} rol={rol} mobile />
+            <SidebarStaff userEmail={userEmail} userName={userName} rol={rol} mobile onNavigate={cerrarSheet} />
           </SheetContent>
         </Sheet>
 

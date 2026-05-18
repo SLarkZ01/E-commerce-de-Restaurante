@@ -6,7 +6,10 @@ import Script from "next/script";
 declare global {
   interface Window {
     WidgetCheckout?: new (config: Record<string, unknown>) => {
-      open: (cb: (r: { transaction: { id: string; status: string; reference: string } }) => void) => void;
+      open: (cb: (r: {
+        transaction: { id: string; status: string; reference: string; customerEmail?: string };
+        customerData?: { email?: string; fullName?: string; phoneNumber?: string };
+      }) => void) => void;
     };
   }
 }

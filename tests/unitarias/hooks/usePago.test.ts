@@ -80,9 +80,10 @@ describe("usePago", () => {
 
       expect(r.exito).toBe(true);
       expect(r.pedidoId).toBe("ped-123-abc");
-      expect(mockCrearPedidoWompi).toHaveBeenCalledWith(
-        "mesa-uuid", itemsPrueba, 24000, "txn-001"
-      );
+      expect(mockCrearPedidoWompi).toHaveBeenCalledTimes(1);
+      expect(mockCrearPedidoWompi.mock.calls[0].slice(0, 4)).toEqual([
+        "mesa-uuid", itemsPrueba, 24000, "txn-001",
+      ]);
     });
 
     it("maneja error al confirmar pedido", async () => {

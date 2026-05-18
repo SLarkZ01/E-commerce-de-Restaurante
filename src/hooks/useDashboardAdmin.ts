@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
-import type { StatsAdmin, PedidoConDetalles } from "@/types";
+import type { StatsAdmin } from "@/types";
 
 const PAGINA_TAMANO = 10;
 
-export function useDashboardAdminRealtime(statsIniciales: StatsAdmin) {
+export function useDashboardAdmin(statsIniciales: StatsAdmin) {
   const [pagina, setPagina] = useState(1);
 
   const pedidos = statsIniciales.pedidosRecientes;

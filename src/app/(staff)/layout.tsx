@@ -24,7 +24,11 @@ export default async function LayoutStaff({
   const rol = (perfil?.rol as Rol) ?? "mesero";
 
   return (
-    <StaffLayoutClient userEmail={user.email ?? ""} rol={rol}>
+    <StaffLayoutClient
+      userEmail={user.email ?? ""}
+      userName={perfil?.nombre ?? ""}
+      rol={rol}
+    >
       {children}
     </StaffLayoutClient>
   );

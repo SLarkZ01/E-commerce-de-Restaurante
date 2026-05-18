@@ -17,7 +17,7 @@ export function crearCliente() {
             const cookie = document.cookie
               .split("; ")
               .find((row) => row.startsWith(`${key}=`));
-            return cookie ? cookie.substring(key.length + 1) : null;
+            return cookie ? cookie.split("=")[1] : null;
           },
           setItem: (key: string, value: string) => {
             document.cookie = `${key}=${value}; path=/; max-age=31536000; samesite=lax`;
