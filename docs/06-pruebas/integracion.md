@@ -19,7 +19,7 @@ Las pruebas de integración requieren una instancia de Supabase local o un proye
 
 | ID | Caso | Pasos | Resultado esperado |
 |---|---|---|---|
-| I-05 | Compra completa crea pedido | 1. Cliente paga con PayPal (mock)<br>2. Server Action `crearPedido` se ejecuta | Pedido creado con `estado = pendiente` |
+| I-05 | Compra completa crea pedido | 1. Cliente paga con Wompi (mock)<br>2. Server Action `crearPedidoWompi` se ejecuta | Pedido creado con `estado = pendiente` |
 | I-06 | Pedido aparece en panel cocina | 1. Se crea pedido<br>2. Panel cocina tiene suscripción Realtime | Pedido visible en columna "Pendiente" sin recargar |
 | I-07 | Items del pedido son correctos | 1. Carrito con 2 platos distintos<br>2. Se crea el pedido | `itemsPedido` tiene 2 registros con `cantidad` y `precioUnitario` correctos |
 

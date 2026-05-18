@@ -48,17 +48,25 @@ En el sector gastronómico, la eficiencia en la toma de pedidos y la comunicaci�
 
 ## 4. Patrones de Diseño Integrados
 
-Para garantizar la escalabilidad y mantenibilidad, se han aplicado 5 patrones clave:
+Para garantizar la escalabilidad y mantenibilidad, se han aplicado **10 patrones de diseño** en 4 niveles arquitectónicos. Ver detalle completo en [`docs/04-patrones/indice.md`](04-patrones/indice.md).
 
-1. **Observer Pattern:** Implementado mediante suscripciones de **Supabase Realtime**. Sincroniza la cocina con nuevos pedidos y al cliente con el estado de su preparación.
+**Comportamiento:**
+1. **Pub/Sub:** Supabase Realtime como broker de eventos. Desacopla publicadores (DB) de suscriptores (hooks React).
+2. **Guard:** Validaciones secuenciales antes de ejecutar acciones críticas (cambio de estado, subida de imágenes).
+3. **State Machine (Table-Driven):** Máquina de estados finitos del ciclo de vida del pedido definida como tabla de transiciones.
 
-2. **State Pattern:** Formaliza la lógica de los pedidos. Cada orden transita por estados (Pendiente, Preparando, Listo, Entregado) con reglas de validación específicas, evitando transiciones ilegales en la base de datos.
+**Creacional:**
+4. **Singleton:** Servicio de Realtime (instancia única global) + Carrito de compras (Zustand con persistencia).
+5. **Simple Factory:** Creación parametrizada de validadores según tipo de plato (`crearPlatoFactory(tipo)`).
 
-3. **Factory Method:** Utilizado en el panel del Chef para la creación de ítems del catálogo. Permite instanciar diferentes tipos de productos (Plato Fuerte, Bebida, Combo) manteniendo una interfaz de creación común.
+**Estructural:**
+6. **Facade:** Fachadas para Wompi (pagos), Cloudinary (imágenes) y Brevo (emails).
+7. **Adapter:** `useRealtime` adapta la API de WebSocket de Supabase al ciclo de vida de React.
+8. **Proxy:** `proxy.ts` intercepta requests HTTP, verificando autenticación y roles por ruta.
 
-4. **Strategy Pattern:** Gestiona la lógica de despacho según el origen (Mesa con UUID o Para llevar), permitiendo cambiar las reglas de logística sin afectar el núcleo del procesamiento de pagos.
-
-5. **Facade Pattern:** Simplifica la interacción con servicios externos (Wompi, Cloudinary, Brevo). Una fachada centraliza la lógica compleja de "Finalizar Compra" y "Cargar Multimedia".
+**Arquitectónico:**
+9. **Repository:** 8 Server Actions que encapsulan el acceso a datos por dominio (catálogo, cocina, admin, etc.).
+10. **Dependency Injection:** `IServicioRealtime` inyectable en hooks, permitiendo testing con mocks sin base de datos.
 
 ---
 
@@ -95,7 +103,7 @@ El Chef tiene control total sobre el menú a través de un CRUD dinámico:
 
 ## 7. Máquina de Estados y Flujo Real-time
 
-El ciclo de vida del pedido se gestiona bajo el **Patrón State**. Ver detalle completo en [`docs/04-patrones/state.md`](04-patrones/state.md) y [`docs/03-arquitectura/flujos.md`](03-arquitectura/flujos.md).
+El ciclo de vida del pedido se gestiona bajo una **State Machine table-driven** con guards de validación. Ver detalle completo en [`docs/04-patrones/comportamiento/state-machine.md`](04-patrones/comportamiento/state-machine.md) y [`docs/03-arquitectura/flujos.md`](03-arquitectura/flujos.md).
 
 ---
 
@@ -103,7 +111,7 @@ El ciclo de vida del pedido se gestiona bajo el **Patrón State**. Ver detalle c
 
 - **Mejora frente a soluciones existentes:** La integración directa entre la gestión de inventario del Chef y la vista del Cliente en milisegundos evita la venta de platos agotados y mejora la satisfacción del usuario.
 
-- **Escalabilidad:** La arquitectura basada en eventos y el uso de patrones creacionales (Factory) permiten añadir nuevos tipos de productos o sucursales con cambios mínimos en el código base.
+- **Escalabilidad:** La arquitectura basada en eventos (Pub/Sub) y el uso de patrones creacionales (Simple Factory, Singleton) y de comportamiento (Guard, State Machine) permiten añadir nuevos tipos de productos, reglas de validación o sucursales con cambios mínimos en el código base.
 
 ---
 

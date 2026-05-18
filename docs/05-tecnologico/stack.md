@@ -15,7 +15,7 @@
 | **Schema / Migraciones** | Drizzle ORM + drizzle-kit | 0.45.2 | Solo para definir el schema (`src/lib/db/schema.ts`) y ejecutar migraciones. NO se usa en runtime. |
 | **Auth** | Supabase Auth | SSR 0.10.3 | PKCE flow seguro, roles nativos, integración con RLS. Solo para staff (no clientes). |
 | **Estado cliente** | Zustand | 5.0.13 | Mínimo (~1KB), sin boilerplate, persistencia en localStorage para el carrito. |
-| **Imágenes** | Cloudinary | (SDK a integrar) | Optimización automática, transformaciones on-the-fly, CDN global. |
+| **Imágenes** | Cloudinary | SDK cloudinary ^2 | Optimización automática, transformaciones on-the-fly, CDN global. |
 | **Pagos** | Wompi | (Widget integrado) | Pasarela de pagos colombiana. Widget checkout + API REST para consulta de transacciones. |
 | **Emails** | Brevo | (SDK integrado) | API de email transaccional, templates HTML, seguimiento de entregas. |
 | **Testing** | Vitest | 4.1.6 | Nativo de Vite, compatible con Jest, watch mode, coverage v8. |
