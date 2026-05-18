@@ -109,6 +109,51 @@ export interface StatsCocina {
   tiempoPromedioMin: number;
 }
 
+// --- Dashboard admin ---
+
+export interface EstadisticaDashboard {
+  ventasTotales: number;
+  ventasHoy: number;
+  pedidosHoy: number;
+  completadosHoy: number;
+  pendientes: number;
+  preparando: number;
+  listos: number;
+  promedioPorPedido: number;
+}
+
+export interface IngresoPorHora {
+  hora: number;
+  total: number;
+}
+
+export interface IngresoPorDia {
+  fecha: string;
+  total: number;
+  cantidad: number;
+}
+
+export interface DistribucionEstado {
+  estado: string;
+  cantidad: number;
+  color: string;
+}
+
+export interface PlatoPopular {
+  nombre: string;
+  cantidad: number;
+  total: number;
+}
+
+export interface StatsAdmin {
+  estadisticas: EstadisticaDashboard;
+  ingresosPorHora: IngresoPorHora[];
+  ingresosPorDia: IngresoPorDia[];
+  distribucionEstado: DistribucionEstado[];
+  platosPopulares: PlatoPopular[];
+  pedidosRecientes: PedidoConDetalles[];
+}
+
 // --- Tipo genérico para resultados de operaciones ---
 
 export interface ResultadoOperacion<T = void> {

@@ -1,0 +1,97 @@
+"use client";
+
+import { TrendingUp, ShoppingCart, CheckCircle2, Clock } from "lucide-react";
+import { useDashboardAdminRealtime } from "@/hooks/useDashboardAdminRealtime";
+import { formatearPrecio } from "@/lib/formato";
+import { TarjetaEstadistica } from "./tarjetaEstadistica";
+import { TablaPedidosAdmin } from "./tablaPedidosAdmin";
+import { GraficoIngresosHora } from "./graficoIngresosHora";
+import { GraficoTendenciaSemanal } from "./graficoTendenciaSemanal";
+import { GraficoEstadoPedidos } from "./graficoEstadoPedidos";
+import { GraficoPlatosPopulares } from "./graficoPlatosPopulares";
+import type { StatsAdmin } from "@/types";
+
+interface DashboardAdminProps {
+  statsIniciales: StatsAdmin;
+}
+
+export function DashboardAdmin({ statsIniciales }: DashboardAdminProps) {
+  const {
+    estadisticas,
+    ingresosPorHora,
+    ingresosPorDia,
+    distribucionEstado,
+    platosPopulares,
+    pedidos,
+    pagina,
+    totalPaginas,
+    cambiarPagina,
+    totalPedidos,
+  } = useDashboardAdminRealtime(statsIniciales);
+
+  return (
+    <div className="flex-1 overflow-y-auto">
+      <div className="p-6 space-y-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <TarjetaEstadistica
+            icono={<TrendingUp className="w-5 h-5" />}
+            iconoBg="bg-primario/10"
+            iconoColor="text-primario"
+            label="Ventas del día"
+            valor={formatearPrecio(estadisticas.ventasHoy)}
+            subtitulo={`${estadisticas.pedidosHoy} pedidos procesados`}
+          />
+          <TarjetaEstadistica
+            icono={<ShoppingCart className="w-5 h-5" />}
+            iconoBg="bg-info/10"
+            iconoColor="text-info"
+            label="Total pedidos"
+            valor={totalPedidos.toString()}
+            subtitulo="Todas las transacciones"
+          />
+          <TarjetaEstadistica
+            icono={<CheckCircle2 className="w-5 h-5" />}
+            iconoBg="bg-exito/10"
+            iconoColor="text-exito"
+            label="Completados hoy"
+            valor={estadisticas.completadosHoy.toString()}
+            subtitulo={
+              estadisticas.completadosHoy > 0 && estadisticas.pedidosHoy > 0
+                ? `${Math.round((estadisticas.completadosHoy / estadisticas.pedidosHoy) * 100)}% de tasa de completitud`
+                : "Sin pedidos hoy"
+            }
+          />
+          <TarjetaEstadistica
+            icono={<Clock className="w-5 h-5" />}
+            iconoBg="bg-advertencia/10"
+            iconoColor="text-advertencia"
+            label="Pendientes"
+            valor={estadisticas.pendientes.toString()}
+            subtitulo={
+              estadisticas.preparando > 0
+                ? `${estadisticas.preparando} en preparación, ${estadisticas.listos} listos`
+                : "En espera de atención"
+            }
+          />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <GraficoIngresosHora datos={ingresosPorHora} />
+          <GraficoTendenciaSemanal datos={ingresosPorDia} />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <GraficoEstadoPedidos datos={distribucionEstado} />
+          <GraficoPlatosPopulares datos={platosPopulares} />
+        </div>
+
+        <TablaPedidosAdmin
+          pedidos={pedidos}
+          pagina={pagina}
+          totalPaginas={totalPaginas}
+          onCambiarPagina={cambiarPagina}
+        />
+      </div>
+    </div>
+  );
+}
