@@ -257,7 +257,7 @@ npm test
 
 **Proyecto Final de Arquitectura de Software, 2026.**
 
-| Integrante |
+| Integrantes |
 |---|
 | Daniel Rivas Agredo |
 | Luisa Juliet Juaqui |
