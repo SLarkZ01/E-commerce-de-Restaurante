@@ -74,7 +74,7 @@ export function useCheckoutWompi(mesaUuid: string | null, abierto: boolean) {
       return;
     }
     setEstado("exito");
-    setMensaje(`Pedido #${resultado.pedidoId?.slice(0, 8)} creado correctamente`);
+    setMensaje(`Pedido #${resultado.pedidoId?.slice(0, 8).toUpperCase()} creado correctamente`);
     setEsExito(true);
   }, [tieneMesa, mesaUuid, items, total, confirmarPedido, vaciarCarrito]);
 

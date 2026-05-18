@@ -103,7 +103,14 @@ export function CarritoContenido({ mesaUuid, abierto, variant = "sheet", onAntes
           ) : (
             <AlertCircle className="w-4 h-4 shrink-0" />
           )}
-          {mensaje}
+          <span>
+            {mensaje}
+            {esExito && (
+              <span className="block text-xs mt-1 opacity-80">
+                Usa el botón <strong>Rastrear Pedido</strong> en la barra superior para seguir su estado.
+              </span>
+            )}
+          </span>
         </div>
       )}
 
