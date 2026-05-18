@@ -106,13 +106,16 @@ npm run test:run  # Single run
 
 | Servicio | Costo mensual estimado |
 |---|---|
-| Supabase (Plan Pro) | ~$25/mes |
-| Cloudinary | $0 (tier gratuito 25GB) |
+| Supabase | $0 (tier gratuito: 500MB BD, 50K usuarios, 5GB ancho de banda) |
+| Cloudinary | $0 (tier gratuito: 25GB storage) |
 | Wompi | Comisión por transacción (~3.5% + $1,000 COP) |
 | Brevo | $0 (300 emails/día gratuitos) |
 | Vercel (deploy) | $0 (plan Hobby) |
 
-**Costo total: ~$25/mes fijo + comisiones variables por venta.**
+**Costo total fijo: $0/mes. Solo se paga la comisión de Wompi por cada venta.**
+
+> [!TIP]
+> El proyecto actualmente funciona en producción con múltiples pantallas simultáneas sin costo de infraestructura. Supabase escala a plan Pro (~$25/mes) solo cuando se necesita más de 500MB de BD, backups automáticos, o múltiples sucursales.
 
 ---
 
@@ -250,6 +253,14 @@ npm test
 
 ---
 
-## 👤 Autor
+## 👥 Equipo
 
-**Thomas Montoya Magon** — Proyecto Final de Arquitectura de Software, 2026.
+**Proyecto Final de Arquitectura de Software, 2026.**
+
+| Integrante |
+|---|
+| Daniel Rivas Agredo |
+| Luisa Juliet Juaqui |
+| Deiby Alejandro Ramires |
+| David Urrutio Cero |
+| Thomas Montoya Magon |
