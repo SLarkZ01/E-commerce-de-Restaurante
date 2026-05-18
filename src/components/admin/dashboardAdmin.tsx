@@ -1,15 +1,29 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { TrendingUp, ShoppingCart, CheckCircle2, Clock } from "lucide-react";
 import { useDashboardAdminRealtime } from "@/hooks/useDashboardAdminRealtime";
 import { formatearPrecio } from "@/lib/formato";
 import { TarjetaEstadistica } from "./tarjetaEstadistica";
 import { TablaPedidosAdmin } from "./tablaPedidosAdmin";
-import { GraficoIngresosHora } from "./graficoIngresosHora";
-import { GraficoTendenciaSemanal } from "./graficoTendenciaSemanal";
-import { GraficoEstadoPedidos } from "./graficoEstadoPedidos";
-import { GraficoPlatosPopulares } from "./graficoPlatosPopulares";
 import type { StatsAdmin } from "@/types";
+
+const GraficoIngresosHora = dynamic(
+  () => import("./graficoIngresosHora").then((m) => ({ default: m.GraficoIngresosHora })),
+  { ssr: true }
+);
+const GraficoTendenciaSemanal = dynamic(
+  () => import("./graficoTendenciaSemanal").then((m) => ({ default: m.GraficoTendenciaSemanal })),
+  { ssr: true }
+);
+const GraficoEstadoPedidos = dynamic(
+  () => import("./graficoEstadoPedidos").then((m) => ({ default: m.GraficoEstadoPedidos })),
+  { ssr: true }
+);
+const GraficoPlatosPopulares = dynamic(
+  () => import("./graficoPlatosPopulares").then((m) => ({ default: m.GraficoPlatosPopulares })),
+  { ssr: true }
+);
 
 interface DashboardAdminProps {
   statsIniciales: StatsAdmin;
