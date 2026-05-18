@@ -31,8 +31,8 @@
 | ID | Caso | Tipo | Resultado esperado |
 |---|---|---|---|
 | U-15 | Crear Plato Fuerte | `plato_fuerte` | Campos requeridos: nombre, precio, ingredientes |
-| U-16 | Crear Bebida | `bebida` | No requiere ingredientes, permite tamaño |
-| U-17 | Crear Combo | `combo` | Requiere lista de platos incluidos |
+| U-16 | Crear Bebida | `bebida` | No requiere ingredientes, valida nombre y precio |
+| U-17 | Crear Combo | `combo` | No requiere ingredientes, valida nombre y precio |
 
 ### Strategy (Despacho)
 

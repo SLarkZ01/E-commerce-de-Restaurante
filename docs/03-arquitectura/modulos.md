@@ -21,7 +21,8 @@ Cada módulo del monolito se implementa como un conjunto de archivos dentro de `
 - **Público:** `/`, `/login`, `/mesa/[uuid]` — sin autenticación
 - **Staff (cualquier rol):** `/cocina`, `/cocina/platos`, `/logistica`, `/admin` — requiere sesión
 - **Solo admin:** `/admin/personal`, `/admin/mesas`, `/admin` (dashboard completo)
-- **Solo cocinero o admin:** operaciones de escritura en platos y cambio de estado de pedidos (validado en `State Pattern`)
+- **Solo cocinero o admin:** operaciones de escritura en platos (crear, editar, eliminar del catálogo)
+- **Solo cocinero o mesero:** cambio de estado de pedidos (validado en `State Pattern`). El admin puede ver los pedidos pero no cambiar su estado.
 - **Solo mesero:** marcar pedido como "Entregado" (validado en `State Pattern`)
 
 ## Arquitectura de capas

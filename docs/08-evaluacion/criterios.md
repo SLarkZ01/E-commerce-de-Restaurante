@@ -18,8 +18,8 @@ La latencia en la comunicación entre salón y cocina en restaurantes. E-Kitchen
 
 Ver análisis completo en [`docs/07-riesgos/analisis.md`](07-riesgos/analisis.md). Principales riesgos mitigados:
 
-- **Venta de platos agotados:** menú en tiempo real (Observer Pattern)
-- **Pedidos duplicados:** idempotencia vía `paypal_pedido_id`
+- **Venta de platos agotados:** menú en tiempo real (Pub/Sub via Supabase Realtime)
+- **Pedidos duplicados:** idempotencia vía `wompi_transaccion_id` (columna `paypal_pedido_id` en BD)
 - **Acceso no autorizado:** RLS + autenticación solo para staff
 
 ---
@@ -30,11 +30,11 @@ Ver análisis completo en [`docs/07-riesgos/analisis.md`](07-riesgos/analisis.md
 |---|---|---|
 | Supabase | Suscripción mensual | ~$25/mes (plan Pro, 1 proyecto) |
 | Cloudinary | Gratuito hasta 25GB | $0/mes inicial |
-| PayPal | Comisión por transacción | 2.9% + $0.30 por pago |
+| Wompi | Comisión por transacción | 3.5% + $1,000 COP por pago |
 | Brevo | Gratuito hasta 300 emails/día | $0/mes inicial |
 | Vercel (deploy) | Gratuito (plan Hobby) | $0/mes inicial |
 
-**Costo total estimado inicial:** ~$25/mes + comisiones de PayPal. Escala con el volumen de pedidos, no con usuarios.
+**Costo total estimado inicial:** ~$25/mes + comisiones de Wompi. Escala con el volumen de pedidos, no con usuarios.
 
 ---
 
@@ -42,8 +42,8 @@ Ver análisis completo en [`docs/07-riesgos/analisis.md`](07-riesgos/analisis.md
 
 Ver detalle completo en `docs/06-pruebas/`:
 
-- **Unitarias (19 casos):** Store del carrito, validaciones de estado, Factory, Strategy
-- **Integración (12 casos):** CRUD plato → visibilidad, compra → notificación, ciclo completo de pedido, RLS
+- **Unitarias (80 casos):** Store del carrito, validaciones de estado, Simple Factory, Facades
+- **Integración (19 casos):** CRUD plato → visibilidad, compra → notificación, ciclo completo de pedido, RLS, Pub/Sub
 - **Carga (5 escenarios):** 50 clientes simultáneos, Realtime broadcast, concurrencia
 
 Herramientas: Vitest, Testing Library, jsdom, k6/Artillery.
@@ -55,8 +55,8 @@ Herramientas: Vitest, Testing Library, jsdom, k6/Artillery.
 | Escenario de crecimiento | Solución arquitectónica |
 |---|---|
 | Más sucursales | Extraer módulo de Administración a servicio separado. Cada sucursal tiene su propia instancia de Supabase. |
-| Más tipos de productos | Factory Method: agregar nueva clase concreta sin modificar el factory existente. |
-| Más pasarelas de pago | Strategy Pattern en el Facade de pagos: nueva estrategia sin tocar la UI. |
+| Más tipos de productos | Simple Factory: agregar nueva clase concreta al mapa `CREADORES` sin modificar el factory existente. |
+| Más pasarelas de pago | Facade Pattern: nueva fachada de pago sin tocar la UI. |
 | Alta concurrencia (>500 pedidos/hora) | Migrar Server Actions a Route Handlers con edge runtime. Agregar Redis para caché de catálogo. |
 | App móvil nativa | La API ya existe (Server Actions). Migrar a REST o tRPC exponiendo los mismos endpoints. |
 

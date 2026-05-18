@@ -31,10 +31,10 @@ Todas las operaciones de lectura/escritura se hacen mediante Server Actions. Cad
 - **Devuelve:** `{ publicKey: string, firma: string, error?: string }`
 - **Qué hace:** Genera la llave pública y firma de integridad para el widget Wompi (server-side, sin exponer el secreto)
 
-### `crearPedidoWompi(mesaUuid, items, total, wompiTransactionId)`
+### `crearPedidoWompi(mesaUuid, items, total, wompiTransactionId, emailCliente?)`
 - **Archivo:** `src/lib/acciones/pago.ts`
 - **Quién:** Cliente anónimo
-- **Parámetros:** `mesaUuid: string`, `items: ItemCarrito[]`, `total: number`, `wompiTransactionId: string`
+- **Parámetros:** `mesaUuid: string`, `items: ItemCarrito[]`, `total: number`, `wompiTransactionId: string`, `emailCliente?: string`
 - **Devuelve:** `{ pedidoId: string, error?: string }`
 - **Qué hace:** Consulta la transacción en Wompi para extraer el email, valida la mesa, genera el `pedidoId` con `crypto.randomUUID()`, inserta el pedido con ID pre-generado (sin `.select()` para evitar necesidad de permiso SELECT anónimo), inserta sus items, envía factura por Brevo. Retorna el ID o un error
 - **Nota:** Se usa `crypto.randomUUID()` del lado del servidor para evitar el patrón `.insert().select("id").single()` que requiere permiso SELECT en la tabla `pedidos`, el cual está restringido a `authenticated` por RLS
@@ -75,15 +75,16 @@ Todas las operaciones de lectura/escritura se hacen mediante Server Actions. Cad
 - **Devuelve:** `{ pendientes, preparando, listos, tiempoPromedioMin }`
 - **Qué hace:** Contadores por estado y tiempo promedio de pedidos completados hoy
 
-### `cambiarEstadoPedido(pedidoId, nuevoEstado, rolUsuario)`
+### `cambiarEstadoPedido(pedidoId, nuevoEstado)`
 - **Archivo:** `src/lib/acciones/cocina.ts`
 - **Quién:** Cocinero o mesero (ambos pueden cambiar entre pendiente↔preparando↔listo). Solo mesero puede marcar "entregado"
+- **Parámetros:** `pedidoId: string`, `nuevoEstado: EstadoPedido`
 - **Devuelve:** `{ exito: boolean, error?: string }`
 - **Validaciones:**
-  - Solo cocinero o mesero pueden cambiar estados
-  - Transición válida según máquina de estados (ver `state.md`)
+  - Solo cocinero o mesero pueden cambiar estados (obtenido del contexto de autenticación)
+  - Transición válida según máquina de estados (ver `state-machine.md`)
   - Solo mesero puede marcar como "entregado"
-- **Errores:** "No tienes permiso", "Pedido no encontrado", "Transición inválida: X → Y"
+- **Errores:** "No autenticado", "No tienes permiso", "Pedido no encontrado", "Transición inválida: X → Y"
 
 ### `obtenerTodosPlatos()` (catálogo para gestión)
 - **Archivo:** `src/lib/acciones/catalogo.ts`
@@ -178,13 +179,12 @@ Todas las operaciones de lectura/escritura se hacen mediante Server Actions. Cad
 
 ### `crearEstrategiaDespacho(tipoDespacho)`
 - **Archivo:** `src/lib/servicios/estrategiaDespacho.ts`
-- **Patrón:** Strategy
 - **Devuelve:** `EstrategiaDespacho` (instancia de `DespachoMesa` o `DespachoParaLlevar`)
 
 ### `EstrategiaDespacho.alEntregar(pedido)`
 - **Qué hace:** Define el comportamiento post-entrega según el tipo de despacho
-  - `DespachoMesa`: libera la mesa
-  - `DespachoParaLlevar`: notifica al cliente por email
+  - `DespachoMesa`: ejecuta lógica de entrega para pedidos en mesa
+  - `DespachoParaLlevar`: ejecuta lógica de entrega para pedidos para llevar
 
 ---
 
@@ -192,7 +192,7 @@ Todas las operaciones de lectura/escritura se hacen mediante Server Actions. Cad
 
 ### `crearRealtimeService()`
 - **Archivo:** `src/lib/servicios/realtimeService.ts`
-- **Patrón:** Observer + Singleton
+- **Patrón:** Singleton
 - **Devuelve:** `IServicioRealtime`
 - **Qué hace:** Retorna la instancia global del servicio de canales WebSocket. Expone `suscribir()` y `desconectarTodo()`
 
@@ -207,13 +207,14 @@ Todas las operaciones de lectura/escritura se hacen mediante Server Actions. Cad
 - **Qué hace:** Obtiene la sesión, configura `setAuth()` para RLS, crea un canal WebSocket único y se suscribe a `postgres_changes`
 - **Implementación:** `SupabaseRealtimeService` (concreta)
 
-### Hooks del patrón Observer
+### Hooks del patrón Pub/Sub (Realtime)
 
 | Hook | Archivo | Suscripción | Uso |
 |---|---|---|---|
-| `useRealtime(tabla, evento, cb, filtro?, servicio?)` | `src/hooks/useRealtime.ts` | Generic | Cualquier tabla, cualquier evento |
+| `useRealtime(tabla, evento, cb, filtro?, servicio?)` | `src/hooks/useRealtime.ts` | Genérico | Cualquier tabla, cualquier evento |
 | `usePedidosRealtime(callbacks, servicio?)` | `src/hooks/usePedidosRealtime.ts` | `pedidos` INSERT + UPDATE | Panel cocina (kanban) |
 | `usePlatosRealtime(callbacks, servicio?)` | `src/hooks/usePlatosRealtime.ts` | `platos` INSERT + UPDATE + DELETE | Menú cliente (catálogo) |
 | `useMiPedidoRealtime(pedidoId, callbacks, servicio?)` | `src/hooks/useMiPedidoRealtime.ts` | `pedidos` UPDATE filtrado por ID | Cliente (estado de su pedido) |
+| `useEntregaPedidos(pedidosIniciales)` | `src/hooks/useEntregaPedidos.ts` | `pedidos` UPDATE filtrado `estado=eq.listo` | Panel logística (mesero) |
 
-Todos los hooks aceptan un `IServicioRealtime` opcional para inyección de dependencias (testing).
+Todos los hooks genéricos aceptan un `IServicioRealtime` opcional para inyección de dependencias (testing).
