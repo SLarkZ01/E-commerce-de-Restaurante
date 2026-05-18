@@ -18,17 +18,23 @@ interface NavLinkProps {
   item: ItemNavegacion;
   isActive: boolean;
   colapsado?: boolean;
+  onNavigate?: () => void;
 }
 
-export function NavLink({ item, isActive, colapsado }: NavLinkProps) {
+export function NavLink({ item, isActive, colapsado, onNavigate }: NavLinkProps) {
   const router = useRouter();
   const Icon = item.icon;
+
+  const handleClick = () => {
+    onNavigate?.();
+    router.push(item.href);
+  };
 
   if (colapsado) {
     return (
       <Tooltip>
         <TooltipTrigger
-          onClick={() => router.push(item.href)}
+          onClick={handleClick}
           className={`flex items-center justify-center w-full px-3 py-3 rounded-xl text-sm font-medium transition-all ${
             isActive
               ? "bg-primario/10 text-primario"
@@ -46,7 +52,7 @@ export function NavLink({ item, isActive, colapsado }: NavLinkProps) {
 
   return (
     <button
-      onClick={() => router.push(item.href)}
+      onClick={handleClick}
       className={`flex items-center gap-3.5 px-3 py-3 rounded-xl text-sm font-medium transition-all ${
         isActive
           ? "bg-primario/10 text-primario"

@@ -29,6 +29,7 @@ export interface IServicioRealtime {
 
 export class SupabaseRealtimeService implements IServicioRealtime {
   private canales: Map<string, { cancelar: () => Promise<void> }> = new Map();
+  private contadorCanales = 0;
 
   async suscribir<TRow extends Record<string, unknown>>(
     opciones: OpcionesSuscripcion,
@@ -41,7 +42,8 @@ export class SupabaseRealtimeService implements IServicioRealtime {
       supabase.realtime.setAuth(session.access_token);
     }
 
-    const canalNombre = `rt-${opciones.tabla}-${opciones.evento}-${Date.now()}`;
+    this.contadorCanales++;
+    const canalNombre = `rt-${opciones.tabla}-${opciones.evento}-${this.contadorCanales}-${Date.now()}`;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const channelConfig: Record<string, any> = {

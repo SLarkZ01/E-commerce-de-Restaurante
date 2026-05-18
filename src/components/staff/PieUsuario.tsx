@@ -12,11 +12,12 @@ import {
 
 interface PieUsuarioProps {
   email: string;
+  nombre?: string;
   colapsado?: boolean;
   onToggle?: () => void;
 }
 
-export function PieUsuario({ email, colapsado, onToggle }: PieUsuarioProps) {
+export function PieUsuario({ email, nombre, colapsado, onToggle }: PieUsuarioProps) {
   if (colapsado) {
     return (
       <div className="space-y-3 px-2">
@@ -45,7 +46,7 @@ export function PieUsuario({ email, colapsado, onToggle }: PieUsuarioProps) {
           </AvatarFallback>
         </Avatar>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-texto truncate">Usuario</p>
+          <p className="text-sm font-medium text-texto truncate">{nombre || email.split("@")[0]}</p>
           <p className="text-xs text-texto-terciario truncate">{email}</p>
         </div>
       </div>

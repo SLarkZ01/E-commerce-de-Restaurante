@@ -75,10 +75,22 @@ export async function actualizarPlato(
       const oldPublicId = MediaFacade.extraerPublicId(platoActual.imagen_url);
       if (oldPublicId) {
         try {
-          await MediaFacade.eliminarImagen(oldPublicId);
+          const eliminada = await MediaFacade.eliminarImagen(oldPublicId);
+          if (!eliminada) {
+            console.error(
+              `[actualizarPlato] Cloudinary no eliminó la imagen anterior (publicId=${oldPublicId})`
+            );
+          }
         } catch (err) {
-          console.error("Error al eliminar imagen anterior de Cloudinary:", err);
+          console.error(
+            `[actualizarPlato] Error al eliminar imagen anterior de Cloudinary (publicId=${oldPublicId}):`,
+            err
+          );
         }
+      } else {
+        console.error(
+          `[actualizarPlato] No se pudo extraer publicId de URL anterior: ${platoActual.imagen_url}`
+        );
       }
     }
   }
@@ -137,10 +149,22 @@ export async function eliminarPlato(id: string) {
     const publicId = MediaFacade.extraerPublicId(plato.imagen_url);
     if (publicId) {
       try {
-        await MediaFacade.eliminarImagen(publicId);
+        const eliminada = await MediaFacade.eliminarImagen(publicId);
+        if (!eliminada) {
+          console.error(
+            `[eliminarPlato] Cloudinary no eliminó la imagen (publicId=${publicId})`
+          );
+        }
       } catch (err) {
-        console.error("Error al eliminar imagen de Cloudinary:", err);
+        console.error(
+          `[eliminarPlato] Error al eliminar imagen de Cloudinary (publicId=${publicId}):`,
+          err
+        );
       }
+    } else {
+      console.error(
+        `[eliminarPlato] No se pudo extraer publicId de URL: ${plato.imagen_url}`
+      );
     }
   }
 

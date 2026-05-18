@@ -9,14 +9,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 declare global {
   interface Window {
     WidgetCheckout?: new (config: Record<string, unknown>) => {
-      open: (cb: (r: { transaction: { id: string; status: string; reference: string } }) => void) => void;
+      open: (cb: (r: {
+        transaction: { id: string; status: string; reference: string; customerEmail?: string };
+        customerData?: { email?: string; fullName?: string; phoneNumber?: string };
+      }) => void) => void;
     };
   }
 }
 
 interface WompiButtonProps {
   datos: DatosWompi | null;
-  onExito: (transactionId: string) => void;
+  onExito: (transactionId: string, customerEmail?: string) => void;
   onError: (mensaje: string) => void;
   onAntesDeAbrir: () => void;
 }
@@ -26,7 +29,12 @@ export function WompiButton({ datos, onExito, onError, onAntesDeAbrir }: WompiBu
   const { setWompiAbierto } = useWompiModal();
   const [abriendo, setAbriendo] = useState(false);
   const [pagoCompletado, setPagoCompletado] = useState(false);
-  const checkoutRef = useRef<{ open: (cb: (r: { transaction: { id: string; status: string; reference: string } }) => void) => void } | null>(null);
+  const checkoutRef = useRef<{
+    open: (cb: (r: {
+      transaction: { id: string; status: string; reference: string; customerEmail?: string };
+      customerData?: { email?: string; fullName?: string; phoneNumber?: string };
+    }) => void) => void;
+  } | null>(null);
   const observerRef = useRef<MutationObserver | null>(null);
   const pagoCompletadoRef = useRef(pagoCompletado);
 
@@ -77,7 +85,8 @@ export function WompiButton({ datos, onExito, onError, onAntesDeAbrir }: WompiBu
           return;
         }
         setPagoCompletado(true);
-        onExito(tx.id);
+        const email = result.transaction.customerEmail ?? result.customerData?.email;
+        onExito(tx.id, email);
       });
     }, 200);
   }, [datos, pagoCompletado, onAntesDeAbrir, setWompiAbierto, onError, onExito]);

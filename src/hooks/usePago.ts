@@ -38,16 +38,17 @@ export function usePago() {
 
   /**
    * Crea el pedido después de que Wompi confirma el pago.
-   * Recibe el transactionId para obtener el email del cliente desde Wompi.
+   * Recibe el transactionId y opcionalmente el email del widget de Wompi.
    */
   const confirmarPedido = useCallback(async (
     mesaUuid: string,
     items: ItemCarrito[],
     total: number,
-    transactionId: string
+    transactionId: string,
+    customerEmail?: string
   ): Promise<ResultadoPago> => {
     try {
-      const resultado = await crearPedidoWompi(mesaUuid, items, total, transactionId);
+      const resultado = await crearPedidoWompi(mesaUuid, items, total, transactionId, customerEmail);
       if (resultado.error) return { exito: false, error: resultado.error };
       return { exito: true, pedidoId: resultado.pedidoId };
     } catch (err) {

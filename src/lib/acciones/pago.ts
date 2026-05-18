@@ -22,10 +22,12 @@ export async function crearPedidoWompi(
   mesaUuid: string,
   items: ItemCarrito[],
   total: number,
-  wompiTransactionId: string
+  wompiTransactionId: string,
+  emailCliente?: string
 ): Promise<{ pedidoId: string; error?: string }> {
-  // 1. Obtener el email del cliente desde Wompi
+  // 1. Obtener el email del cliente desde Wompi (API) o del widget (callback)
   const tx = await PagoFacade.obtenerTransaccion(wompiTransactionId);
+  const email = tx.email ?? emailCliente ?? null;
 
   // 2. Crear pedido en BD
   const supabase = await crearCliente();
@@ -49,7 +51,7 @@ export async function crearPedidoWompi(
       mesa_id: mesa.id,
       estado: "pendiente",
       total,
-      correo_cliente: tx.email ?? null,
+      correo_cliente: email,
     });
 
   if (errPedido) {
@@ -66,19 +68,28 @@ export async function crearPedidoWompi(
   await supabase.from("items_pedido").insert(itemsInsert);
 
   // 3. Enviar factura por email (no bloquea)
-  if (tx.email) {
+  if (email) {
     const facturaItems = items.map((i) => ({
       nombre: i.nombre,
       cantidad: i.cantidad,
       precio: i.precio,
+      imagenUrl: i.imagenUrl,
     }));
     NotificacionFacade.enviarComprobante(
-      tx.email,
+      email,
       pedidoId,
       total,
       facturaItems,
       mesa.numero
-    ).catch((err) => console.error("Error enviando factura:", err));
+    ).then((resultado) => {
+      if (!resultado.exito) {
+        console.error("[Brevo] Error enviando factura:", resultado.error);
+      } else {
+        console.log("[Brevo] Factura enviada a", email);
+      }
+    }).catch((err) => console.error("[Brevo] Error enviando factura:", err));
+  } else {
+    console.warn("[Brevo] Email del cliente no disponible — factura no enviada");
   }
 
   revalidatePath("/cocina");

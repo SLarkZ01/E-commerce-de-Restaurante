@@ -23,8 +23,8 @@ describe("NotificacionFacade — Brevo", () => {
 
   describe("enviarComprobante", () => {
     const items = [
-      { nombre: "Pizza Margarita", cantidad: 2, precio: 28000 },
-      { nombre: "Limonada", cantidad: 1, precio: 9000 },
+      { nombre: "Pizza Margarita", cantidad: 2, precio: 28000, imagenUrl: "https://res.cloudinary.com/e-kitchen/image/upload/pizza.jpg" },
+      { nombre: "Limonada", cantidad: 1, precio: 9000, imagenUrl: null },
     ];
 
     it("envía email con factura HTML correctamente", async () => {
@@ -49,6 +49,9 @@ describe("NotificacionFacade — Brevo", () => {
       expect(body.htmlContent).toContain("Pizza Margarita");
       expect(body.htmlContent).toContain("$ 65.000");
       expect(body.htmlContent).toContain("Mesa 3");
+      expect(body.htmlContent).toContain("cloudinary.com"); // imagen del plato
+      expect(body.htmlContent).toContain('alt="Pizza Margarita"'); // alt text de imagen
+      expect(body.htmlContent).toContain("L"); // fallback inicial de "Limonada"
 
       mockFetch.mockRestore();
     });
@@ -60,8 +63,8 @@ describe("NotificacionFacade — Brevo", () => {
 
       const Facade = await getFacade();
       await Facade.enviarComprobante("test@test.com", "ped-001", 61000, [
-        { nombre: "Pizza", cantidad: 2, precio: 28000 },
-        { nombre: "Agua", cantidad: 1, precio: 5000 },
+        { nombre: "Pizza", cantidad: 2, precio: 28000, imagenUrl: "https://img.example.com/pizza.jpg" },
+        { nombre: "Agua", cantidad: 1, precio: 5000, imagenUrl: null },
       ]);
 
       const body = JSON.parse(mockFetch.mock.calls[0][1]!.body as string);
@@ -69,6 +72,7 @@ describe("NotificacionFacade — Brevo", () => {
       expect(body.htmlContent).toContain("x2");
       expect(body.htmlContent).toContain("Agua");
       expect(body.htmlContent).toContain("$ 61.000");
+      expect(body.htmlContent).toContain("img.example.com");
 
       mockFetch.mockRestore();
     });

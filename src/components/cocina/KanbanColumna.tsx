@@ -19,7 +19,7 @@ export function KanbanColumna({
   onCambiarEstado,
 }: KanbanColumnaProps) {
   return (
-    <div className={`flex-1 min-w-0 flex flex-col rounded-2xl overflow-hidden border border-borde/20 shadow-sm ${config.bgColumna} backdrop-blur-[2px]`}>
+    <div className={`flex-1 min-w-[280px] sm:min-w-0 flex flex-col rounded-2xl overflow-hidden border border-borde/20 shadow-sm ${config.bgColumna} backdrop-blur-[2px] max-h-[60vh] md:max-h-none`}>
       <CardHeader className="pb-3 pt-3.5 px-5 border-b border-borde/20">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">

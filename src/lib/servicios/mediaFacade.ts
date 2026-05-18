@@ -91,16 +91,25 @@ export class MediaFacade {
     };
   }
 
-  static async eliminarImagen(publicId: string): Promise<void> {
-    await cloudinary.v2.uploader.destroy(publicId, {
+  static async eliminarImagen(publicId: string): Promise<boolean> {
+    const { result } = await cloudinary.v2.uploader.destroy(publicId, {
       resource_type: "image",
       invalidate: true,
     });
+
+    if (result !== "ok") {
+      console.error(
+        `[MediaFacade.eliminarImagen] destroy retornó "${result}" para publicId=${publicId}`
+      );
+      return false;
+    }
+
+    return true;
   }
 
   static extraerPublicId(url: string): string | null {
     try {
-      const regex = /\/upload\/v\d+\/(.+?)(?:\.\w+)?$/;
+      const regex = /\/upload\/(?:[^/]+\/)*v\d+\/(.+?)(?:\.\w+)?$/;
       const match = url.match(regex);
       return match?.[1] ?? null;
     } catch {
