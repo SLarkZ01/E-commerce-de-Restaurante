@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useRealtime } from "@/hooks/useRealtime";
 import type { IServicioRealtime } from "@/lib/servicios/realtimeService";
 import type {
@@ -13,7 +13,6 @@ import type {
   PedidoConDetalles,
   EstadoPedido,
 } from "@/types";
-import { obtenerStatsAdmin } from "@/lib/acciones/admin";
 
 const PAGINA_TAMANO = 10;
 const COLORES_ESTADO: Record<string, string> = {
@@ -117,89 +116,99 @@ function recalcularDistribucionEstado(pedidos: PedidoConDetalles[]): Distribucio
   }));
 }
 
+function recalcularPlatosPopulares(pedidos: PedidoConDetalles[], iniciales: PlatoPopular[]): PlatoPopular[] {
+  const mapa = new Map<string, { cantidad: number; total: number }>();
+
+  for (const p of pedidos) {
+    for (const item of p.items) {
+      if (!item.plato_nombre) continue;
+      const prev = mapa.get(item.plato_nombre) ?? { cantidad: 0, total: 0 };
+      prev.cantidad += item.cantidad;
+      prev.total += item.cantidad * item.precio_unitario;
+      mapa.set(item.plato_nombre, prev);
+    }
+  }
+
+  if (mapa.size === 0) return iniciales;
+
+  return Array.from(mapa.entries())
+    .map(([nombre, val]) => ({ nombre, cantidad: val.cantidad, total: val.total }))
+    .sort((a, b) => b.cantidad - a.cantidad)
+    .slice(0, 10);
+}
+
 export function useDashboardAdminRealtime(
   statsIniciales: StatsAdmin,
   servicio?: IServicioRealtime
 ) {
   const [pedidos, setPedidos] = useState<PedidoConDetalles[]>(statsIniciales.pedidosRecientes);
-  const [platosPopulares, setPlatosPopulares] = useState<PlatoPopular[]>(statsIniciales.platosPopulares);
   const [pagina, setPagina] = useState(1);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const onInsert = useCallback((payload: any) => {
+    const nuevo = payload.new as Record<string, unknown> | undefined;
+    if (!nuevo?.id) return;
+
+    setPedidos((prev) => {
+      if (prev.some((p) => p.id === String(nuevo.id))) return prev;
+      const pedidoNuevo: PedidoConDetalles = {
+        id: String(nuevo.id),
+        mesa_id: (nuevo.mesa_id as string) ?? null,
+        mesa_numero: null,
+        tipo_despacho: (nuevo.tipo_despacho as "mesa" | "para_llevar") ?? "mesa",
+        estado: (nuevo.estado as EstadoPedido) ?? "pendiente",
+        correo_cliente: (nuevo.correo_cliente as string) ?? null,
+        total: Number(nuevo.total ?? 0),
+        paypal_pedido_id: (nuevo.paypal_pedido_id as string) ?? null,
+        cocinero_id: (nuevo.cocinero_id as string) ?? null,
+        creado_en: (nuevo.creado_en as string) ?? new Date().toISOString(),
+        actualizado_en: (nuevo.actualizado_en as string) ?? new Date().toISOString(),
+        items: [],
+      };
+      return [pedidoNuevo, ...prev];
+    });
+  }, []);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const onUpdate = useCallback((payload: any) => {
+    const nuevo = payload.new as Record<string, unknown> | undefined;
+    if (!nuevo?.id) return;
+
+    setPedidos((prev) =>
+      prev.map((p) =>
+        String(p.id) === String(nuevo.id)
+          ? {
+              ...p,
+              estado: (nuevo.estado as EstadoPedido) ?? p.estado,
+              total: Number(nuevo.total ?? p.total),
+              actualizado_en: (nuevo.actualizado_en as string) ?? p.actualizado_en,
+            }
+          : p
+      )
+    );
+  }, []);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const onDelete = useCallback((payload: any) => {
+    const viejo = payload.old as Record<string, unknown> | undefined;
+    if (!viejo?.id) return;
+
+    setPedidos((prev) => prev.filter((p) => String(p.id) !== String(viejo.id)));
+  }, []);
+
+  useRealtime("pedidos", "INSERT", onInsert, undefined, servicio);
+  useRealtime("pedidos", "UPDATE", onUpdate, undefined, servicio);
+  useRealtime("pedidos", "DELETE", onDelete, undefined, servicio);
 
   const estadisticas = useMemo(() => recalcularEstadisticas(pedidos), [pedidos]);
   const ingresosPorHora = useMemo(() => recalcularIngresosPorHora(pedidos), [pedidos]);
   const ingresosPorDia = useMemo(() => recalcularIngresosPorDia(pedidos), [pedidos]);
   const distribucionEstado = useMemo(() => recalcularDistribucionEstado(pedidos), [pedidos]);
 
-  useRealtime(
-    "pedidos",
-    "*",
-    (payload: any) => {
-      const eventType = payload.eventType as string;
-      const nuevo = payload.new as Record<string, unknown> | undefined;
-      const viejo = payload.old as Record<string, unknown> | undefined;
-
-      if (eventType === "INSERT" && nuevo?.id) {
-        setPedidos((prev) => {
-          if (prev.some((p) => p.id === String(nuevo.id))) return prev;
-          const pedidoNuevo: PedidoConDetalles = {
-            id: String(nuevo.id),
-            mesa_id: (nuevo.mesa_id as string) ?? null,
-            mesa_numero: null,
-            tipo_despacho: (nuevo.tipo_despacho as "mesa" | "para_llevar") ?? "mesa",
-            estado: (nuevo.estado as EstadoPedido) ?? "pendiente",
-            correo_cliente: (nuevo.correo_cliente as string) ?? null,
-            total: Number(nuevo.total ?? 0),
-            paypal_pedido_id: (nuevo.paypal_pedido_id as string) ?? null,
-            cocinero_id: (nuevo.cocinero_id as string) ?? null,
-            creado_en: (nuevo.creado_en as string) ?? new Date().toISOString(),
-            actualizado_en: (nuevo.actualizado_en as string) ?? new Date().toISOString(),
-            items: [],
-          };
-          return [pedidoNuevo, ...prev];
-        });
-        return;
-      }
-
-      if (eventType === "UPDATE" && nuevo?.id) {
-        setPedidos((prev) =>
-          prev.map((p) =>
-            String(p.id) === String(nuevo.id)
-              ? {
-                  ...p,
-                  estado: (nuevo.estado as EstadoPedido) ?? p.estado,
-                  total: Number(nuevo.total ?? p.total),
-                  actualizado_en: (nuevo.actualizado_en as string) ?? p.actualizado_en,
-                }
-              : p
-          )
-        );
-        return;
-      }
-
-      if (eventType === "DELETE" && viejo?.id) {
-        setPedidos((prev) => prev.filter((p) => String(p.id) !== String(viejo.id)));
-      }
-    },
-    undefined,
-    servicio
+  const platosPopulares = useMemo(
+    () => recalcularPlatosPopulares(pedidos, statsIniciales.platosPopulares),
+    [pedidos, statsIniciales.platosPopulares]
   );
-
-  useEffect(() => {
-    let activo = true;
-    const id = setTimeout(() => {
-      if (!activo) return;
-      obtenerStatsAdmin()
-        .then((stats) => {
-          if (activo) setPlatosPopulares(stats.platosPopulares);
-        })
-        .catch(() => {});
-    }, 500);
-
-    return () => {
-      activo = false;
-      clearTimeout(id);
-    };
-  }, [pedidos.length]);
 
   const totalPaginas = Math.max(1, Math.ceil(pedidos.length / PAGINA_TAMANO));
   const paginaActual = Math.min(pagina, totalPaginas);
