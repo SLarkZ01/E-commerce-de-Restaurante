@@ -53,8 +53,8 @@ export function HeaderStaff({ userEmail, rol, collapsed, onToggle }: HeaderStaff
   const seccion = SECCIONES[pathname] ?? { titulo: "E-Kitchen", descripcion: "" };
 
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between px-6 h-16 bg-fondo/95 backdrop-blur-sm border-b border-borde/60">
-      <div className="flex items-center gap-4">
+    <header className="sticky top-0 z-30 flex items-center justify-between px-3 sm:px-6 h-16 bg-fondo/95 backdrop-blur-sm border-b border-borde/60">
+      <div className="flex items-center gap-2 sm:gap-4 min-w-0">
         <button
           onClick={onToggle}
           className="hidden md:flex p-2 rounded-lg text-texto-secundario hover:bg-fondo-oscuro hover:text-texto transition-colors"
@@ -76,12 +76,12 @@ export function HeaderStaff({ userEmail, rol, collapsed, onToggle }: HeaderStaff
           </SheetContent>
         </Sheet>
 
-        <div>
-          <h1 className="font-playfair text-xl font-bold text-texto tracking-tight">
+        <div className="min-w-0">
+          <h1 className="font-playfair text-lg sm:text-xl font-bold text-texto tracking-tight truncate">
             {seccion.titulo}
           </h1>
           {seccion.descripcion && (
-            <p className="text-sm text-texto-secundario mt-0.5">
+            <p className="text-xs sm:text-sm text-texto-secundario mt-0.5 truncate hidden sm:block">
               {seccion.descripcion}
             </p>
           )}

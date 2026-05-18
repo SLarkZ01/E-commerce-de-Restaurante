@@ -72,25 +72,25 @@ export function TarjetaPedidoKanban({
   };
 
   return (
-    <Card className="group bg-fondo-card border border-borde/30 shadow-[0_2px_8px_rgba(45,42,38,0.04)] hover:shadow-[0_8px_30px_rgba(45,42,38,0.08)] hover:-translate-y-0.5 transition-all duration-300 rounded-2xl overflow-hidden">
-      <div className={`h-1.5 w-full ${barraColor}`} />
-      <CardHeader className="pb-2 pt-3 px-4">
-        <div className="flex items-center justify-between">
+    <Card className="group bg-fondo-card border border-borde/30 shadow-[0_2px_8px_rgba(45,42,38,0.04)] hover:shadow-[0_8px_30px_rgba(45,42,38,0.08)] sm:hover:-translate-y-0.5 transition-all duration-300 rounded-2xl overflow-hidden">
+      <div className={`h-1 sm:h-1.5 w-full ${barraColor}`} />
+      <CardHeader className="pb-2 pt-2.5 sm:pt-3 px-3 sm:px-4">
+        <div className="flex items-center justify-between gap-2">
           {mesaNumero ? (
             <MesaBadge numero={mesaNumero} urgente={urgente} />
           ) : (
-            <Badge className="bg-fondo-oscuro text-texto-secundario text-xs font-medium px-3 py-1.5">
+            <Badge className="bg-fondo-oscuro text-texto-secundario text-xs font-medium px-2 sm:px-3 py-1 sm:py-1.5">
               Para llevar
             </Badge>
           )}
           <Badge
             variant="secondary"
-            className={`${config.bg} ${config.color} text-xs font-semibold px-2.5 py-1 shrink-0`}
+            className={`${config.bg} ${config.color} text-xs font-semibold px-2 sm:px-2.5 py-1 shrink-0`}
           >
             {config.label}
           </Badge>
         </div>
-        <div className="flex items-center gap-1.5 mt-2">
+        <div className="flex items-center gap-1.5 mt-1.5 sm:mt-2">
           <Timer
             className={`w-3.5 h-3.5 ${urgente ? "text-error animate-pulse" : "text-texto-terciario"}`}
           />
@@ -100,27 +100,27 @@ export function TarjetaPedidoKanban({
             {formatear(pedido.creado_en)}
           </span>
           {urgente && (
-            <span className="text-[10px] font-bold text-error bg-error/10 px-2 py-0.5 rounded-md ml-1 ring-1 ring-error/20 animate-pulse">
+            <span className="text-[10px] font-bold text-error bg-error/10 px-1.5 sm:px-2 py-0.5 rounded-md ml-1 ring-1 ring-error/20 animate-pulse">
               Urgente
             </span>
           )}
         </div>
       </CardHeader>
 
-      <CardContent className="pb-2 px-4">
-        <div className="bg-fondo-oscuro/30 rounded-xl p-2.5">
+      <CardContent className="pb-2 px-3 sm:px-4">
+        <div className="bg-fondo-oscuro/30 rounded-xl p-2 sm:p-2.5">
           <DishThumbnails items={pedido.items ?? []} />
         </div>
-        <Separator className="bg-borde/30 my-3" />
+        <Separator className="bg-borde/30 my-2 sm:my-3" />
         <div className="flex items-center justify-between">
           <span className="text-xs text-texto-terciario font-medium">Total</span>
-          <span className="font-playfair text-base font-bold text-primario tabular-nums">
+          <span className="font-playfair text-sm sm:text-base font-bold text-primario tabular-nums">
             {formatearPrecio(pedido.total)}
           </span>
         </div>
       </CardContent>
 
-      <CardFooter className="px-4 pb-3 pt-1.5">
+      <CardFooter className="px-3 sm:px-4 pb-2.5 sm:pb-3 pt-1 sm:pt-1.5">
         {renderBotonAccion()}
       </CardFooter>
     </Card>

@@ -79,7 +79,7 @@ export function KanbanPedidos({ pedidosIniciales }: KanbanPedidosProps) {
           <MensajeToast mensaje={mensaje} variante="error" onClose={() => setMensaje("")} />
         </div>
       )}
-      <div className="flex-1 flex flex-col md:flex-row gap-3 p-4 min-h-0">
+      <div className="flex-1 flex flex-col md:flex-row gap-2 sm:gap-3 p-2 sm:p-4 min-h-0">
         {ESTADOS.map((estado) => (
           <KanbanColumna
             key={estado}
