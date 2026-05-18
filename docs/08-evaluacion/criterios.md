@@ -28,13 +28,13 @@ Ver análisis completo en [`docs/07-riesgos/analisis.md`](07-riesgos/analisis.md
 
 | Costo | Tipo | Estimación |
 |---|---|---|
-| Supabase | Suscripción mensual | ~$25/mes (plan Pro, 1 proyecto) |
+| Supabase | $0 (tier gratuito) | Suficiente para una sucursal (500MB BD, 50K usuarios) |
 | Cloudinary | Gratuito hasta 25GB | $0/mes inicial |
 | Wompi | Comisión por transacción | 3.5% + $1,000 COP por pago |
 | Brevo | Gratuito hasta 300 emails/día | $0/mes inicial |
 | Vercel (deploy) | Gratuito (plan Hobby) | $0/mes inicial |
 
-**Costo total estimado inicial:** ~$25/mes + comisiones de Wompi. Escala con el volumen de pedidos, no con usuarios.
+**Costo total estimado inicial:** $0/mes fijo + comisiones de Wompi. Escala con el volumen de pedidos, no con usuarios. Supabase se migra a plan Pro (~$25/mes) solo al necesitar más de 500MB de BD o backups automáticos.
 
 ---
 
