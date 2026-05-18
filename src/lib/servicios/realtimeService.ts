@@ -36,10 +36,18 @@ export class SupabaseRealtimeService implements IServicioRealtime {
   ): Promise<ISuscripcionRealtime> {
     const supabase = crearCliente();
 
+    // Forzar carga de sesión y esperar a que el onAuthStateChange
+    // interno de Supabase haya procesado su realtime.setAuth().
+    // Esto evita que canales creados prematuramente reciban CLOSED
+    // por el disconnect/reconnect que dispara setAuth() internamente.
     const { data: { session } } = await supabase.auth.getSession();
     if (session?.access_token) {
       supabase.realtime.setAuth(session.access_token);
     }
+
+    // Diferir la creación del canal al próximo macrotask para que
+    // el onAuthStateChange (microtask) ya haya terminado.
+    await new Promise((r) => setTimeout(r, 0));
 
     const canalNombre = `rt-${opciones.tabla}-${opciones.evento}-${Date.now()}`;
 
