@@ -65,7 +65,15 @@ export async function crearPedidoWompi(
     precio_unitario: item.precio,
   }));
 
-  await supabase.from("items_pedido").insert(itemsInsert);
+  const { error: errItems } = await supabase
+    .from("items_pedido")
+    .insert(itemsInsert);
+
+  if (errItems) {
+    // Rollback: eliminar el pedido huérfano
+    await supabase.from("pedidos").delete().eq("id", pedidoId);
+    return { pedidoId: "", error: "Error al registrar los platos del pedido. Intenta de nuevo." };
+  }
 
   // 3. Enviar factura por email (no bloquea)
   if (email) {

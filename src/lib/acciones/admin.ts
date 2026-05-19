@@ -106,6 +106,16 @@ export async function eliminarPerfil(id: string) {
 export async function crearMesa(numero: number) {
   const supabase = await crearCliente();
 
+  const { data: existente } = await supabase
+    .from("mesas")
+    .select("id")
+    .eq("numero", numero)
+    .maybeSingle();
+
+  if (existente) {
+    throw new Error(`Ya existe una mesa con el número ${numero}`);
+  }
+
   const { data, error } = await supabase
     .from("mesas")
     .insert({ numero })

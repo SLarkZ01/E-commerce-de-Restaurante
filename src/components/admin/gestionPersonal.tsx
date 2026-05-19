@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, Users } from "lucide-react";
 import type { Perfil } from "@/types";
 import { useGestionAdmin } from "@/hooks/useGestionAdmin";
@@ -22,6 +22,10 @@ export { SkeletonGestionPersonal } from "./SkeletonGestionPersonal";
 export function GestionPersonal({ perfilesIniciales }: { perfilesIniciales: Perfil[] }) {
   const [perfiles, setPerfiles] = useState(perfilesIniciales);
   const [mostrandoFormulario, setMostrandoFormulario] = useState(false);
+
+  useEffect(() => {
+    setPerfiles(perfilesIniciales);
+  }, [perfilesIniciales]);
   const [mensaje, setMensaje] = useState("");
   const [tipoMensaje, setTipoMensaje] = useState<"exito" | "error">("exito");
   const { crearPerfil, eliminarPerfil } = useGestionAdmin();

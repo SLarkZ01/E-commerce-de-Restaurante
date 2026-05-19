@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Loader2, AlertCircle, Sparkles, ImagePlus, DollarSign, Pencil } from "lucide-react";
 import type { Categoria, Plato } from "@/types";
 import { Input } from "@/components/ui/input";
@@ -69,6 +69,19 @@ export function FormularioPlato({
   const [cambiandoImagen, setCambiandoImagen] = useState(false);
   const [guardando, setGuardando] = useState(false);
   const [errorFormulario, setErrorFormulario] = useState("");
+
+  useEffect(() => {
+    setNombre(platoInicial?.nombre ?? "");
+    setDescripcion(platoInicial?.descripcion ?? "");
+    setPrecio(platoInicial ? String(platoInicial.precio) : "");
+    setTipoPlato((platoInicial?.tipo_plato as TipoPlatoValor) ?? "plato_fuerte");
+    setCategoriaId(platoInicial?.categoria_id ?? "");
+    setIngredientes(platoInicial?.ingredientes ?? []);
+    setIngrediente("");
+    setArchivoImagen(null);
+    setCambiandoImagen(false);
+    setErrorFormulario("");
+  }, [platoInicial]);
 
   const agregarIngrediente = () => {
     if (ingrediente.trim()) {
