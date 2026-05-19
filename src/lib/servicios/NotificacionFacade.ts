@@ -62,6 +62,8 @@ function construirFacturaHTML(
     )
     .join("");
 
+  const idCorto = pedidoId.slice(0, 8).toUpperCase();
+
   return `<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -97,24 +99,57 @@ function construirFacturaHTML(
             </td>
           </tr>
 
-          <!-- Info del pedido -->
+          <!-- Tarjeta ID del pedido -->
           <tr>
-            <td style="padding:24px 28px 0">
+            <td style="padding:20px 28px 0">
               <table role="presentation" style="width:100%;border-collapse:collapse">
                 <tr>
-                  <td style="font-family:Georgia,serif;font-size:11px;color:#a8a29e;text-transform:uppercase;letter-spacing:1px;padding-bottom:4px">Pedido</td>
-                  <td style="font-family:Georgia,serif;font-size:11px;color:#a8a29e;text-transform:uppercase;letter-spacing:1px;padding-bottom:4px;text-align:right">Fecha</td>
+                  <td style="font-family:Georgia,serif;font-size:11px;color:#a8a29e;text-transform:uppercase;letter-spacing:1px;padding-bottom:10px">
+                    &#128269; ID del pedido
+                  </td>
+                </tr>
+              </table>
+              <table role="presentation" style="width:100%;border-collapse:collapse;background:#faf8f5;border-radius:12px;border:2px dashed #e7d5c3">
+                <tr>
+                  <td style="padding:20px 20px 16px;text-align:center">
+                    <span style="font-family:'Courier New',Courier,monospace;font-size:26px;font-weight:bold;color:#2d2a26;letter-spacing:4px;word-break:break-all;line-height:1.4">
+                      ${idCorto}
+                    </span>
+                  </td>
                 </tr>
                 <tr>
-                  <td style="font-family:Georgia,serif;font-size:16px;color:#2d2a26;font-weight:bold">
-                    #${pedidoId.slice(0, 8).toUpperCase()}
-                  </td>
-                  <td style="font-family:Georgia,serif;font-size:13px;color:#78716c;text-align:right">
-                    ${fecha}
+                  <td style="padding:0 20px 16px;text-align:center">
+                    <span style="display:inline-block;background:#c44536;color:#ffffff;padding:6px 16px;border-radius:8px;font-family:Georgia,serif;font-size:12px;font-weight:600;letter-spacing:0.3px">
+                      &#128203; Selecciona y copia este ID
+                    </span>
                   </td>
                 </tr>
-                ${mesaNumero ? `<tr><td colspan="2" style="font-family:Georgia,serif;font-size:12px;color:#a8a29e;padding-top:4px">Mesa ${mesaNumero}</td></tr>` : ""}
               </table>
+            </td>
+          </tr>
+
+          <!-- Info y fecha -->
+          <tr>
+            <td style="padding:16px 28px 0">
+              <table role="presentation" style="width:100%;border-collapse:collapse">
+                <tr>
+                  <td style="font-family:Georgia,serif;font-size:12px;color:#a8a29e">
+                    ${fecha}
+                  </td>
+                  <td style="font-family:Georgia,serif;font-size:12px;color:#a8a29e;text-align:right">
+                    ${mesaNumero ? `Mesa ${mesaNumero}` : "Para llevar"}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Instrucción -->
+          <tr>
+            <td style="padding:12px 28px 0">
+              <p style="margin:0;font-family:Georgia,serif;font-size:12px;color:#a88b5e;line-height:1.5">
+                Copia el ID y usa el bot&oacute;n <strong>Rastrear Pedido</strong> en E-Kitchen para seguir su estado en tiempo real.
+              </p>
             </td>
           </tr>
 
@@ -162,7 +197,7 @@ function construirFacturaHTML(
                 <tr>
                   <td style="font-family:Georgia,serif;font-size:11px;color:#a8a29e;line-height:1.6">
                     Pagado con Wompi &middot; Bancolombia<br>
-                    E-Kitchen &mdash; Tu cocina, m&aacute;s cerca
+                    E-Kitchen &mdash; Tu cocina, m&aacute;s de confianza.
                   </td>
                 </tr>
               </table>
