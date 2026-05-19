@@ -101,6 +101,7 @@ bun run test:run  # Single run
 | Pérdida de mensajes Realtime | Reconexión automática + retry con backoff (200ms, 400ms) |
 | Escalación de costos Supabase | Plan gratuito suficiente para desarrollo, RLS + connection pooling en producción |
 | Imágenes grandes degradan rendimiento | Cloudinary optimiza automáticamente (WebP, compresión, tamaños responsivos) |
+| Rate limit de Groq detiene a Arianna | Notificación clara al usuario ("Arianna está saturada, espera unos minutos"). Cambio de API key o modelo mitiga. |
 
 > [!NOTE]
 > Ver análisis completo en [`docs/07-riesgos/analisis.md`](docs/07-riesgos/analisis.md)
@@ -115,14 +116,14 @@ bun run test:run  # Single run
 | Cloudinary | $0 (tier gratuito: 25GB storage) |
 | Wompi | Comisión por transacción (~3.5% + $1,000 COP) |
 | Brevo | $0 (300 emails/día gratuitos) |
-| Groq (LLM) | $0 (tier gratuito: 100K tokens/día) |
-| Railway (n8n) | $0 (plan hobby: $5 crédito) |
+| Groq (LLM) | $0 (tier gratuito: 100K tokens/día, ~30 req/min para Llama 3.3 70B) |
+| Railway (n8n) | $0 (plan Hobby: $5 crédito inicial, suficiente para desarrollo) |
 | Vercel (deploy) | $0 (plan Hobby) |
 
 **Costo total fijo: $0/mes. Solo se paga la comisión de Wompi por cada venta.**
 
 > [!TIP]
-> El proyecto actualmente funciona en producción con múltiples pantallas simultáneas sin costo de infraestructura. Supabase escala a plan Pro (~$25/mes) solo cuando se necesita más de 500MB de BD, backups automáticos, o múltiples sucursales.
+> El proyecto actualmente funciona en producción con múltiples pantallas simultáneas sin costo de infraestructura. Supabase escala a plan Pro (~$25/mes) solo cuando se necesita más de 500MB de BD, backups automáticos, o múltiples sucursales. Groq escala a plan Dev (~$5/mes) si se superan los 100K tokens diarios. Railway escala a plan Starter (~$5/mes) al agotar el crédito inicial.
 
 ---
 
@@ -164,6 +165,8 @@ bun run test:run  # Single run
 | Pagos | Wompi | Widget + API REST |
 | Imágenes | Cloudinary | SDK cloudinary ^2 |
 | Emails | Brevo | API v3 SMTP |
+| Automatización | n8n (self-hosted en Railway) | latest |
+| LLM | Groq (Llama 3.3 70B) | API compatible OpenAI |
 | Testing | Vitest + Testing Library + jsdom | 4.1.6 / 16.3.2 / 29.1.1 |
 
 > [!NOTE]
