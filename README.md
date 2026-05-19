@@ -173,14 +173,28 @@ bun run test:run  # Single run
 ```
 src/
 ├── app/                    # App Router (páginas y layouts)
-│   ├── page.tsx            # Landing page / login
-│   ├── mesa/[uuid]/        # Módulo Cliente (QR + menú + pago)
+│   ├── layout.tsx          # Layout raíz (fuentes, metadata)
+│   ├── page.tsx            # Menú público (catálogo sin mesa)
+│   ├── globals.css         # Tailwind CSS + variables de diseño
+│   ├── login/page.tsx      # Inicio de sesión staff (Supabase Auth)
+│   ├── mesa/[uuid]/        # Módulo Cliente (QR + menú + pago + rastreo)
+│   │   └── page.tsx
 │   └── (staff)/            # Route group protegido (proxy.ts)
-│       ├── cocina/         # Panel Kanban + CRUD platos
-│       ├── logistica/      # Panel de entregas
-│       └── admin/          # Dashboard + personal + mesas
+│       ├── layout.tsx      # Layout staff (sidebar + header)
+│       ├── cocina/
+│       │   ├── page.tsx    # Panel Kanban
+│       │   └── platos/
+│       │       └── page.tsx # CRUD de platos
+│       ├── logistica/
+│       │   └── page.tsx    # Panel de entregas
+│       └── admin/
+│           ├── page.tsx    # Dashboard
+│           ├── personal/
+│           │   └── page.tsx # Gestión de personal
+│           └── mesas/
+│               └── page.tsx # Gestión de mesas
 ├── components/
-│   ├── ui/                 # shadcn/ui (Button, Card, Dialog, Sheet...)
+│   ├── ui/                 # shadcn/ui (Button, Card, Dialog, Sheet...) + CargandoPedido
 │   ├── cliente/            # Catálogo, carrito, Wompi, rastreo, pago exitoso
 │   ├── cocina/             # Kanban, formulario plato, stats
 │   ├── logistica/          # Lista de entregas
@@ -190,7 +204,7 @@ src/
 ├── hooks/                  # 22 hooks (useRealtime, usePedidos, useRastrearPedido, usePago...)
 ├── stores/                 # Zustand (cart.ts)
 ├── lib/
-│   ├── acciones/           # 9 Server Actions (Repository pattern)
+│   ├── acciones/           # 9 Server Actions: platos, pago, cocina, catalogo, categorias, admin, auth, imagenes, pedidoPublico
 │   ├── servicios/          # Patrones: Facade, Simple Factory, Pub/Sub, Singleton
 │   ├── supabase/           # Clientes SSR + Browser + Admin
 │   ├── db/                 # Drizzle schema (solo migraciones)
