@@ -24,12 +24,12 @@ Archivo de setup: `tests/setup.ts` (importa `@testing-library/jest-dom/vitest`)
 
 Comandos disponibles:
 ```bash
-npm test            # Watch mode
-npm run test:run    # Single run
-npm run test:coverage # Con reporte de cobertura
+bun test            # Watch mode
+bun run test:run    # Single run
+bun run test:coverage # Con reporte de cobertura
 ```
 ### Estado actual
-100 tests implementados (16 archivos): 80 unitarios + 19 integración + 1 componente.
+140 tests implementados (20 archivos): 90 unitarios + 19 integración + 31 componentes.
 
 ### Áreas de prueba cubiertas
 - Store del carrito (Zustand + localStorage)
@@ -39,5 +39,7 @@ npm run test:coverage # Con reporte de cobertura
 - Pub/Sub Realtime (canales, suscripciones, cancelación, DI con mocks)
 - CRUD platos → visibilidad cliente
 - Seguridad RLS (cliente anónimo, mesero, admin)
-- **Rastreo de pedido** (máquina de estados del modal, búsqueda por ID)
-- **Confirmación de pago** (modal de éxito, flujo de checkout)
+- **Rastreo de pedido** (máquina de estados del modal: input → validando → rastreando → entregado, 10 tests)
+- **Server Action pública** (búsqueda por prefijo, case-insensitive, `#` prefix, 10 tests)
+- **Modal de rastreo** (render de 6 estados, callbacks, botones, 12 tests)
+- **Modal de pago exitoso** (checkmark, ID, correo, instrucciones, 8 tests)

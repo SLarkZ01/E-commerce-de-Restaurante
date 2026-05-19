@@ -137,4 +137,27 @@ sequenceDiagram
     CTX-->>MODAL: Abre modal con pedidoId
     MODAL-->>CL: "Hemos recibido tu pedido" + ID + "Enviamos recibo a tu correo"
 ```
+
+## Flujo 6: Arianna AI — Chat con IA vía n8n (SSE Streaming)
+
+```mermaid
+sequenceDiagram
+    actor AD as Admin
+    participant UI as AsistenteChat
+    participant HOOK as useAsistenteChat
+    participant API as /api/asistente/chat
+    participant N8N as n8n Webhook
+    participant DB as Supabase E-Kitchen
+
+    AD->>UI: Escribe pregunta
+    UI->>HOOK: enviarMensaje("¿Cuánto vendí hoy?")
+    HOOK->>API: POST /api/asistente/chat { mensaje, conversationId }
+    API->>N8N: POST webhook { mensaje, conversationId }
+    N8N->>DB: SELECT pedidos, platos, etc.
+    DB-->>N8N: Datos del restaurante
+    N8N-->>API: SSE stream: chunk 1, chunk 2, ...
+    API-->>HOOK: SSE chunks
+    HOOK-->>UI: Actualiza texto progresivamente (efecto typing)
+    UI-->>AD: Respuesta se "pinta" letra por letra
+```
 ```

@@ -6,6 +6,7 @@ import {
   LayoutDashboard,
   Users,
   Armchair,
+  Sparkles,
 } from "lucide-react";
 import type { Rol } from "@/types";
 
@@ -55,5 +56,12 @@ export const ITEMS_NAVEGACION: ItemNavegacion[] = [
     label: "Mesas",
     icon: Armchair,
     roles: ["admin"],
+  },
+  {
+    href: "/admin/asistente",
+    label: "Arianna AI",
+    icon: Sparkles,
+    roles: ["admin"],
+    separadorAntes: true,
   },
 ];

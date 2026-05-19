@@ -162,3 +162,22 @@
 - Instrucciones para usar el botón "Rastrear Pedido"
 - Botón "Entendido" para cerrar
 - Funciona en mobile (responsive, sm:max-w-sm)
+
+---
+
+### HU-13: Consultar datos del restaurante con Arianna AI
+**Como** administrador  
+**Quiero** hacer preguntas en lenguaje natural sobre el restaurante al asistente de IA  
+**Para** obtener información sin navegar por múltiples pantallas del dashboard
+
+**Criterios de aceptación:**
+- Ítem "Arianna AI" en el sidebar del staff con icono ✨, visible solo para admin
+- Chat tipo ChatGPT con sidebar de conversaciones (múltiples hilos)
+- Sidebar con lista de conversaciones pasadas, botón "+ Nueva" y eliminar
+- Streaming SSE real: la respuesta se "pinta" a medida que llega desde n8n
+- La respuesta se ve letra por letra (efecto typing)
+- Indicador de "Arianna está escribiendo..." mientras se genera la respuesta
+- Botón para cancelar la generación en curso
+- Persistencia en localStorage + sincronización con n8n (historial remoto)
+- Privado por admin: cada admin solo ve sus propias conversaciones
+- Acceso solo para rol admin (proxy + RLS)

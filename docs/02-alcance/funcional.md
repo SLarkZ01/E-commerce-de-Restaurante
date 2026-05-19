@@ -36,3 +36,4 @@
 - Asignación de roles (cocinero, mesero, admin)
 - Generación de códigos QR únicos (UUID) vinculados a mesas físicas (✅ implementado con `qrcode`)
 - Auditoría de ventas y pedidos
+- **Arianna AI:** chat con inteligencia artificial para consultar datos del restaurante en lenguaje natural (ventas, desempeño del personal, estado de mesas, reportes, recomendaciones de menú)
