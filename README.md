@@ -115,6 +115,8 @@ bun run test:run  # Single run
 | Cloudinary | $0 (tier gratuito: 25GB storage) |
 | Wompi | Comisión por transacción (~3.5% + $1,000 COP) |
 | Brevo | $0 (300 emails/día gratuitos) |
+| Groq (LLM) | $0 (tier gratuito: 100K tokens/día) |
+| Railway (n8n) | $0 (plan hobby: $5 crédito) |
 | Vercel (deploy) | $0 (plan Hobby) |
 
 **Costo total fijo: $0/mes. Solo se paga la comisión de Wompi por cada venta.**
@@ -180,6 +182,8 @@ src/
 │   ├── login/page.tsx      # Inicio de sesión staff (Supabase Auth)
 │   ├── mesa/[uuid]/        # Módulo Cliente (QR + menú + pago + rastreo)
 │   │   └── page.tsx
+│   ├── api/asistente/chat/ # Route Handler SSE → n8n (Arianna AI)
+│   │   └── route.ts
 │   └── (staff)/            # Route group protegido (proxy.ts)
 │       ├── layout.tsx      # Layout staff (sidebar + header)
 │       ├── cocina/
@@ -190,26 +194,29 @@ src/
 │       │   └── page.tsx    # Panel de entregas
 │       └── admin/
 │           ├── page.tsx    # Dashboard
+│           ├── asistente/
+│           │   └── page.tsx # Arianna AI (chat con IA)
 │           ├── personal/
 │           │   └── page.tsx # Gestión de personal
 │           └── mesas/
 │               └── page.tsx # Gestión de mesas
 ├── components/
 │   ├── ui/                 # shadcn/ui (Button, Card, Dialog, Sheet...) + CargandoPedido
-│   ├── cliente/            # Catálogo, carrito, Wompi, rastreo, pago exitoso
+│   ├── cliente/            # Catálogo, carrito, Wompi, rastreo (8 archivos), pago exitoso
 │   ├── cocina/             # Kanban, formulario plato, stats
 │   ├── logistica/          # Lista de entregas
-│   ├── admin/              # Dashboard, personal, mesas, QR
+│   ├── admin/              # Dashboard, personal, mesas, QR, Arianna AI (8 archivos)
 │   ├── staff/              # Sidebar, header, navegación
 │   └── compartidos/        # Toast, ImageDropzone, EstadoVacio
-├── hooks/                  # 23 hooks (useRealtime, usePedidos, useRastrearPedido, useAsistenteChat, usePago...)
-├── stores/                 # Zustand (cart.ts)
+├── hooks/                  # 23 hooks (useRealtime, useRastrearPedido, useAsistenteChat, usePago...)
+├── stores/                 # Zustand: cart.ts + asistente.ts
 ├── lib/
 │   ├── acciones/           # 10 Server Actions: platos, pago, cocina, catalogo, categorias, admin, auth, imagenes, pedidoPublico, asistente
-│   ├── servicios/          # Patrones: Facade, Simple Factory, Pub/Sub, Singleton
+│   ├── servicios/          # Patrones: Facade, Simple Factory, Pub/Sub, Singleton, Observer
 │   ├── supabase/           # Clientes SSR + Browser + Admin
 │   ├── db/                 # Drizzle schema (solo migraciones)
 │   ├── formato.ts          # formatearPrecio() (COP)
+│   ├── iniciales.ts        # obtenerIniciales()
 │   ├── utils.ts            # cn() (clsx + tailwind-merge)
 │   └── redirecciones.ts    # RUTA_POR_ROL, RUTAS_POR_ROL
 ├── types/                  # Interfaces TypeScript del dominio
@@ -243,13 +250,13 @@ N8N_ASISTENTE_WEBHOOK_URL=
 N8N_ASISTENTE_SECRET=
 N8N_ASISTENTE_HISTORIAL_URL=
 
-# 3. Ejecutar migraciones (Drizzle)
-npx drizzle-kit push
+# 4. Ejecutar migraciones (Drizzle)
+bunx drizzle-kit push
 
-# 4. Iniciar desarrollo
+# 5. Iniciar desarrollo
 bun run dev
 
-# 5. Ejecutar tests
+# 6. Ejecutar tests
 bun run test
 ```
 
@@ -268,7 +275,7 @@ bun run test
 | Esquema de base de datos | [`docs/03-arquitectura/schema.md`](docs/03-arquitectura/schema.md) |
 | API / Server Actions | [`docs/03-arquitectura/api.md`](docs/03-arquitectura/api.md) |
 | Diagramas de flujo | [`docs/03-arquitectura/flujos.md`](docs/03-arquitectura/flujos.md) |
-| **10 Patrones de Diseño** | **[`docs/04-patrones/indice.md`](docs/04-patrones/indice.md)** |
+| **11 Patrones de Diseño** | **[`docs/04-patrones/indice.md`](docs/04-patrones/indice.md)** |
 | Stack tecnológico | [`docs/05-tecnologico/stack.md`](docs/05-tecnologico/stack.md) |
 | Estrategia de pruebas | [`docs/06-pruebas/estrategia.md`](docs/06-pruebas/estrategia.md) |
 | Riesgos y mitigaciones | [`docs/07-riesgos/analisis.md`](docs/07-riesgos/analisis.md) |
