@@ -46,58 +46,64 @@ export function DashboardAdmin({ statsIniciales }: DashboardAdminProps) {
   return (
     <div className="flex-1 overflow-y-auto">
       <div className="p-6 space-y-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-5">
+        <div className="flex gap-2 sm:gap-4 overflow-x-auto no-scrollbar md:grid md:grid-cols-3 lg:grid-cols-6 md:overflow-visible">
           <TarjetaEstadistica
-            icono={<TrendingUp className="w-5 h-5" />}
+            icono={<TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />}
             iconoBg="bg-primario/10"
             iconoColor="text-primario"
             label="Ventas del día"
             valor={formatearPrecio(estadisticas.ventasHoy)}
             subtitulo={`${estadisticas.pedidosHoy} pedidos procesados`}
+            variante="horizontal"
           />
           <TarjetaEstadistica
-            icono={<ShoppingCart className="w-5 h-5" />}
+            icono={<ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />}
             iconoBg="bg-info/10"
             iconoColor="text-info"
             label="Total pedidos"
             valor={totalPedidos.toString()}
             subtitulo="Todas las transacciones"
+            variante="horizontal"
           />
           <TarjetaEstadistica
-            icono={<CheckCircle2 className="w-5 h-5" />}
+            icono={<CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />}
             iconoBg="bg-exito/10"
             iconoColor="text-exito"
             label="Completados hoy"
             valor={estadisticas.completadosHoy.toString()}
             subtitulo={
               estadisticas.completadosHoy > 0 && estadisticas.pedidosHoy > 0
-                ? `${Math.round((estadisticas.completadosHoy / estadisticas.pedidosHoy) * 100)}% de tasa de completitud`
+                ? `${Math.round((estadisticas.completadosHoy / estadisticas.pedidosHoy) * 100)}% completitud`
                 : "Sin pedidos hoy"
             }
+            variante="horizontal"
           />
           <TarjetaEstadistica
-            icono={<Clock className="w-5 h-5" />}
+            icono={<Clock className="w-4 h-4 sm:w-5 sm:h-5" />}
             iconoBg="bg-info/10"
             iconoColor="text-info"
             label="Pendientes"
             valor={estadisticas.pendientes.toString()}
             subtitulo="En espera de atención"
+            variante="horizontal"
           />
           <TarjetaEstadistica
-            icono={<UtensilsCrossed className="w-5 h-5" />}
+            icono={<UtensilsCrossed className="w-4 h-4 sm:w-5 sm:h-5" />}
             iconoBg="bg-advertencia/10"
             iconoColor="text-advertencia"
             label="En preparación"
             valor={estadisticas.preparando.toString()}
             subtitulo="Cocina trabajando"
+            variante="horizontal"
           />
           <TarjetaEstadistica
-            icono={<PackageCheck className="w-5 h-5" />}
+            icono={<PackageCheck className="w-4 h-4 sm:w-5 sm:h-5" />}
             iconoBg="bg-exito/10"
             iconoColor="text-exito"
             label="Listos"
             valor={estadisticas.listos.toString()}
             subtitulo="Para entregar o recoger"
+            variante="horizontal"
           />
         </div>
 
