@@ -39,6 +39,13 @@ Todas las operaciones de lectura/escritura se hacen mediante Server Actions. Cad
 - **Qué hace:** Consulta la transacción en Wompi para extraer el email, valida la mesa, genera el `pedidoId` con `crypto.randomUUID()`, inserta el pedido con ID pre-generado (sin `.select()` para evitar necesidad de permiso SELECT anónimo), inserta sus items, envía factura por Brevo. Retorna el ID o un error
 - **Nota:** Se usa `crypto.randomUUID()` del lado del servidor para evitar el patrón `.insert().select("id").single()` que requiere permiso SELECT en la tabla `pedidos`, el cual está restringido a `authenticated` por RLS
 
+### `obtenerEstadoPedidoPublico(pedidoId: string)`
+- **Archivo:** `src/lib/acciones/pedidoPublico.ts`
+- **Quién:** Cliente anónimo
+- **Parámetros:** `pedidoId: string` — prefijo del UUID (8 caracteres mostrados en email/sheet, case-insensitive)
+- **Devuelve:** `Pedido | null`
+- **Qué hace:** Busca un pedido por prefijo de ID usando la función RPC `buscar_pedido_por_prefijo` que castea UUID → text y aplica ILIKE. Soporta búsqueda con o sin el prefijo `#`. Usada por el modal de rastreo del cliente.
+
 ---
 
 ## Módulo Cocina — Lectura y escritura (chef/admin)
@@ -85,6 +92,25 @@ Todas las operaciones de lectura/escritura se hacen mediante Server Actions. Cad
   - Transición válida según máquina de estados (ver `state-machine.md`)
   - Solo mesero puede marcar como "entregado"
 - **Errores:** "No autenticado", "No tienes permiso", "Pedido no encontrado", "Transición inválida: X → Y"
+
+### `obtenerPedidoConDetalles(pedidoId: string)`
+- **Archivo:** `src/lib/acciones/cocina.ts`
+- **Quién:** Cocinero, admin, mesero (requiere sesión)
+- **Parámetros:** `pedidoId: string`
+- **Devuelve:** `PedidoConDetalles | null`
+- **Qué hace:** Obtiene un pedido con JOIN a mesas (numero) e items_pedido con platos (nombre, imagen_url, tipo_plato). Usada por `usePedidosRealtime` para resolver la race condition entre INSERT pedido e INSERT items_pedido.
+
+### `obtenerTodosPedidosConImagenes()`
+- **Archivo:** `src/lib/acciones/cocina.ts`
+- **Quién:** Cocinero, admin
+- **Devuelve:** `PedidoConDetalles[]`
+- **Qué hace:** Retorna todos los pedidos con detalles completos (mesa, items, imágenes), ordenados del más reciente al más antiguo.
+
+### `obtenerPedidosListosConDetalles()`
+- **Archivo:** `src/lib/acciones/cocina.ts`
+- **Quién:** Mesero, admin
+- **Devuelve:** `PedidoConDetalles[]`
+- **Qué hace:** Retorna solo los pedidos en estado "listo" con detalles completos, ordenados del más antiguo al más reciente. Usada por el panel de logística.
 
 ### `obtenerTodosPlatos()` (catálogo para gestión)
 - **Archivo:** `src/lib/acciones/catalogo.ts`
@@ -216,5 +242,6 @@ Todas las operaciones de lectura/escritura se hacen mediante Server Actions. Cad
 | `usePlatosRealtime(callbacks, servicio?)` | `src/hooks/usePlatosRealtime.ts` | `platos` INSERT + UPDATE + DELETE | Menú cliente (catálogo) |
 | `useMiPedidoRealtime(pedidoId, callbacks, servicio?)` | `src/hooks/useMiPedidoRealtime.ts` | `pedidos` UPDATE filtrado por ID | Cliente (estado de su pedido) |
 | `useEntregaPedidos(pedidosIniciales)` | `src/hooks/useEntregaPedidos.ts` | `pedidos` UPDATE filtrado `estado=eq.listo` | Panel logística (mesero) |
+| `useRastrearPedido()` | `src/hooks/useRastrearPedido.ts` | Máquina de estados + `useMiPedidoRealtime` | Modal de rastreo del cliente (input → validando → rastreando → entregado) |
 
-Todos los hooks genéricos aceptan un `IServicioRealtime` opcional para inyección de dependencias (testing).
+Todos los hooks genéricos aceptan un `IServicioRealtime` opcional para inyección de dependencias (testing). Los hooks de negocio (`usePedidosRealtime`, `useMiPedidoRealtime`, `useRastrearPedido`) usan `useRealtime` internamente, respetando el DIP.

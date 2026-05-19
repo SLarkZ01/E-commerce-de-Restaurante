@@ -93,7 +93,7 @@ Todas las tablas viven en Supabase (PostgreSQL). El schema se define en `src/lib
 | `creado_en` | `TIMESTAMP` | NOT NULL, default `now()` | |
 | `actualizado_en` | `TIMESTAMP` | NOT NULL, default `now()` | |
 
-**RLS:** Cualquiera puede crear pedidos (anónimo). Solo staff puede leer y actualizar.
+**RLS:** Cualquiera puede crear pedidos (anónimo). Staff autenticado puede leer y actualizar. Clientes anónimos pueden leer (SELECT público) para habilitar el rastreo en tiempo real vía WebSocket.
 
 **Índices:** `idx_pedidos_estado` (estado), `idx_pedidos_mesa` (mesa_id)
 

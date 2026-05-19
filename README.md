@@ -2,7 +2,7 @@
 
 **E-commerce de Restaurante con Menú Digital Interactivo**
 
-![Arquitectura](https://img.shields.io/badge/Arquitectura-Monolito%20Modular%20%2B%20Event--Driven-c44536?style=flat-square) ![Patrones](https://img.shields.io/badge/Patrones-10%20dise%C3%B1o-c44536?style=flat-square) ![Tests](https://img.shields.io/badge/Tests-99%20casos-c44536?style=flat-square) ![Next.js](https://img.shields.io/badge/Next.js-16.2.6-000000?style=flat-square&logo=next.js) ![React](https://img.shields.io/badge/React-19.2.4-61DAFB?style=flat-square&logo=react) ![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL%20%2B%20Realtime-3ECF8E?style=flat-square&logo=supabase)
+![Arquitectura](https://img.shields.io/badge/Arquitectura-Monolito%20Modular%20%2B%20Event--Driven-c44536?style=flat-square) ![Patrones](https://img.shields.io/badge/Patrones-10%20dise%C3%B1o-c44536?style=flat-square) ![Tests](https://img.shields.io/badge/Tests-140%20casos-c44536?style=flat-square) ![Next.js](https://img.shields.io/badge/Next.js-16.2.6-000000?style=flat-square&logo=next.js) ![React](https://img.shields.io/badge/React-19.2.4-61DAFB?style=flat-square&logo=react) ![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL%20%2B%20Realtime-3ECF8E?style=flat-square&logo=supabase)
 
 ---
 
@@ -20,7 +20,7 @@ En el sector gastronómico, la comunicación entre el salón y la cocina genera 
 
 | Módulo | Responsabilidad | Ruta |
 |---|---|---|
-| 🛒 **Cliente** | Catálogo público, carrito, pago Wompi | `/mesa/[uuid]` |
+| 🛒 **Cliente** | Catálogo público, carrito, pago Wompi, rastreo en tiempo real, confirmación de pago | `/mesa/[uuid]` |
 | 👨‍🍳 **Cocina** | Kanban de pedidos, CRUD de platos, cambio de estado | `/cocina` |
 | 🏍️ **Logística** | Panel de entregas, confirmación de entrega | `/logistica` |
 | ⚙️ **Admin** | Gestión de personal, QR de mesas, dashboard de ventas | `/admin` |
@@ -58,13 +58,13 @@ Integrados de forma coherente en 4 niveles arquitectónicos:
 
 ## 🧪 Pruebas
 
-**99 casos de prueba** implementados en Vitest + Testing Library:
+**140 casos de prueba** implementados en Vitest + Testing Library:
 
 | Tipo | Casos | Herramienta |
 |---|---|---|
-| Unitarias | 80 | Vitest |
+| Unitarias | 90 | Vitest |
 | Integración | 19 | Vitest + Supabase local |
-| Componentes | 1 | Testing Library + jsdom |
+| Componentes | 31 | Testing Library + jsdom |
 
 ### Lo que se prueba
 - Store del carrito (Zustand + localStorage)
@@ -74,10 +74,14 @@ Integrados de forma coherente en 4 niveles arquitectónicos:
 - Pub/Sub Realtime (canales, suscripciones, cancelación, DI con mocks)
 - CRUD platos → visibilidad cliente
 - Seguridad RLS (cliente anónimo, mesero, admin)
+- **Rastreo de pedido** (máquina de estados del modal: input → validando → rastreando → entregado, 10 tests)
+- **Server Action pública** (búsqueda por prefijo, case-insensitive, `#` prefix, 10 tests)
+- **Modal de rastreo** (render de 6 estados, callbacks, botones, 12 tests)
+- **Modal de pago exitoso** (checkmark, ID, correo, instrucciones, 8 tests)
 
 ```bash
-npm test          # Watch mode
-npm run test:run  # Single run
+bun test          # Watch mode (Vitest)
+bun run test:run  # Single run
 ```
 
 > [!NOTE]
@@ -147,6 +151,7 @@ npm run test:run  # Single run
 | Capa | Tecnología | Versión |
 |---|---|---|
 | Framework | Next.js (App Router + Turbopack) | 16.2.6 |
+| Runtime / PKM | Bun | 1.x |
 | UI | React + shadcn/ui + Tailwind CSS | 19.2.4 / latest / 4.x |
 | Base de datos | Supabase (PostgreSQL + RLS) | — |
 | ORM (schema) | Drizzle ORM | 0.45.2 |
@@ -176,16 +181,16 @@ src/
 │       └── admin/          # Dashboard + personal + mesas
 ├── components/
 │   ├── ui/                 # shadcn/ui (Button, Card, Dialog, Sheet...)
-│   ├── cliente/            # Catálogo, carrito, Wompi
+│   ├── cliente/            # Catálogo, carrito, Wompi, rastreo, pago exitoso
 │   ├── cocina/             # Kanban, formulario plato, stats
 │   ├── logistica/          # Lista de entregas
 │   ├── admin/              # Dashboard, personal, mesas, QR
 │   ├── staff/              # Sidebar, header, navegación
 │   └── compartidos/        # Toast, ImageDropzone, EstadoVacio
-├── hooks/                  # 20 hooks (useRealtime, usePedidos, usePago...)
+├── hooks/                  # 22 hooks (useRealtime, usePedidos, useRastrearPedido, usePago...)
 ├── stores/                 # Zustand (cart.ts)
 ├── lib/
-│   ├── acciones/           # 8 Server Actions (Repository pattern)
+│   ├── acciones/           # 9 Server Actions (Repository pattern)
 │   ├── servicios/          # Patrones: Facade, Simple Factory, Pub/Sub, Singleton
 │   ├── supabase/           # Clientes SSR + Browser + Admin
 │   ├── db/                 # Drizzle schema (solo migraciones)
@@ -204,7 +209,7 @@ src/
 # 1. Clonar e instalar
 git clone <repo-url>
 cd arquitectura
-npm install
+bun install
 
 # 2. Configurar variables de entorno (.env.local)
 NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
@@ -222,10 +227,10 @@ BREVO_FROM_EMAIL=no-reply@ekitchen.com
 npx drizzle-kit push
 
 # 4. Iniciar desarrollo
-npm run dev
+bun run dev
 
 # 5. Ejecutar tests
-npm test
+bun run test
 ```
 
 ---

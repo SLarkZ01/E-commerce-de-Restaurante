@@ -129,3 +129,36 @@
 - Cada mesa tiene un UUID único (`codigo_qr`)
 - El QR enlaza a `/mesa/{uuid}`
 - Se puede imprimir o descargar el QR generado
+
+---
+
+### HU-11: Rastrear estado del pedido
+**Como** cliente  
+**Quiero** poder consultar el estado de mi pedido en tiempo real ingresando su ID  
+**Para** saber si ya está siendo preparado, si está listo o si ya fue entregado
+
+**Criterios de aceptación:**
+- Botón "Rastrear Pedido" visible en la barra superior (`barraMesa`)
+- Modal con campo para ingresar el ID del pedido (el mismo que aparece en el correo y en la confirmación de pago)
+- Búsqueda por prefijo (8 caracteres) case-insensitive
+- Visualización del progreso en tiempo real: Pendiente → Preparando → Listo → Entregado
+- Stepper visual con los 4 estados, el actual resaltado
+- Mensaje dinámico descriptivo para cada estado (ej: "Tu pedido está en preparación. La cocina ya está trabajando en él.")
+- Animación del chefsito despidiéndose al llegar a "Entregado"
+- Indicador de carga animado (perrito) mientras se actualiza
+- Actualización automática vía WebSocket (Supabase Realtime), sin recargar
+
+---
+
+### HU-12: Confirmación visual de pago exitoso
+**Como** cliente  
+**Quiero** ver una confirmación clara después de pagar  
+**Para** tener la seguridad de que mi pedido fue registrado y mi dinero no se perdió
+
+**Criterios de aceptación:**
+- Modal centrado que aparece inmediatamente después de completar el pago con Wompi
+- Muestra: checkmark verde, "Hemos recibido tu pedido", ID del pedido
+- Indica que el recibo fue enviado al correo electrónico
+- Instrucciones para usar el botón "Rastrear Pedido"
+- Botón "Entendido" para cerrar
+- Funciona en mobile (responsive, sm:max-w-sm)

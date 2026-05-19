@@ -29,4 +29,15 @@ npm run test:run    # Single run
 npm run test:coverage # Con reporte de cobertura
 ```
 ### Estado actual
-99 tests implementados (16 archivos): 80 unitarios + 19 integración.
+100 tests implementados (16 archivos): 80 unitarios + 19 integración + 1 componente.
+
+### Áreas de prueba cubiertas
+- Store del carrito (Zustand + localStorage)
+- Máquina de estados del pedido (14 tests de transiciones válidas e inválidas)
+- Simple Factory de platos (11 tests por tipo y validación)
+- Facades de Wompi y Brevo (firmas SHA256, envío de emails, manejo de errores)
+- Pub/Sub Realtime (canales, suscripciones, cancelación, DI con mocks)
+- CRUD platos → visibilidad cliente
+- Seguridad RLS (cliente anónimo, mesero, admin)
+- **Rastreo de pedido** (máquina de estados del modal, búsqueda por ID)
+- **Confirmación de pago** (modal de éxito, flujo de checkout)
