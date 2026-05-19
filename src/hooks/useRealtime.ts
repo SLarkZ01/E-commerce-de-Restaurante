@@ -25,6 +25,8 @@ export function useRealtime(
   servicio?: IServicioRealtime
 ) {
   const callbackRef = useRef(callback);
+  const suscripcionRef = useRef<ISuscripcionRealtime | null>(null);
+  const generacionRef = useRef(0);
 
   useEffect(() => {
     callbackRef.current = callback;
@@ -34,7 +36,8 @@ export function useRealtime(
 
   useEffect(() => {
     let activo = true;
-    let suscripcionVigente: ISuscripcionRealtime | null = null;
+    generacionRef.current++;
+    const generacionActual = generacionRef.current;
 
     svc
       .suscribir(
@@ -46,17 +49,18 @@ export function useRealtime(
         }
       )
       .then((suscripcion) => {
-        if (activo) {
-          suscripcionVigente = suscripcion;
-        } else {
+        if (!activo || generacionRef.current !== generacionActual) {
           suscripcion.cancelar();
+          return;
         }
+        suscripcionRef.current = suscripcion;
       });
 
     return () => {
       activo = false;
-      if (suscripcionVigente) {
-        suscripcionVigente.cancelar();
+      if (suscripcionRef.current) {
+        suscripcionRef.current.cancelar();
+        suscripcionRef.current = null;
       }
     };
   }, [svc, tabla, evento, filtro]);

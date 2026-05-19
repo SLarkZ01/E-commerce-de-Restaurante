@@ -37,9 +37,13 @@ export class SupabaseRealtimeService implements IServicioRealtime {
   ): Promise<ISuscripcionRealtime> {
     const supabase = crearCliente();
 
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session?.access_token) {
-      supabase.realtime.setAuth(session.access_token);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.access_token) {
+        supabase.realtime.setAuth(session.access_token);
+      }
+    } catch {
+      // Sesión no disponible (cliente anónimo) — continuar sin auth
     }
 
     this.contadorCanales++;
@@ -65,14 +69,41 @@ export class SupabaseRealtimeService implements IServicioRealtime {
           callback(payload);
         }
       )
-      .subscribe((status: string) => {
+      .subscribe((status: string, err?: Error) => {
         if (status === "CHANNEL_ERROR") {
-          console.error(`[Realtime] Error en canal ${opciones.tabla}:`, status);
+          const msg = err?.message ?? status;
+          // Socket closure (1006) es normal en reconexiones y cambios de pestaña
+          if (msg.includes("socket closed")) {
+            console.warn(
+              `[Realtime] Reconexión en ${opciones.tabla} (${opciones.evento}${opciones.filtro ? `, ${opciones.filtro}` : ""}):`,
+              msg
+            );
+          } else {
+            console.error(
+              `[Realtime] Error en canal ${opciones.tabla} (${opciones.evento}${opciones.filtro ? `, ${opciones.filtro}` : ""}):`,
+              msg
+            );
+          }
+        }
+        if (status === "SUBSCRIBED") {
+          console.log(
+            `[Realtime] Canal ${opciones.tabla} (${opciones.evento}${opciones.filtro ? `, filtro: ${opciones.filtro}` : ""}) conectado`
+          );
+        }
+        if (status === "CLOSED") {
+          console.log(`[Realtime] Canal ${opciones.tabla} (${opciones.evento}) cerrado`);
+        }
+        if (status === "TIMED_OUT") {
+          console.warn(`[Realtime] Timeout en canal ${opciones.tabla} (${opciones.evento})`);
         }
       });
 
     const cancelar = async () => {
-      await supabase.removeChannel(canal).catch(() => {});
+      try {
+        await supabase.removeChannel(canal);
+      } catch {
+        // Canal ya removido o inválido
+      }
       this.canales.delete(canalNombre);
     };
 
