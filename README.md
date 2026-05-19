@@ -261,6 +261,7 @@ npm test
 |---|
 | Daniel Rivas Agredo |
 | Luisa Juliet Juaqui |
-| Deiby Alejandro Ramires |
-| David Urrutio Cero |
+| Mateo Rivera |
+| Deiby Alejandro Ramirez |
+| David Urrutia Ceron |
 | Thomas Montoya Magon |

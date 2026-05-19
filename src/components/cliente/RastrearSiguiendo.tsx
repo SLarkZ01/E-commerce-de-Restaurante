@@ -20,6 +20,17 @@ const ETIQUETA_ESTADO: Record<EstadoPedido, string> = {
   entregado: "Entregado",
 };
 
+const MENSAJE_ESTADO: Record<EstadoPedido, string> = {
+  pendiente:
+    "Tu pedido ya se ha registrado pero a\u00fan no se est\u00e1 preparando.",
+  preparando:
+    "Tu pedido est\u00e1 en preparaci\u00f3n. La cocina ya est\u00e1 trabajando en \u00e9l.",
+  listo:
+    "Tu pedido est\u00e1 listo. Pronto te lo entregar\u00e1n en la mesa.",
+  entregado:
+    "Tu pedido ha sido entregado. Disfruta.",
+};
+
 const COLOR_BARRA_ESTADO: Record<EstadoPedido, string> = {
   pendiente: "bg-slate-400",
   preparando: "bg-amber-500",
@@ -105,8 +116,8 @@ export function RastrearSiguiendo({ estadoActual }: RastrearSiguiendoProps) {
 
       <StepperProgreso estadoActual={estadoActual} />
 
-      <p className="text-xs text-texto-terciario text-center">
-        El estado se actualiza automáticamente cuando la cocina procese tu pedido.
+      <p className="text-xs text-texto-secundario text-center leading-relaxed bg-fondo-oscuro/20 rounded-lg px-3 py-2 transition-all">
+        {MENSAJE_ESTADO[estadoActual]}
       </p>
     </div>
   );

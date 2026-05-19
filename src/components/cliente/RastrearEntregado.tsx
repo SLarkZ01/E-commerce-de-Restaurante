@@ -9,10 +9,12 @@ interface RastrearEntregadoProps {
 
 export function RastrearEntregado({ onCerrar }: RastrearEntregadoProps) {
   return (
-    <div className="flex flex-col items-center gap-3 py-4">
-      <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center">
-        <CircleCheck className="w-7 h-7 text-green-600" />
-      </div>
+    <div className="flex flex-col items-center gap-3 py-2">
+      <img
+        src="/gifs/chefsito.gif"
+        alt="Chef despidiéndose"
+        className="w-28 h-28 object-contain"
+      />
       <div className="text-center">
         <p className="font-playfair text-lg font-bold text-green-700">
           Pedido Entregado
