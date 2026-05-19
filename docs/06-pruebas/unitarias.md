@@ -40,3 +40,25 @@
 |---|---|---|---|
 | U-18 | Despacho en mesa con mesaId | `mesa` | `mesaId` requerido, notifica al panel mesero |
 | U-19 | Despacho para llevar sin mesaId | `para_llevar` | `mesaId` nulo, notifica por email |
+
+### Rastreo de pedido (`src/hooks/useRastrearPedido.ts`)
+
+| ID | Caso | Resultado esperado |
+|---|---|---|
+| U-20 | Estado inicial es "input" | `estado === "input"` |
+| U-21 | Buscar con ID válido → transiciona a "rastreando" | `estado === "rastreando"` |
+| U-22 | Buscar con ID no existente → "no_encontrado" | `estado === "no_encontrado"` |
+| U-23 | Buscar con API fallida → "error" | `estado === "error"` |
+| U-24 | Pedido ya entregado → "entregado" directo | `estado === "entregado"` |
+| U-25 | Normaliza ID a mayúsculas | Mock llamado con uppercase |
+| U-26 | Reiniciar vuelve a "input" | `estado === "input"` |
+
+### Server Action pública (`src/lib/acciones/pedidoPublico.ts`)
+
+| ID | Caso | Resultado esperado |
+|---|---|---|
+| U-27 | Prefijo vacío → null | `null` |
+| U-28 | Prefijo válido → pedido encontrado | RPC llamada correctamente |
+| U-29 | Prefijo con # → limpia el # | Busca sin el # |
+| U-30 | Sin resultados → null | `null` |
+| U-31 | Error de Supabase → null + log | `null`, `console.error` llamado |

@@ -31,6 +31,7 @@ const SECCIONES: Record<string, { titulo: string; descripcion: string }> = {
   "/admin": { titulo: "Dashboard", descripcion: "Vista general del negocio" },
   "/admin/personal": { titulo: "Gestión de Personal", descripcion: "Administra el equipo del restaurante" },
   "/admin/mesas": { titulo: "Gestión de Mesas", descripcion: "Administra mesas y códigos QR" },
+  "/admin/asistente": { titulo: "Arianna AI", descripcion: "Tu asistente de cocina inteligente" },
 };
 
 export function HeaderStaff({ userEmail, userName, rol, collapsed, onToggle }: HeaderStaffProps) {

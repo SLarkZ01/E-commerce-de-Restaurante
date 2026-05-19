@@ -48,3 +48,13 @@ Las pruebas de integración requieren una instancia de Supabase local o un proye
 | I-16 | Cancelación al desmontar | 1. Montar hook<br>2. Desmontar antes de resolver promesa | `cancelar()` es invocado al resolver la promesa |
 | I-17 | usePedidosRealtime: INSERT pendiente | 1. Emitir INSERT con estado="pendiente" | `onNuevoPedido` llamado con el pedido + items |
 | I-18 | usePedidosRealtime: UPDATE entregado | 1. Emitir UPDATE con estado="entregado" | `onPedidoEntregado` llamado con el ID |
+
+### Flujo 6: Arianna AI — Chat con IA
+
+| ID | Caso | Pasos | Resultado esperado |
+|---|---|---|---|
+| I-19 | Enviar mensaje a Arianna | 1. Admin escribe pregunta<br>2. Hook envía a Route Handler | n8n recibe el mensaje con admin info |
+| I-20 | Respuesta en streaming | 1. n8n devuelve chunks<br>2. Cliente lee stream | Texto se acumula progresivamente |
+| I-21 | Historial de conversaciones | 1. Admin tiene conversaciones previas<br>2. Carga la página | Sidebar muestra lista de conversaciones |
+| I-22 | Editar mensaje y reenviar | 1. Admin edita un mensaje<br>2. Confirma edición | Mensaje anterior se borra, nuevo se envía |
+| I-23 | Eliminar mensaje | 1. Admin elimina un mensaje<br>2. Confirmación | Mensaje y posteriores desaparecen |

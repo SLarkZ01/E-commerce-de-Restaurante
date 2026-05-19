@@ -2,7 +2,7 @@
 
 **E-commerce de Restaurante con Menú Digital Interactivo**
 
-![Arquitectura](https://img.shields.io/badge/Arquitectura-Monolito%20Modular%20%2B%20Event--Driven-c44536?style=flat-square) ![Patrones](https://img.shields.io/badge/Patrones-10%20dise%C3%B1o-c44536?style=flat-square) ![Tests](https://img.shields.io/badge/Tests-140%20casos-c44536?style=flat-square) ![Next.js](https://img.shields.io/badge/Next.js-16.2.6-000000?style=flat-square&logo=next.js) ![React](https://img.shields.io/badge/React-19.2.4-61DAFB?style=flat-square&logo=react) ![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL%20%2B%20Realtime-3ECF8E?style=flat-square&logo=supabase)
+![Arquitectura](https://img.shields.io/badge/Arquitectura-Monolito%20Modular%20%2B%20Event--Driven-c44536?style=flat-square) ![Patrones](https://img.shields.io/badge/Patrones-11%20dise%C3%B1o-c44536?style=flat-square) ![Tests](https://img.shields.io/badge/Tests-140%20casos-c44536?style=flat-square) ![Next.js](https://img.shields.io/badge/Next.js-16.2.6-000000?style=flat-square&logo=next.js) ![React](https://img.shields.io/badge/React-19.2.4-61DAFB?style=flat-square&logo=react) ![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL%20%2B%20Realtime-3ECF8E?style=flat-square&logo=supabase)
 
 ---
 
@@ -23,7 +23,7 @@ En el sector gastronómico, la comunicación entre el salón y la cocina genera 
 | 🛒 **Cliente** | Catálogo público, carrito, pago Wompi, rastreo en tiempo real, confirmación de pago | `/mesa/[uuid]` |
 | 👨‍🍳 **Cocina** | Kanban de pedidos, CRUD de platos, cambio de estado | `/cocina` |
 | 🏍️ **Logística** | Panel de entregas, confirmación de entrega | `/logistica` |
-| ⚙️ **Admin** | Gestión de personal, QR de mesas, dashboard de ventas | `/admin` |
+| ⚙️ **Admin** | Gestión de personal, QR de mesas, dashboard de ventas, Arianna AI | `/admin` |
 
 Cada módulo tiene sus propias Server Actions, componentes y hooks. Comparten el schema de Supabase y el mismo deploy.
 
@@ -34,7 +34,7 @@ Cada módulo tiene sus propias Server Actions, componentes y hooks. Comparten el
 
 ---
 
-## 🧩 Patrones de Diseño (10)
+## 🧩 Patrones de Diseño (11)
 
 Integrados de forma coherente en 4 niveles arquitectónicos:
 
@@ -45,11 +45,12 @@ Integrados de forma coherente en 4 niveles arquitectónicos:
 | 3 | **State Machine** | Comportamiento | Transiciones válidas del ciclo de vida del pedido |
 | 4 | **Singleton** | Creacional | Instancia única global (Realtime + Carrito) |
 | 5 | **Simple Factory** | Creacional | Creación parametrizada de validadores por tipo de plato |
-| 6 | **Facade** | Estructural | APIs externas simplificadas (Wompi, Cloudinary, Brevo) |
+| 6 | **Facade** | Estructural | APIs externas simplificadas (Wompi, Cloudinary, Brevo, n8n) |
 | 7 | **Adapter** | Estructural | WebSocket de Supabase adaptado al ciclo de vida React |
 | 8 | **Proxy** | Estructural | Control de acceso a rutas del staff por autenticación y rol |
 | 9 | **Repository** | Arquitectónico | Acceso a datos encapsulado por dominio |
 | 10 | **DI** | Arquitectónico | Mock injection para testing sin base de datos |
+| 11 | **AI Agent** | Arquitectónico | Delegar consultas en lenguaje natural a un LLM que accede a la BD vía herramientas |
 
 > [!IMPORTANT]
 > Ver documentación completa de cada patrón en [`docs/04-patrones/indice.md`](docs/04-patrones/indice.md) — incluye diagramas Mermaid, referencias exactas al código y tests asociados.
@@ -201,10 +202,10 @@ src/
 │   ├── admin/              # Dashboard, personal, mesas, QR
 │   ├── staff/              # Sidebar, header, navegación
 │   └── compartidos/        # Toast, ImageDropzone, EstadoVacio
-├── hooks/                  # 22 hooks (useRealtime, usePedidos, useRastrearPedido, usePago...)
+├── hooks/                  # 23 hooks (useRealtime, usePedidos, useRastrearPedido, useAsistenteChat, usePago...)
 ├── stores/                 # Zustand (cart.ts)
 ├── lib/
-│   ├── acciones/           # 9 Server Actions: platos, pago, cocina, catalogo, categorias, admin, auth, imagenes, pedidoPublico
+│   ├── acciones/           # 10 Server Actions: platos, pago, cocina, catalogo, categorias, admin, auth, imagenes, pedidoPublico, asistente
 │   ├── servicios/          # Patrones: Facade, Simple Factory, Pub/Sub, Singleton
 │   ├── supabase/           # Clientes SSR + Browser + Admin
 │   ├── db/                 # Drizzle schema (solo migraciones)
@@ -236,6 +237,11 @@ CLOUDINARY_API_KEY=...
 CLOUDINARY_API_SECRET=...
 BREVO_API_KEY=xkeysib-...
 BREVO_FROM_EMAIL=no-reply@ekitchen.com
+
+# 3. (Opcional) Configurar n8n para Arianna AI
+N8N_ASISTENTE_WEBHOOK_URL=
+N8N_ASISTENTE_SECRET=
+N8N_ASISTENTE_HISTORIAL_URL=
 
 # 3. Ejecutar migraciones (Drizzle)
 npx drizzle-kit push

@@ -201,6 +201,29 @@ Todas las operaciones de lectura/escritura se hacen mediante Server Actions. Cad
 
 ---
 
+## Módulo Arianna AI — Chat con IA (solo admin)
+
+### `obtenerHistorial()`
+- **Archivo:** `src/lib/acciones/asistente.ts`
+- **Quién:** Admin (requiere sesión)
+- **Devuelve:** `{ conversaciones: Conversacion[], error?: string }`
+- **Qué hace:** Consulta el historial de conversaciones del admin actual desde n8n vía webhook.
+
+### `eliminarConversacionRemota(conversationId: string)`
+- **Archivo:** `src/lib/acciones/asistente.ts`
+- **Quién:** Admin
+- **Devuelve:** `{ exito: boolean, error?: string }`
+- **Qué hace:** Elimina una conversación del historial en n8n.
+
+### Route Handler: `POST /api/asistente/chat`
+- **Archivo:** `src/app/api/asistente/chat/route.ts`
+- **Quién:** Admin (verificado por proxy)
+- **Body:** `{ mensaje: string, conversationId?: string }`
+- **Respuesta:** SSE stream con la respuesta de Arianna desde n8n
+- **Qué hace:** Proxy entre el cliente y n8n. Transmite el mensaje a n8n y retransmite la respuesta en streaming hacia el cliente vía Server-Sent Events.
+
+---
+
 ## Servicios (patrones de diseño)
 
 ### `crearEstrategiaDespacho(tipoDespacho)`

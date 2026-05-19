@@ -18,6 +18,7 @@ El proyecto integra **10 patrones de diseño** distribuidos en 4 categorías, op
 | 8 | **Proxy** | Estructural | Capa HTTP | Proteger rutas del staff con autenticación y roles | `src/proxy.ts` |
 | 9 | **Repository** | Arquitectónico | Acceso a datos | Encapsular queries por dominio, separar BD de la UI | `src/lib/acciones/*.ts` |
 | 10 | **DI** | Arquitectónico | Infraestructura | Permitir testing con mocks inyectables | `src/hooks/useRealtime.ts` |
+| 11 | **AI Agent** | Arquitectónico | IA + Datos | Delegar consultas en lenguaje natural a un LLM que accede a la BD vía herramientas | `src/app/api/asistente/chat/route.ts`, `src/hooks/useAsistenteChat.ts`, workflow n8n |
 
 ---
 
@@ -28,7 +29,7 @@ El proyecto integra **10 patrones de diseño** distribuidos en 4 categorías, op
 | [Comportamiento](comportamiento/) | Pub/Sub, Guard, State Machine |
 | [Creacional](creacional/) | Singleton, Simple Factory |
 | [Estructural](estructural/) | Facade, Adapter, Proxy |
-| [Arquitectónico](arquitectonico/) | Repository, Dependency Injection |
+| [Arquitectónico](arquitectonico/) | Repository, Dependency Injection, AI Agent + Tool Calling |
 
 ---
 
@@ -42,6 +43,7 @@ El proyecto integra **10 patrones de diseño** distribuidos en 4 categorías, op
 | **Repository** | SRP | Cada archivo de acciones encapsula un dominio |
 | **Adapter** | ISP | `IServicioRealtime` expone solo los métodos necesarios |
 | **DI** | DIP | Componentes dependen de abstracciones (`IServicioRealtime`), no de implementaciones concretas |
+| **AI Agent** | SRP, DIP | El agente solo interpreta y consulta; la UI solo renderiza; el Route Handler solo transporta |
 
 ---
 

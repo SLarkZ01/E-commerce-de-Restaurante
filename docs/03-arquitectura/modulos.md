@@ -12,9 +12,10 @@ Cada módulo del monolito se implementa como un conjunto de archivos dentro de `
 | `/cocina` | Panel Kanban | **Cocinero, Admin** | 3 columnas: Pendiente / Preparando / Listo. Cards con nº mesa, **ID del pedido**, tiempo, platos, total. **Tiempo real vía Observer** | Ver pedidos nuevos en tiempo real, cambiar estado (Iniciar → Listo), ir a CRUD de platos |
 | `/cocina/platos` | CRUD de platos | **Cocinero, Admin** | Grid de platos con nombre, tipo, precio, estado (activo/inactivo). Botón "Nuevo Plato". Modal con Factory Method | Crear, activar/desactivar, eliminar platos. Subir imagen. Asignar categoría, tipo, ingredientes, precio |
 | `/logistica` | Panel de entregas | **Mesero, Admin** | Lista de pedidos en estado "Listo" con nº mesa, **ID del pedido**, tiempo, total. **Tiempo real vía Observer** | Ver pedidos listos, confirmar entrega física (marca "Entregado") |
-| `/admin` | Dashboard admin | **Admin** | Sidebar (Inicio, Personal, Mesas). KPIs de ventas, tabla de últimos pedidos | Ver resumen del día, navegar a secciones de gestión |
+| `/admin` | Dashboard admin | **Admin** | Sidebar (Inicio, Personal, Mesas, Arianna AI). KPIs de ventas, tabla de últimos pedidos | Ver resumen del día, navegar a secciones de gestión |
 | `/admin/personal` | Gestión de personal | **Admin** | Tabla con nombre, email, rol. Botón "+ Agregar Personal". Modal formulario con selector de rol | Crear, eliminar personal. Asignar rol (cocinero/mesero/admin) |
 | `/admin/mesas` | Gestión de mesas | **Admin** | Tabla con nº mesa, código QR. Botón "+ Agregar Mesa". Modal QR con vista previa y botón copiar | Crear mesa, ver/generar QR, copiar URL del menú, eliminar mesa |
+| `/admin/asistente` | Arianna AI | **Admin** | Chat con IA tipo ChatGPT. Sidebar de conversaciones, streaming de respuestas, historial persistente. Conexión a n8n para consultas sobre el restaurante vía Supabase. | Preguntar sobre ventas, personal, mesas, platos. Recibir respuestas en tiempo real con streaming SSE. |
 
 ## Reglas de acceso
 
@@ -80,6 +81,8 @@ src/
 │       ├── logistica/page.tsx    Panel de entregas (Observer)
 │       └── admin/
 │           ├── page.tsx          Dashboard
+│           ├── asistente/
+│           │   └── page.tsx      Arianna AI (chat con IA vía n8n + SSE)
 │           ├── personal/page.tsx Gestión de personal
 │           └── mesas/page.tsx    Gestión de mesas
 │
@@ -115,6 +118,7 @@ src/
 │   ├── useTiempoTranscurrido.ts  Tiempo relativo + urgencia
 │   ├── useMensajeTemporal.ts     Mensajes con auto-dismiss
 │   └── useLogin.ts               Flujo de autenticación
+│   └── useAsistenteChat.ts        Chat IA: streaming SSE + máquina de estados + historial
 │
 ├── stores/
 │   └── cart.ts                   Zustand: carrito (Singleton)
@@ -135,7 +139,8 @@ src/
 │   │   ├── admin.ts              CRUD personal y mesas (validación server-side)
 │   │   ├── auth.ts               Cerrar sesión
 │   │   ├── imagenes.ts           Subir imagen (MediaFacade)
-│   │   └── pedidoPublico.ts      Consulta pública de pedido por ID (rastreo anónimo)
+│   │   ├── pedidoPublico.ts      Consulta pública de pedido por ID (rastreo anónimo)
+│   │   └── asistente.ts          Historial de conversaciones de Arianna AI (n8n)
 │   ├── servicios/                 Patrones de diseño + integraciones
 │   │   ├── realtimeService.ts     Observer: IServicioRealtime + DIP
 │   │   ├── platoFactory.ts       Factory Method (3 tipos de plato)
