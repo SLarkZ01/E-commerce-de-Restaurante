@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { TrendingUp, ShoppingCart, CheckCircle2, Clock } from "lucide-react";
+import { TrendingUp, ShoppingCart, CheckCircle2, Clock, UtensilsCrossed, PackageCheck } from "lucide-react";
 import { useDashboardAdmin } from "@/hooks/useDashboardAdmin";
 import { formatearPrecio } from "@/lib/formato";
 import { TarjetaEstadistica } from "./tarjetaEstadistica";
@@ -46,7 +46,7 @@ export function DashboardAdmin({ statsIniciales }: DashboardAdminProps) {
   return (
     <div className="flex-1 overflow-y-auto">
       <div className="p-6 space-y-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-5">
           <TarjetaEstadistica
             icono={<TrendingUp className="w-5 h-5" />}
             iconoBg="bg-primario/10"
@@ -77,15 +77,27 @@ export function DashboardAdmin({ statsIniciales }: DashboardAdminProps) {
           />
           <TarjetaEstadistica
             icono={<Clock className="w-5 h-5" />}
-            iconoBg="bg-advertencia/10"
-            iconoColor="text-advertencia"
+            iconoBg="bg-info/10"
+            iconoColor="text-info"
             label="Pendientes"
             valor={estadisticas.pendientes.toString()}
-            subtitulo={
-              estadisticas.preparando > 0
-                ? `${estadisticas.preparando} en preparación, ${estadisticas.listos} listos`
-                : "En espera de atención"
-            }
+            subtitulo="En espera de atención"
+          />
+          <TarjetaEstadistica
+            icono={<UtensilsCrossed className="w-5 h-5" />}
+            iconoBg="bg-advertencia/10"
+            iconoColor="text-advertencia"
+            label="En preparación"
+            valor={estadisticas.preparando.toString()}
+            subtitulo="Cocina trabajando"
+          />
+          <TarjetaEstadistica
+            icono={<PackageCheck className="w-5 h-5" />}
+            iconoBg="bg-exito/10"
+            iconoColor="text-exito"
+            label="Listos"
+            valor={estadisticas.listos.toString()}
+            subtitulo="Para entregar o recoger"
           />
         </div>
 

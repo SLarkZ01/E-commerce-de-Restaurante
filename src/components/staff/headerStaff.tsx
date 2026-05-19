@@ -51,7 +51,8 @@ export function HeaderStaff({ userEmail, userName, rol, collapsed, onToggle }: H
     ? hora.toLocaleTimeString("es-CO", {
         hour: "2-digit",
         minute: "2-digit",
-      })
+        hour12: true,
+      }).replace(/\./g, "")
     : "--:--";
 
   const seccion = SECCIONES[pathname] ?? { titulo: "E-Kitchen", descripcion: "" };

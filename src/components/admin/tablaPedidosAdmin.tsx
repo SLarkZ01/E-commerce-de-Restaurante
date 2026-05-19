@@ -4,6 +4,7 @@ import { useMemo, useState, useEffect, memo, useCallback } from "react";
 import { Clock, ShoppingBag, ChevronLeft, ChevronRight } from "lucide-react";
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatearPrecio } from "@/lib/formato";
 import type { PedidoConDetalles } from "@/types";
 
@@ -29,7 +30,25 @@ const TiempoHace = memo(function TiempoHace({ creadoEn }: { creadoEn: string }) 
     return () => clearInterval(id);
   }, [creadoEn]);
 
-  return <>{texto}</>;
+  const horaExacta = useMemo(() => {
+    const fecha = new Date(creadoEn);
+    return fecha.toLocaleTimeString("es-CO", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    }).replace(/\./g, "");
+  }, [creadoEn]);
+
+  return (
+    <Tooltip>
+      <TooltipTrigger className="cursor-default">
+        <>{texto}</>
+      </TooltipTrigger>
+      <TooltipContent side="top">
+        <p className="text-xs">Creado: {horaExacta}</p>
+      </TooltipContent>
+    </Tooltip>
+  );
 });
 
 function formatearHace(creadoEn: string): string {

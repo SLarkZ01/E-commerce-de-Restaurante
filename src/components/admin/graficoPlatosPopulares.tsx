@@ -21,6 +21,16 @@ interface GraficoPlatosPopularesProps {
   datos: PlatoPopular[];
 }
 
+function abreviarMoneda(valor: number): string {
+  if (valor >= 1_000_000) {
+    return `$${(valor / 1_000_000).toFixed(valor % 1_000_000 === 0 ? 0 : 1)}M`;
+  }
+  if (valor >= 1_000) {
+    return `$${(valor / 1_000).toFixed(0)}k`;
+  }
+  return `$${valor}`;
+}
+
 export function GraficoPlatosPopulares({ datos }: GraficoPlatosPopularesProps) {
   const [metrica, setMetrica] = useState<"cantidad" | "total">("cantidad");
 
@@ -73,6 +83,10 @@ export function GraficoPlatosPopulares({ datos }: GraficoPlatosPopularesProps) {
         ticks: {
           color: "#78716C",
           font: { size: 11 },
+          callback: (v: string | number) =>
+            metrica === "total"
+              ? abreviarMoneda(Number(v))
+              : Number(v).toString(),
         },
         border: { display: false },
       },
@@ -91,7 +105,7 @@ export function GraficoPlatosPopulares({ datos }: GraficoPlatosPopularesProps) {
     <Card>
       <CardHeader className="flex-row items-center justify-between">
         <CardTitle className="text-base font-semibold text-texto">
-          Platos mas vendidos
+          Platos más vendidos
         </CardTitle>
         <Tabs
           value={metrica}
