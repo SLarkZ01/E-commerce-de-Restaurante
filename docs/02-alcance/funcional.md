@@ -11,6 +11,8 @@
 - Para completar la compra debe escanear el QR de su mesa → redirige a `/mesa/{uuid}` (el carrito se mantiene)
 - Pago confirmado desde la mesa asignada (Wompi ✅ implementado vía `PagoFacade`)
 - Recepción de comprobante por correo electrónico (Brevo ✅ implementado vía `NotificacionFacade`)
+- **Modal de confirmación de pago exitoso** tras completar la compra, con ID del pedido e instrucciones de rastreo
+- **Rastreo del pedido en tiempo real** ingresando el ID (recibido en el correo o en el modal de confirmación) — muestra el progreso pendiente → preparando → listo → entregado vía WebSocket
 
 ### Cocinero (Chef)
 - Panel de pedidos en tiempo real (columna por estado)
@@ -19,11 +21,13 @@
 - Subida de imágenes (Cloudinary ✅ implementado vía `MediaFacade`)
 - Cambio de estado del pedido: Pendiente → Preparando → Listo
 - Stats de cocina: contadores por estado y tiempo promedio
+- **Visualización del ID del pedido** en cada card del Kanban para trazabilidad
 - Los cambios en el catálogo se reflejan instantáneamente en el menú del cliente
 
 ### Mesero
 - Panel de platos listos para entrega
 - Visualización del número de mesa asociado al pedido
+- **Visualización del ID del pedido** en cada card de entrega para identificación
 - Confirmación de entrega física (estado: Entregado)
 - Cierre del ciclo del pedido
 

@@ -105,6 +105,9 @@ export function TarjetaPedidoKanban({
             </span>
           )}
         </div>
+        <p className="font-mono text-[10px] text-texto-terciario tracking-[0.15em] mt-1">
+          #{pedido.id.slice(0, 8).toUpperCase()}
+        </p>
       </CardHeader>
 
       <CardContent className="pb-2 px-3 sm:px-4">

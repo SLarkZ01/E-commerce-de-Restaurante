@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { usePedidos } from "@/hooks/usePedidos";
 import { useRealtime } from "@/hooks/useRealtime";
 import { useTiempoTranscurrido } from "@/hooks/useTiempoTranscurrido";
@@ -13,6 +13,10 @@ export function useEntregaPedidos(pedidosIniciales: PedidoConDetalles[]) {
   const [tipoMensaje, setTipoMensaje] = useState<"exito" | "error">("exito");
   const [confirmando, setConfirmando] = useState<string | null>(null);
   const { cambiarEstado } = usePedidos();
+
+  useEffect(() => {
+    setPedidos(pedidosIniciales);
+  }, [pedidosIniciales]);
   const { esUrgente } = useTiempoTranscurrido();
 
   useRealtime("pedidos", "UPDATE", useCallback(async (payload) => {

@@ -102,7 +102,7 @@ describe("useCheckoutWompi", () => {
     );
     expect(mockStore.vaciarCarrito).toHaveBeenCalled();
     expect(result.current.estado).toBe("exito");
-    expect(result.current.mensaje).toContain("ped-xyz");
+    expect(result.current.mensaje).toContain("PED-XYZ");
     expect(result.current.esExito).toBe(true);
   });
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { MensajeToast } from "@/components/compartidos/MensajeToast";
 import { KanbanColumna } from "./KanbanColumna";
 import { ESTADOS, CONFIG_ESTADO } from "./configEstados";
@@ -18,6 +18,10 @@ export function KanbanPedidos({ pedidosIniciales }: KanbanPedidosProps) {
   const [pedidos, setPedidos] = useState(pedidosIniciales);
   const [mensaje, setMensaje] = useState("");
   const { cambiarEstado } = usePedidos();
+
+  useEffect(() => {
+    setPedidos(pedidosIniciales);
+  }, [pedidosIniciales]);
 
   const pedidosPorEstado = useCallback(
     (estado: string) => pedidos.filter((p) => p.estado === estado),

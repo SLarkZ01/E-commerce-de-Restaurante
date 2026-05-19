@@ -51,6 +51,10 @@ export const EntregaCard = memo(function EntregaCard({
           <PedidoTimer creadoEn={pedido.creado_en} />
         </div>
 
+        <p className="font-mono text-[11px] text-texto-terciario tracking-[0.15em] mb-2">
+          #{pedido.id.slice(0, 8).toUpperCase()}
+        </p>
+
         {/* Indicador de urgencia sutil */}
         {urgente && (
           <div className="flex items-center gap-1.5 mb-3">

@@ -21,9 +21,19 @@ interface GraficoTendenciaSemanalProps {
 }
 
 function formatearFecha(fecha: string): string {
-  const dias = ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"];
+  const dias = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
   const [a, m, d] = fecha.split("-").map(Number);
   return dias[new Date(a, m - 1, d).getDay()];
+}
+
+function abreviarMoneda(valor: number): string {
+  if (valor >= 1_000_000) {
+    return `$${(valor / 1_000_000).toFixed(valor % 1_000_000 === 0 ? 0 : 1)}M`;
+  }
+  if (valor >= 1_000) {
+    return `$${(valor / 1_000).toFixed(0)}k`;
+  }
+  return `$${valor}`;
 }
 
 export function GraficoTendenciaSemanal({ datos }: GraficoTendenciaSemanalProps) {
@@ -58,6 +68,7 @@ export function GraficoTendenciaSemanal({ datos }: GraficoTendenciaSemanalProps)
         padding: 12,
         cornerRadius: 8,
         callbacks: {
+          title: (items: { label: string }[]) => items[0]?.label ?? "",
           label: (ctx: { raw: unknown }) => formatearPrecio(ctx.raw as number),
         },
       },
@@ -73,7 +84,7 @@ export function GraficoTendenciaSemanal({ datos }: GraficoTendenciaSemanalProps)
         ticks: {
           color: "#78716C",
           font: { size: 11 },
-          callback: (v: string | number) => `$${(Number(v) / 1000).toFixed(0)}k`,
+          callback: (v: string | number) => abreviarMoneda(Number(v)),
         },
         border: { display: false },
       },

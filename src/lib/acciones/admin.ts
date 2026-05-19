@@ -87,6 +87,13 @@ export async function crearPerfil(datos: {
 
 export async function eliminarPerfil(id: string) {
   const supabase = await crearCliente();
+
+  // Anular FKs en pedidos y platos para evitar FK violation
+  await Promise.all([
+    supabase.from("pedidos").update({ cocinero_id: null }).eq("cocinero_id", id),
+    supabase.from("platos").update({ creado_por: null }).eq("creado_por", id),
+  ]);
+
   const { error } = await supabase
     .from("perfiles")
     .delete()
@@ -98,6 +105,16 @@ export async function eliminarPerfil(id: string) {
 
 export async function crearMesa(numero: number) {
   const supabase = await crearCliente();
+
+  const { data: existente } = await supabase
+    .from("mesas")
+    .select("id")
+    .eq("numero", numero)
+    .maybeSingle();
+
+  if (existente) {
+    throw new Error(`Ya existe una mesa con el número ${numero}`);
+  }
 
   const { data, error } = await supabase
     .from("mesas")
@@ -112,6 +129,27 @@ export async function crearMesa(numero: number) {
 
 export async function eliminarMesa(id: string) {
   const supabase = await crearCliente();
+
+  // Verificar si hay pedidos activos en esta mesa
+  const { data: pedidosActivos } = await supabase
+    .from("pedidos")
+    .select("id")
+    .eq("mesa_id", id)
+    .neq("estado", "entregado")
+    .limit(1);
+
+  if (pedidosActivos && pedidosActivos.length > 0) {
+    throw new Error(
+      "No se puede eliminar la mesa porque tiene pedidos activos. Entrégalos primero."
+    );
+  }
+
+  // Anular mesa_id en pedidos históricos (entregados) para evitar FK violation
+  await supabase
+    .from("pedidos")
+    .update({ mesa_id: null })
+    .eq("mesa_id", id);
+
   const { error } = await supabase.from("mesas").delete().eq("id", id);
 
   if (error) throw new Error(error.message);

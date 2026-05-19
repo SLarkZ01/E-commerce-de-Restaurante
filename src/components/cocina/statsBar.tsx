@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Clock, AlertTriangle, CheckCircle2, Timer } from "lucide-react";
 import { useRealtime } from "@/hooks/useRealtime";
 import type { StatsCocina, Pedido } from "@/types";
@@ -12,6 +12,10 @@ interface StatsBarProps {
 
 export function StatsBar({ stats: statsIniciales }: StatsBarProps) {
   const [stats, setStats] = useState(statsIniciales);
+
+  useEffect(() => {
+    setStats(statsIniciales);
+  }, [statsIniciales]);
 
   // Observer: actualizar contadores en tiempo real
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

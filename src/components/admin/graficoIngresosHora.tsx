@@ -20,9 +20,26 @@ interface GraficoIngresosHoraProps {
   datos: IngresoPorHora[];
 }
 
+function formatearHoraAMPM(hora: number): string {
+  if (hora === 0) return "12:00 a.m.";
+  if (hora === 12) return "12:00 p.m.";
+  if (hora < 12) return `${hora}:00 a.m.`;
+  return `${hora - 12}:00 p.m.`;
+}
+
+function abreviarMoneda(valor: number): string {
+  if (valor >= 1_000_000) {
+    return `$${(valor / 1_000_000).toFixed(valor % 1_000_000 === 0 ? 0 : 1)}M`;
+  }
+  if (valor >= 1_000) {
+    return `$${(valor / 1_000).toFixed(0)}k`;
+  }
+  return `$${valor}`;
+}
+
 export function GraficoIngresosHora({ datos }: GraficoIngresosHoraProps) {
   const chartData = useMemo(() => {
-    const labels = datos.map((d) => `${d.hora.toString().padStart(2, "0")}:00`);
+    const labels = datos.map((d, i) => (i % 3 === 0 ? formatearHoraAMPM(d.hora) : ""));
     const values = datos.map((d) => d.total);
     return {
       labels,
@@ -52,6 +69,10 @@ export function GraficoIngresosHora({ datos }: GraficoIngresosHoraProps) {
         padding: 12,
         cornerRadius: 8,
         callbacks: {
+          title: (items: { dataIndex: number }[]) => {
+            const idx = items[0]?.dataIndex ?? 0;
+            return formatearHoraAMPM(idx);
+          },
           label: (ctx: { raw: unknown }) => formatearPrecio(ctx.raw as number),
         },
       },
@@ -59,7 +80,7 @@ export function GraficoIngresosHora({ datos }: GraficoIngresosHoraProps) {
     scales: {
       x: {
         grid: { display: false },
-        ticks: { color: "#78716C", font: { size: 11 } },
+        ticks: { color: "#78716C", font: { size: 10 } },
         border: { display: false },
       },
       y: {
@@ -67,7 +88,7 @@ export function GraficoIngresosHora({ datos }: GraficoIngresosHoraProps) {
         ticks: {
           color: "#78716C",
           font: { size: 11 },
-          callback: (v: string | number) => `$${(Number(v) / 1000).toFixed(0)}k`,
+          callback: (v: string | number) => abreviarMoneda(Number(v)),
         },
         border: { display: false },
       },

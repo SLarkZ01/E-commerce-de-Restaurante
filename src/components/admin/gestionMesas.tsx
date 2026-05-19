@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { QrCode } from "lucide-react";
 import type { Mesa } from "@/types";
 import { useGestionAdmin } from "@/hooks/useGestionAdmin";
@@ -31,6 +31,10 @@ export function GestionMesas({
 }) {
   const [mesas, setMesas] = useState(mesasIniciales);
   const [mostrandoQR, setMostrandoQR] = useState<Mesa | null>(null);
+
+  useEffect(() => {
+    setMesas(mesasIniciales);
+  }, [mesasIniciales]);
   const [mensaje, setMensaje] = useState("");
   const [tipoMensaje, setTipoMensaje] = useState<"exito" | "error">("exito");
   const { crearMesa, eliminarMesa } = useGestionAdmin();

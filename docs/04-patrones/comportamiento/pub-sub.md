@@ -33,6 +33,7 @@ Supabase Realtime actúa como **broker de eventos**. La base de datos (PostgreSQ
 | Panel Mesero | `pedidos` | UPDATE | `estado=eq.listo` | `useEntregaPedidos` | `listaEntregas.tsx` |
 | Menú Cliente | `platos` | INSERT, UPDATE, DELETE | — | `usePlatosRealtime` | Catálogo en `/mesa/[uuid]` |
 | Cliente (estado) | `pedidos` | UPDATE | `id=eq.{pedidoId}` | `useMiPedidoRealtime` | Tracking de pedido |
+| Cliente (rastreo) | `pedidos` | UPDATE | `id=eq.{pedidoId}` | `useRastrearPedido` → `useMiPedidoRealtime` | `rastrearPedidoModal.tsx` + subcomponentes |
 
 ---
 

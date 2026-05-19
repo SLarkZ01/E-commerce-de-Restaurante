@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Plus, Tags } from "lucide-react";
 import dynamic from "next/dynamic";
 import type { Plato, Categoria } from "@/types";
@@ -48,6 +48,15 @@ export function TablaPlatos({
 }: TablaPlatosProps) {
   const [platos, setPlatos] = useState(platosIniciales);
   const [categorias, setCategorias] = useState(categoriasIniciales);
+
+  // Sincronizar cuando el Server Component revalida los datos
+  useEffect(() => {
+    setPlatos(platosIniciales);
+  }, [platosIniciales]);
+
+  useEffect(() => {
+    setCategorias(categoriasIniciales);
+  }, [categoriasIniciales]);
 
   const { crear, actualizar, toggleDisponible, eliminar } = useGestionPlatos();
   const { crear: crearCat, eliminar: eliminarCat } = useGestionCategorias();

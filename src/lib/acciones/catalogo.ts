@@ -30,6 +30,17 @@ export async function crearPlato(datos: {
 
   const supabase = await crearCliente();
 
+  // Validar que la categoría exista si se proporcionó
+  if (datos.categoriaId) {
+    const { data: categoria } = await supabase
+      .from("categorias")
+      .select("id")
+      .eq("id", datos.categoriaId)
+      .maybeSingle();
+
+    if (!categoria) throw new Error("La categoría seleccionada no existe");
+  }
+
   const { data, error } = await supabase
     .from("platos")
     .insert({
@@ -107,7 +118,7 @@ export async function actualizarPlato(
   if (datos.tipoPlato !== undefined)
     actualizacion.tipo_plato = datos.tipoPlato;
   if (datos.categoriaId !== undefined)
-    actualizacion.categoria_id = datos.categoriaId;
+    actualizacion.categoria_id = datos.categoriaId === null ? null : datos.categoriaId;
   if (datos.ingredientes !== undefined)
     actualizacion.ingredientes = datos.ingredientes;
   if (datos.imagenUrl !== undefined)

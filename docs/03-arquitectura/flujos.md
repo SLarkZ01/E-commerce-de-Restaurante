@@ -74,28 +74,67 @@ sequenceDiagram
     RT-->>CL: Menú se actualiza sin recargar
     SA-->>UI: Confirmación
 
-## Flujo 4: Seguimiento del pedido del cliente (Observer)
+## Flujo 4: Seguimiento del pedido del cliente (Observer + Modal)
 
 ```mermaid
 sequenceDiagram
     actor CL as Cliente
-    participant APP as Next.js /mesa/[uuid]
+    participant MODAL as RastrearPedidoModal
+    participant HOOK as useRastrearPedido
+    participant SA as Server Action pedidoPublico
     participant RT as Supabase Realtime
     participant DB as Supabase DB
     participant CK as Chef (Panel Cocina)
 
-    CL->>APP: Pago completado, pedido creado
-    APP->>RT: useMiPedidoRealtime(pedidoId)
-    Note right of APP: Suscrito a UPDATE con filtro id=eq.{pedidoId}
+    CL->>MODAL: Abre "Rastrear Pedido" desde barra superior
+    CL->>MODAL: Ingresa ID del pedido (#66DF8CA2)
+    MODAL->>HOOK: manejarBuscar()
+    HOOK->>SA: obtenerEstadoPedidoPublico(id)
+    SA->>DB: SELECT pedido WHERE id::text ILIKE prefijo
+    DB-->>SA: Pedido encontrado (estado actual)
+    SA-->>HOOK: Pedido { id, estado }
+    HOOK->>RT: useMiPedidoRealtime(id)
+    Note right of HOOK: Suscrito a UPDATE con filtro id=eq.{pedidoId}
+    HOOK-->>MODAL: Estado "rastreando" + estado actual
 
     CK->>DB: UPDATE pedido SET estado = 'preparando'
     DB->>RT: Evento: cambio de estado
-    RT-->>APP: onEstadoCambiado("preparando")
-    APP-->>CL: "Tu pedido está siendo preparado"
+    RT-->>HOOK: onEstadoCambiado("preparando")
+    HOOK-->>MODAL: Actualiza stepper + mensaje dinámico
+    MODAL-->>CL: "Tu pedido está en preparación..."
 
     CK->>DB: UPDATE pedido SET estado = 'listo'
     DB->>RT: Evento: cambio de estado
-    RT-->>APP: onEstadoCambiado("listo")
-    APP-->>CL: "Tu pedido está listo"
+    RT-->>HOOK: onEstadoCambiado("listo")
+    HOOK-->>MODAL: Actualiza stepper + mensaje dinámico
+    MODAL-->>CL: "Tu pedido está listo. Pronto te lo entregarán."
+
+    CK->>DB: UPDATE pedido SET estado = 'entregado'
+    DB->>RT: Evento: cambio de estado
+    RT-->>HOOK: onEstadoCambiado("entregado")
+    HOOK-->>MODAL: Estado "entregado"
+    MODAL-->>CL: GIF chefsito despidiéndose + "Pedido Entregado"
+```
+
+## Flujo 5: Confirmación de pago exitoso (PagoExitoModal)
+
+```mermaid
+sequenceDiagram
+    actor CL as Cliente
+    participant CAR as CarritoContenido
+    participant WOM as Wompi Widget
+    participant SA as Server Action pago
+    participant CTX as PagoExitoProvider
+    participant MODAL as PagoExitoModal
+
+    CL->>CAR: Clic en "Pagar con Wompi"
+    CAR->>WOM: Abre widget de pago
+    CL->>WOM: Completa pago
+    WOM-->>CAR: onApprove(transactionID)
+    CAR->>SA: crearPedidoWompi(mesaUuid, items, total, transactionID)
+    SA-->>CAR: { pedidoId }
+    CAR->>CTX: mostrar(pedidoId)
+    CTX-->>MODAL: Abre modal con pedidoId
+    MODAL-->>CL: "Hemos recibido tu pedido" + ID + "Enviamos recibo a tu correo"
 ```
 ```
