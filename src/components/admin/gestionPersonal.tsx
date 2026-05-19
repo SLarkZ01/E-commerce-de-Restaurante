@@ -39,7 +39,7 @@ export function GestionPersonal({ perfilesIniciales }: { perfilesIniciales: Perf
       setMensaje("Personal agregado correctamente");
       setTipoMensaje("exito");
     } else {
-      setMensaje("Error al agregar personal");
+      setMensaje(resultado.error || "Error al agregar personal");
       setTipoMensaje("error");
     }
   };
