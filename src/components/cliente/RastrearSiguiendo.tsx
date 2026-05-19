@@ -98,7 +98,9 @@ export function RastrearSiguiendo({ estadoActual }: RastrearSiguiendoProps) {
   return (
     <div className="flex flex-col gap-5">
       <div className="flex justify-center py-2">
-        <CargandoPedido />
+        <div style={{ fontSize: "7px" }}>
+          <CargandoPedido />
+        </div>
       </div>
 
       <StepperProgreso estadoActual={estadoActual} />

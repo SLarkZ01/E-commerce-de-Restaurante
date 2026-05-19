@@ -1,8 +1,9 @@
 "use client";
 
-import { ShoppingBag, Check, AlertCircle } from "lucide-react";
+import { ShoppingBag, AlertCircle } from "lucide-react";
 import { formatearPrecio } from "@/lib/formato";
 import { useCheckoutWompi } from "@/hooks/useCheckoutWompi";
+import { usePagoExito } from "./PagoExitoProvider";
 import { CarritoItem } from "./CarritoItem";
 import { CarritoEstadoVacio } from "./CarritoEstadoVacio";
 import { CarritoSinMesa } from "./CarritoSinMesa";
@@ -18,12 +19,13 @@ interface CarritoContenidoProps {
 
 export function CarritoContenido({ mesaUuid, abierto, variant = "sheet", onAntesDeAbrir }: CarritoContenidoProps) {
   const tieneMesa = mesaUuid !== null;
+  const { mostrar } = usePagoExito();
 
   const {
     datosWompi, mensaje, esExito,
     items, total, actualizarCantidad, eliminarItem,
     manejarExito, manejarError,
-  } = useCheckoutWompi(mesaUuid, abierto);
+  } = useCheckoutWompi(mesaUuid, abierto, mostrar);
 
   const cantidadTotal = items.reduce((sum, i) => sum + i.cantidad, 0);
   const itemsLength = items.length;
@@ -91,26 +93,11 @@ export function CarritoContenido({ mesaUuid, abierto, variant = "sheet", onAntes
         )}
       </div>
 
-      {/* Mensaje de estado */}
-      {mensaje && (
-        <div
-          className={`mx-5 mb-2 px-4 py-3 rounded-xl text-sm text-center flex items-center justify-center gap-2 ${
-            esExito ? "bg-exito/10 text-exito" : "bg-error/10 text-error"
-          }`}
-        >
-          {esExito ? (
-            <Check className="w-4 h-4 shrink-0" />
-          ) : (
-            <AlertCircle className="w-4 h-4 shrink-0" />
-          )}
-          <span>
-            {mensaje}
-            {esExito && (
-              <span className="block text-xs mt-1 opacity-80">
-                Usa el botón <strong>Rastrear Pedido</strong> en la barra superior para seguir su estado.
-              </span>
-            )}
-          </span>
+      {/* Mensaje de error */}
+      {mensaje && !esExito && (
+        <div className="mx-5 mb-2 px-4 py-3 rounded-xl text-sm text-center flex items-center justify-center gap-2 bg-error/10 text-error">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>{mensaje}</span>
         </div>
       )}
 

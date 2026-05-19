@@ -6,7 +6,11 @@ import { usePago, type DatosWompi } from "@/hooks/usePago";
 
 export type EstadoCheckout = "idle" | "preparando" | "listo" | "pagando" | "exito" | "error";
 
-export function useCheckoutWompi(mesaUuid: string | null, abierto: boolean) {
+export function useCheckoutWompi(
+  mesaUuid: string | null,
+  abierto: boolean,
+  onPagoExitoso?: (pedidoId: string) => void
+) {
   const tieneMesa = mesaUuid !== null;
 
   const storeItems = usarCarrito((s) => s.items);
@@ -76,7 +80,8 @@ export function useCheckoutWompi(mesaUuid: string | null, abierto: boolean) {
     setEstado("exito");
     setMensaje(`Pedido #${resultado.pedidoId?.slice(0, 8).toUpperCase()} creado correctamente`);
     setEsExito(true);
-  }, [tieneMesa, mesaUuid, items, total, confirmarPedido, vaciarCarrito]);
+    onPagoExitoso?.(resultado.pedidoId ?? "");
+  }, [tieneMesa, mesaUuid, items, total, confirmarPedido, vaciarCarrito, onPagoExitoso]);
 
   const manejarError = useCallback((msg: string) => {
     setEstado("error");
