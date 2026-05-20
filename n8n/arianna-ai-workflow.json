@@ -1,0 +1,105 @@
+{
+  "id": "RU5K23pv3Fjwv0EF",
+  "name": "Arianna AI",
+  "description": "Chat con IA para E-Kitchen. Recibe preguntas en lenguaje natural, consulta Supabase vía herramientas y responde con streaming SSE.",
+  "active": true,
+  "webhookUrl": "https://n8n-production-ac7dc.up.railway.app/webhook/ari",
+  "webhookTestUrl": "https://n8n-production-ac7dc.up.railway.app/webhook-test/ari",
+  "connections": {
+    "Recibir mensaje": { "main": [[{ "node": "Arianna AI", "type": "main", "index": 0 }]] },
+    "Groq (via OpenAI)": { "ai_languageModel": [[{ "node": "Arianna AI", "type": "ai_languageModel", "index": 0 }]] },
+    "Memoria de chat": { "ai_memory": [[{ "node": "Arianna AI", "type": "ai_memory", "index": 0 }]] },
+    "Think": { "ai_tool": [[{ "node": "Arianna AI", "type": "ai_tool", "index": 0 }]] },
+    "Consultar Supabase": { "ai_tool": [[{ "node": "Arianna AI", "type": "ai_tool", "index": 0 }]] }
+  },
+  "nodes": [
+    {
+      "id": "7b77e14a-abb6-4d2d-9527-7d1e7b9b7765",
+      "name": "Recibir mensaje",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [0, 112],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ari",
+        "responseMode": "streaming"
+      }
+    },
+    {
+      "id": "936d6f69-6177-452b-b7b5-ad6aa019e324",
+      "name": "Arianna AI",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [352, 112],
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.mensaje }}",
+        "options": {
+          "systemMessage": "Eres Arianna, la asistente de E-Kitchen, un restaurante colombiano. Eres cálida, cercana y profesional. Hablas como una persona real: natural, con frases completas, sin sonar a robot.\n\nAl responder:\n- Piensa antes de escribir. Usa la herramienta Think para planificar tu respuesta.\n- Nunca digas dos veces lo mismo en una misma respuesta. Si ya te presentaste, no te vuelvas a presentar.\n- Si el usuario pregunta varias cosas, responde todo junto en una sola respuesta, sin repetirte.\n- Para listas de personal: \"Tenemos a Daniel como administrador, Gustov es nuestro cocinero...\"\n- Para ventas: \"Hoy vendiste $64.000 en una Bandeja Paisa. La entregó Linguini en la mesa 1.\"\n- Para platos: \"Lo más pedido fue la Bandeja Paisa. También salieron empanadas y jugos.\"\n- Nunca pongas títulos ni encabezados. Responde directo.\n- Nunca inventes datos. Si no hay información: \"Todavía no hay nada registrado.\"\n- Precios en COP ($64.000). Nunca muestres UUIDs.\n- Nombra los platos por su nombre, no por precio (\"Bandeja Paisa\", no \"un plato de $32.000\").\n- Adáptate al tono del usuario. Si es cariñoso, sé cálida. Si es directo, sé directa.",
+          "maxIterations": 5,
+          "enableStreaming": true
+        }
+      }
+    },
+    {
+      "id": "792732bf-80c1-4b90-87d6-310716121ec2",
+      "name": "Groq (via OpenAI)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [224, 336],
+      "parameters": {
+        "model": { "mode": "id", "value": "llama-3.3-70b-versatile" },
+        "responsesApiEnabled": false,
+        "options": {
+          "baseURL": "https://api.groq.com/openai/v1",
+          "temperature": 0.3,
+          "maxTokens": 2048
+        }
+      },
+      "credentials": { "type": "openAiApi", "name": "Groq" }
+    },
+    {
+      "id": "1f2b0c1d-b045-4014-b3d0-f02a98b31d8c",
+      "name": "Memoria de chat",
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.4,
+      "position": [352, 336],
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "conversationId",
+        "tableName": "n8n_chat_histories_arianna",
+        "contextWindowLength": 3
+      },
+      "credentials": { "type": "postgres", "name": "Railway PostgreSQL" }
+    },
+    {
+      "id": "ecc483d3-882f-4650-8ea2-722f62252ce5",
+      "name": "Think",
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1.1,
+      "position": [480, 336],
+      "parameters": {
+        "description": "Antes de responder, piensa: ¿ya dije esto antes en esta misma respuesta? ¿qué datos necesito consultar? ¿cómo lo digo en una sola frase sin repetirme? Usa esta herramienta para planificar tu respuesta antes de escribirla."
+      }
+    },
+    {
+      "id": "587c60b5-a706-4f94-bb62-0dc61ff1549c",
+      "name": "Consultar Supabase",
+      "type": "n8n-nodes-base.supabaseTool",
+      "typeVersion": 1,
+      "position": [608, 336],
+      "parameters": {
+        "resource": "row",
+        "operation": "getAll",
+        "tableId": "={{ $fromAI('table', 'Tabla: pedidos, platos, mesas, perfiles, categorias, items_pedido') }}",
+        "returnAll": true
+      },
+      "credentials": { "type": "supabaseApi", "name": "Supabase E-Kitchen" }
+    }
+  ],
+  "envVars": {
+    "N8N_ASISTENTE_WEBHOOK_URL": "https://n8n-production-ac7dc.up.railway.app/webhook/ari",
+    "N8N_ASISTENTE_SECRET": "",
+    "N8N_ASISTENTE_HISTORIAL_URL": ""
+  }
+}

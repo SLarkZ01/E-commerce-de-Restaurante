@@ -116,6 +116,8 @@ export function useAsistenteChat() {
                   const parsed = JSON.parse(limpia);
                   if (parsed.type === "item" && parsed.content !== undefined) {
                     acumulado += parsed.content;
+                  } else if (parsed.type === "error") {
+                    throw new Error(parsed.content ?? "Error en n8n");
                   } else if (parsed.type === "end" || parsed.type === "begin") {
                     continue;
                   } else if (parsed.output !== undefined) {

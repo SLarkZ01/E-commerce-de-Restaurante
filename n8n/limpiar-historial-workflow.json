@@ -1,0 +1,36 @@
+{
+  "id": "I8MxejyfwoExh0O8",
+  "name": "Limpiar historial Arianna",
+  "description": "Borra mensajes de chat de Arianna más viejos de 5 minutos para evitar saturar la memoria y no exceder los límites de tokens de Groq.",
+  "active": true,
+  "schedule": "Cada 5 minutos",
+  "connections": {
+    "Cada 5 minutos": { "main": [[{ "node": "Limpiar mensajes viejos", "type": "main", "index": 0 }]] }
+  },
+  "nodes": [
+    {
+      "id": "3482f9bc-bd37-47c0-9d4f-850634827034",
+      "name": "Cada 5 minutos",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [0, 0],
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "minutes", "minutesInterval": 5 }]
+        }
+      }
+    },
+    {
+      "id": "53c2f87d-d963-40b4-b90b-dd8c9b49afb3",
+      "name": "Limpiar mensajes viejos",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [224, 0],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "DELETE FROM n8n_chat_histories_arianna WHERE created_at < NOW() - INTERVAL '5 minutes'"
+      },
+      "credentials": { "type": "postgres", "name": "Railway PostgreSQL" }
+    }
+  ]
+}
