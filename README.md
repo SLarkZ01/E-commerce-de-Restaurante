@@ -23,7 +23,7 @@ En el sector gastronómico, la comunicación entre el salón y la cocina genera 
 | 🛒 **Cliente** | Catálogo público, carrito, pago Wompi, rastreo en tiempo real, confirmación de pago | `/mesa/[uuid]` |
 | 👨‍🍳 **Cocina** | Kanban de pedidos, CRUD de platos, cambio de estado | `/cocina` |
 | 🏍️ **Logística** | Panel de entregas, confirmación de entrega | `/logistica` |
-| ⚙️ **Admin** | Gestión de personal, QR de mesas, dashboard de ventas, Arianna AI | `/admin` |
+| ⚙️ **Admin** | Gestión de personal, QR de mesas, dashboard de ventas, Arianna AI (chat con IA vía Groq + n8n) | `/admin` |
 
 Cada módulo tiene sus propias Server Actions, componentes y hooks. Comparten el schema de Supabase y el mismo deploy.
 
@@ -167,6 +167,7 @@ bun run test:run  # Single run
 | Emails | Brevo | API v3 SMTP |
 | Automatización | n8n (self-hosted en Railway) | latest |
 | LLM | Groq (Llama 3.3 70B) | API compatible OpenAI |
+| Contenedores | Docker + Docker Compose | latest |
 | Testing | Vitest + Testing Library + jsdom | 4.1.6 / 16.3.2 / 29.1.1 |
 
 > [!NOTE]
@@ -224,6 +225,11 @@ src/
 │   └── redirecciones.ts    # RUTA_POR_ROL, RUTAS_POR_ROL
 ├── types/                  # Interfaces TypeScript del dominio
 └── proxy.ts                # Auth + protección de rutas (Proxy pattern)
+
+n8n/                        # Workflows de n8n (respaldo)
+├── arianna-ai-workflow.json    # Workflow principal (6 nodos: Webhook → AI Agent + Groq + Supabase)
+└── limpiar-historial-workflow.json # Cleanup automático cada 5 min
+docker-compose.yml          # n8n + PostgreSQL (desarrollo local)
 ```
 
 ---
@@ -253,13 +259,18 @@ N8N_ASISTENTE_WEBHOOK_URL=
 N8N_ASISTENTE_SECRET=
 N8N_ASISTENTE_HISTORIAL_URL=
 
-# 4. Ejecutar migraciones (Drizzle)
+# 4. (Opcional) Iniciar n8n local con Docker
+docker compose up -d
+# n8n disponible en http://localhost:5678
+# Importar workflows desde n8n/
+
+# 5. Ejecutar migraciones (Drizzle)
 bunx drizzle-kit push
 
-# 5. Iniciar desarrollo
+# 6. Iniciar desarrollo
 bun run dev
 
-# 6. Ejecutar tests
+# 7. Ejecutar tests
 bun run test
 ```
 
