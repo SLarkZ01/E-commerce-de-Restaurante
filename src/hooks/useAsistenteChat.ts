@@ -7,6 +7,10 @@ import { obtenerHistorial } from "@/lib/acciones/asistente";
 
 type EstadoChat = "idle" | "enviando" | "recibiendo" | "error";
 
+function stripFunctionTags(text: string): string {
+  return text.replace(/<function=[^>]*>\{[^}]*\}<\/function>/g, "").trim();
+}
+
 export function useAsistenteChat() {
   const store = usarAsistenteStore();
 
@@ -134,13 +138,13 @@ export function useAsistenteChat() {
                 }
               }
             }
-            setTextoStreaming(acumulado);
-            store.actualizarUltimoMensaje(cId, acumulado);
+            setTextoStreaming(stripFunctionTags(acumulado));
+            store.actualizarUltimoMensaje(cId, stripFunctionTags(acumulado));
           }
         } else {
           acumulado = await res.text();
-          setTextoStreaming(acumulado);
-          store.actualizarUltimoMensaje(cId, acumulado);
+          setTextoStreaming(stripFunctionTags(acumulado));
+          store.actualizarUltimoMensaje(cId, stripFunctionTags(acumulado));
         }
 
         setEstado("idle");
