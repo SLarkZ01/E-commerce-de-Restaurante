@@ -87,7 +87,7 @@ export function FormularioLogin({
             value={password}
             onChange={(e) => onPasswordChange(e.target.value)}
             required
-            placeholder="••••••••"
+            placeholder="Ingresa tu contraseña"
             className="h-11 sm:h-[52px] pl-9 sm:pl-10 pr-11 sm:pr-12 text-sm rounded-xl sm:rounded-2xl border-borde bg-fondo/60 hover:bg-fondo/80 focus:bg-white transition-all duration-300 focus-visible:ring-2 focus-visible:ring-primario/20 focus-visible:border-primario/60 shadow-sm"
           />
           <button

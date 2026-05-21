@@ -47,9 +47,6 @@ export function PantallaLogin() {
           className="absolute inset-0 bg-cover bg-no-repeat bg-left-top"
           style={{ backgroundImage: "url('/images/background/fondo2.webp')" }}
         />
-        <div className="absolute inset-0 bg-white/40" />
-        <div className="absolute inset-0 bg-gradient-to-br from-primario/10 via-transparent to-acento/15" />
-        <div className="absolute inset-y-0 right-0 md:w-[55%] lg:w-[52%] bg-gradient-to-r from-transparent via-white/10 to-white/30 pointer-events-none" />
         <div className="md:w-[45%] lg:w-[48%]" />
         <div className="md:w-[55%] lg:w-[52%] relative flex items-center justify-start pl-4 md:pl-6 lg:pl-8 pr-4 md:pr-8 lg:pr-10">
           <div className="relative z-10">{tarjeta}</div>
