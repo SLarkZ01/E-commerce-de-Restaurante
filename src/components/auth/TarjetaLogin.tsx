@@ -115,7 +115,7 @@ function CopyRight() {
   return (
     <p
       className="text-center text-[11px] sm:text-xs text-texto/85 font-medium mt-3 sm:mt-5 animate-fade-in"
-      style={{ animationDelay: "0.7s", textShadow: "0 1px 3px rgba(255,255,255,0.7)" }}
+      style={{ animationDelay: "0.7s", textShadow: "0 1px 3px rgba(255, 255, 255, 0.7)" }}
     >
       © 2026 E-Kitchen. Todos los derechos reservados.
     </p>
