@@ -52,6 +52,7 @@ export async function crearPedidoWompi(
       estado: "pendiente",
       total,
       correo_cliente: email,
+      wompi_transaccion_id: wompiTransactionId,
     });
 
   if (errPedido) {

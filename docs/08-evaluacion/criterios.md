@@ -19,7 +19,7 @@ La latencia en la comunicación entre salón y cocina en restaurantes. E-Kitchen
 Ver análisis completo en [`docs/07-riesgos/analisis.md`](07-riesgos/analisis.md). Principales riesgos mitigados:
 
 - **Venta de platos agotados:** menú en tiempo real (Pub/Sub via Supabase Realtime)
-- **Pedidos duplicados:** idempotencia vía `wompi_transaccion_id` (columna `paypal_pedido_id` en BD)
+- **Pedidos duplicados:** idempotencia vía `wompi_transaccion_id` (columna `wompi_transaccion_id` en BD)
 - **Acceso no autorizado:** RLS + autenticación solo para staff
 
 ---

@@ -70,7 +70,7 @@ export const pedidos = pgTable("pedidos", {
   estado: estadoPedidoEnum("estado").notNull().default("pendiente"),
   correoCliente: text("correo_cliente"),
   total: decimal("total", { precision: 10, scale: 0 }).notNull(),
-  paypalPedidoId: text("paypal_pedido_id"),
+  wompiTransaccionId: text("wompi_transaccion_id"),
   cocineroId: uuid("cocinero_id").references(() => perfiles.id),
   creadoEn: timestamp("creado_en").defaultNow().notNull(),
   actualizadoEn: timestamp("actualizado_en").defaultNow().notNull(),
@@ -79,7 +79,7 @@ export const pedidos = pgTable("pedidos", {
 export const itemsPedido = pgTable("items_pedido", {
   id: uuid("id").primaryKey().defaultRandom(),
   pedidoId: uuid("pedido_id")
-    .references(() => pedidos.id)
+    .references(() => pedidos.id, { onDelete: "cascade" })
     .notNull(),
   platoId: uuid("plato_id")
     .references(() => platos.id)

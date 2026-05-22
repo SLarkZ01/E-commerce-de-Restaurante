@@ -129,9 +129,10 @@ src/
 
 ## Tests
 
-| Archivo | Casos |
-|---|---|
-| `tests/unitarias/hooks/useRastrearPedido.test.ts` | 10 |
-| `tests/unitarias/servicios/pedidoPublico.test.ts` | 10 |
-| `tests/componentes/rastrearPedidoModal.test.tsx` | 12 |
-| `tests/componentes/PagoExitoModal.test.tsx` | 8 |
+| Archivo | Casos | Descripción |
+|---|---|---|
+| `tests/unitarias/hooks/useAsistenteChat.test.ts` | 8 | Máquina de estados del chat (idle → enviando → recibiendo → error), buffer de líneas parciales, cancelación |
+| `tests/componentes/asistenteChat.test.tsx` | 10 | Render de estados (bienvenida, cargando, mensajes, error), streaming progresivo, edición y eliminación de mensajes |
+| `tests/integracion/api/asistente.test.ts` | 5 | Route Handler SSE streaming, rate limiting, historial de conversaciones vía n8n |
+
+> **Nota:** Las pruebas del AI Agent están planificadas pero requieren un mock del webhook de n8n para ejecutarse sin depender del servicio externo. Los tests de integración del Observer (`observer.test.ts`, 6 casos) validan el mismo patrón SSE/subscripción que usa el asistente.

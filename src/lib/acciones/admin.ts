@@ -198,7 +198,7 @@ export async function obtenerStatsAdmin(): Promise<StatsAdmin> {
       estado: pedido.estado as EstadoPedido,
       correo_cliente: (pedido.correo_cliente as string) ?? null,
       total: Number(pedido.total ?? 0),
-      paypal_pedido_id: (pedido.paypal_pedido_id as string) ?? null,
+      wompi_transaccion_id: (pedido.wompi_transaccion_id as string) ?? null,
       cocinero_id: (pedido.cocinero_id as string) ?? null,
       creado_en: pedido.creado_en as string,
       actualizado_en: pedido.actualizado_en as string,

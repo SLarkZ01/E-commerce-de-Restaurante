@@ -48,7 +48,7 @@ En el sector gastronómico, la eficiencia en la toma de pedidos y la comunicaci�
 
 ## 4. Patrones de Diseño Integrados
 
-Para garantizar la escalabilidad y mantenibilidad, se han aplicado **10 patrones de diseño** en 4 niveles arquitectónicos. Ver detalle completo en [`docs/04-patrones/indice.md`](04-patrones/indice.md).
+Para garantizar la escalabilidad y mantenibilidad, se han aplicado **11 patrones de diseño** en 4 niveles arquitectónicos. Ver detalle completo en [`docs/04-patrones/indice.md`](04-patrones/indice.md).
 
 **Comportamiento:**
 1. **Pub/Sub:** Supabase Realtime como broker de eventos. Desacopla publicadores (DB) de suscriptores (hooks React).
@@ -67,6 +67,7 @@ Para garantizar la escalabilidad y mantenibilidad, se han aplicado **10 patrones
 **Arquitectónico:**
 9. **Repository:** 8 Server Actions que encapsulan el acceso a datos por dominio (catálogo, cocina, admin, etc.).
 10. **Dependency Injection:** `IServicioRealtime` inyectable en hooks, permitiendo testing con mocks sin base de datos.
+11. **AI Agent + Tool Calling:** Chat con IA (Arianna) vía n8n + Groq. El LLM consulta Supabase mediante herramientas y responde en streaming SSE al admin.
 
 ---
 

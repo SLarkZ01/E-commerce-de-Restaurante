@@ -50,7 +50,7 @@ stateDiagram-v2
     Entregado --> [*]
 ```
 
-Ver reglas completas de transiciones (válidas e inválidas) en [`docs/04-patrones/state.md`](../04-patrones/state.md).
+Ver reglas completas de transiciones (válidas e inválidas) en [`docs/04-patrones/comportamiento/state-machine.md`](../04-patrones/comportamiento/state-machine.md).
 
 ## Flujo 3: Actualización del catálogo (Observer Pattern)
 

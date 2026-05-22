@@ -11,7 +11,7 @@
 | [`01-problema/`](01-problema/contexto.md) | Descripción del problema y contexto del sector gastronómico |
 | [`02-alcance/`](02-alcance/) | Alcance funcional por rol e historias de usuario formales |
 | [`03-arquitectura/`](03-arquitectura/) | Decisión arquitectónica, diagramas, módulos, esquema BD, API y flujos de datos |
-| [`04-patrones/`](04-patrones/) | 10 patrones de diseño en 4 categorías: comportamiento, creacional, estructural, arquitectónico |
+| [`04-patrones/`](04-patrones/) | 11 patrones de diseño en 4 categorías: comportamiento, creacional, estructural, arquitectónico |
 | [`05-tecnologico/`](05-tecnologico/stack.md) | Stack tecnológico con versiones y justificación |
 | [`06-pruebas/`](06-pruebas/) | Estrategia de testing, casos unitarios, integración y carga |
 | [`07-riesgos/`](07-riesgos/analisis.md) | Análisis de riesgos y mitigaciones |

@@ -90,10 +90,10 @@ src/
 │   ├── ui/                       shadcn/ui (Button, Dialog, Sheet, etc.)
 │   ├── cliente/                  Menú, catálogo, carrito, rastreo, pago exitoso
 │   ├── cocina/                   Kanban, formulario, tarjetas, gestor categorías
-│   ├── logistica/                Lista de entregas
-│   ├── admin/                    Gestión personal, gestión mesas
+│   ├── logistica/                Lista de entregas, cards, timers, skeletons
+│   ├── admin/                    Dashboard, gestión personal, gestión mesas, Arianna AI, gráficos
 │   ├── staff/                    Sidebar, header, layout, navegación
-│   └── compartidos/              MensajeToast, EstadoVacio, ImageDropzone
+│   └── compartidos/              MensajeToast, EstadoVacio, ImageDropzone, DishThumbnails, MesaBadge
 │
 ├── hooks/                        Lógica de cliente (capa intermedia)
 │   ├── useGestionPlatos.ts       CRUD platos + imagen (Factory Method)
@@ -117,16 +117,18 @@ src/
 │   ├── useActiveRoute.ts         Ruta activa (sidebar)
 │   ├── useTiempoTranscurrido.ts  Tiempo relativo + urgencia
 │   ├── useMensajeTemporal.ts     Mensajes con auto-dismiss
-│   └── useLogin.ts               Flujo de autenticación
+│   ├── useLogin.ts               Flujo de autenticación
 │   └── useAsistenteChat.ts        Chat IA: streaming SSE + máquina de estados + historial
 │
 ├── stores/
-│   └── cart.ts                   Zustand: carrito (Singleton)
+│   ├── cart.ts                   Zustand: carrito (Singleton)
+│   └── asistente.ts              Zustand: conversaciones Arianna AI (persistencia local)
 │
 ├── lib/
 │   ├── supabase/
 │   │   ├── server.ts             Cliente SSR (Server Actions)
-│   │   └── browser.ts            Cliente navegador (Realtime)
+│   │   ├── browser.ts            Cliente navegador (Realtime)
+│   │   └── admin.ts              Cliente admin (service role, operaciones privilegedas)
 │   ├── db/
 │   │   ├── schema.ts             Drizzle schema (solo referencia)
 │   │   └── index.ts              Conexión Drizzle (migraciones)

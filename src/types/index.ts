@@ -53,7 +53,7 @@ export interface Pedido {
   estado: EstadoPedido;
   correo_cliente: string | null;
   total: number;
-  paypal_pedido_id: string | null;
+  wompi_transaccion_id: string | null;
   cocinero_id: string | null;
   creado_en: string;
   actualizado_en: string;

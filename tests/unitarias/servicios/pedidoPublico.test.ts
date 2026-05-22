@@ -21,7 +21,7 @@ const pedidoMock = {
   estado: "pendiente",
   correo_cliente: "cliente@test.com",
   total: 11000,
-  paypal_pedido_id: null,
+  wompi_transaccion_id: null,
   cocinero_id: null,
   creado_en: "2026-05-18T22:52:29.822915",
   actualizado_en: "2026-05-18T22:52:29.822915",

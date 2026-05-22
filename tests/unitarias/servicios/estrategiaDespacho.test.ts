@@ -15,7 +15,7 @@ const pedidoBase: Pedido = {
   estado: "listo",
   correo_cliente: null,
   total: 28000,
-  paypal_pedido_id: null,
+  wompi_transaccion_id: null,
   cocinero_id: null,
   creado_en: new Date().toISOString(),
   actualizado_en: new Date().toISOString(),
