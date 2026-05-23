@@ -1,0 +1,1063 @@
+\documentclass[12pt,a4paper]{article}
+
+% ------------ PAQUETES ------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{geometry}
+\geometry{left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm}
+
+% ------------ FUENTES ------------
+\usepackage{newpxtext,newpxmath}
+
+% ------------ COLORES ------------
+\usepackage[x11names,table]{xcolor}
+
+% --- Colores por integrante ---
+\definecolor{thomas}{RGB}{59,130,246}
+\definecolor{daniel}{RGB}{139,92,246}
+\definecolor{deiby}{RGB}{34,197,94}
+\definecolor{david}{RGB}{249,115,22}
+\definecolor{luisa}{RGB}{236,72,153}
+\definecolor{mateo}{RGB}{239,68,68}
+
+% --- Colores E-Kitchen ---
+\definecolor{ekitchen}{RGB}{196,69,54}
+\definecolor{ekitchenLight}{RGB}{255,250,246}
+\definecolor{ekitchenAccent}{RGB}{212,165,116}
+\definecolor{ekitchenText}{RGB}{45,42,38}
+\definecolor{ekitchenSuccess}{RGB}{101,163,13}
+
+% ------------ DIAGRAMAS (TikZ) ------------
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, babel}
+
+% ------------ CAJAS Y CÓDIGO ------------
+\usepackage{listings}
+\usepackage{tcolorbox}
+\tcbuselibrary{listings,breakable,skins}
+
+% Colores para sintaxis de código
+\definecolor{codekeyword}{RGB}{139,92,246}    % morado: palabras clave
+\definecolor{codestring}{RGB}{101,163,13}     % verde: strings
+\definecolor{codecomment}{RGB}{120,113,108}    % gris: comentarios
+\definecolor{codefunc}{RGB}{59,130,246}        % azul: funciones
+\definecolor{codenumber}{RGB}{212,165,116}     % dorado: números
+\definecolor{codetype}{RGB}{34,197,94}         % verde fuerte: tipos/interfaces
+\definecolor{codebg}{RGB}{253,251,247}         % fondo código
+
+% Definir lenguaje TypeScript para listings
+\lstdefinelanguage{TypeScript}{
+  keywords={export, import, from, const, let, var, function, return, if, else,
+            new, this, class, extends, implements, async, await, throw, try, catch,
+            finally, static, public, private, protected, readonly, default, null,
+            undefined, true, false, typeof, instanceof, in, of, for, while, do,
+            switch, case, break, continue, super, yield, void, never, any, unknown},
+  keywordstyle=\color{codekeyword}\bfseries,
+  ndkeywords={interface, type, enum, string, number, boolean, Record, Promise, Array,
+              async, await, useState, useEffect, useCallback, useRef},
+  ndkeywordstyle=\color{codetype}\bfseries,
+  sensitive=true,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{codecomment}\itshape,
+  stringstyle=\color{codestring},
+  morestring=[b]{'},
+  morestring=[b]{"},
+  morestring=[b]{`}
+}
+
+% Entorno codeblock con TypeScript resaltado
+\newtcblisting{codeblock}{
+  listing engine=listings,
+  colback=codebg,
+  colframe=ekitchen!60,
+  left=3mm, right=3mm, top=2mm, bottom=2mm,
+  boxrule=0.5pt,
+  arc=2mm,
+  listing options={
+    language=TypeScript,
+    basicstyle=\ttfamily\footnotesize,
+    breaklines=true,
+    aboveskip=0pt,
+    belowskip=0pt,
+    numbers=none,
+    showstringspaces=false,
+    upquote=true,
+    tabsize=2,
+    keywordstyle=\color{codekeyword}\bfseries,
+    commentstyle=\color{codecomment}\itshape,
+    stringstyle=\color{codestring},
+    identifierstyle=\color{ekitchenText},
+  }
+}
+\newtcolorbox{tipbox}{
+  colback=ekitchenLight!95,
+  colframe=ekitchenAccent!70,
+  left=3mm, right=3mm, top=2mm, bottom=2mm,
+  boxrule=0.5pt,
+  arc=2mm,
+  before skip=10pt,
+  after skip=10pt,
+  fontupper=\small
+}
+
+% ------------ TABLAS ------------
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{array}
+
+% ------------ LISTAS ------------
+\usepackage{enumitem}
+
+% ------------ CABECERAS Y PIE ------------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.5pt}
+\rhead{\color{ekitchen}\small E-Kitchen — Arquitectura de Software}
+\lhead{\color{ekitchen}\small Proyecto Final}
+\cfoot{\color{ekitchen}\small\thepage}
+\lfoot{\color{ekitchen}\small Arquitectura de Software}
+\rfoot{\color{ekitchen}\small Mayo 2026}
+
+% ------------ FORMATO DE SECCIONES ------------
+\usepackage{titlesec}
+\titleformat{\section}
+  {\normalfont\Large\bfseries}
+  {\rule[-4pt]{4pt}{20pt}\hspace{10pt}}
+  {0em}
+  {}
+  [\vspace{8pt}]
+\titleformat{name=\section,numberless}
+  {\normalfont\Large\bfseries}
+  {\rule[-4pt]{4pt}{20pt}\hspace{10pt}}
+  {0em}
+  {}
+  [\vspace{8pt}]
+\titleformat{\subsection}
+  {\normalfont\large\bfseries}
+  {\vrule width 3pt\enspace}
+  {0em}
+  {}
+  [\vspace{6pt}]
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries}
+  {}
+  {0em}
+  {}
+  [\vspace{4pt}]
+
+% ------------ ESPACIADO ------------
+\usepackage{parskip}
+
+% ------------ COMANDOS PERSONALIZADOS ------------
+% Badge circular con inicial y color (robusto para poder usarse en \section)
+\DeclareRobustCommand{\badge}[2]{%
+  \begin{tikzpicture}[baseline=-2mm]
+    \node[circle, fill=#1, text=white, font=\bfseries\small, minimum size=7.5mm, inner sep=0pt] {#2};
+  \end{tikzpicture}%
+}
+% Nombre del expositor en su color
+\newcommand{\expone}[2]{%
+  \vspace{4pt}
+  {\color{#1}\textbf{\small #2}}%
+  \vspace{4pt}
+}
+
+% ------------ HIPERVÍNCULOS ------------
+\hypersetup{
+  colorlinks=true,
+  linkcolor=ekitchen,
+  urlcolor=ekitchen!80,
+  citecolor=ekitchen!60
+}
+
+\begin{document}
+
+% ============ PORTADA ============
+\begin{titlepage}
+\pagecolor{ekitchen}
+\color{white}
+\begin{center}
+\vspace*{2.2cm}
+
+\begin{tikzpicture}
+  \node[circle, fill=thomas, minimum size=10.5mm] at (0,0)   {};
+  \node[circle, fill=daniel, minimum size=10.5mm] at (1.6,0) {};
+  \node[circle, fill=deiby,  minimum size=10.5mm] at (3.2,0) {};
+  \node[circle, fill=david,  minimum size=10.5mm] at (4.8,0) {};
+  \node[circle, fill=luisa,  minimum size=10.5mm] at (6.4,0) {};
+  \node[circle, fill=mateo,  minimum size=10.5mm] at (8.0,0) {};
+\end{tikzpicture}
+
+\vspace{1.2cm}
+{\fontsize{30}{36}\selectfont\bfseries E-Kitchen\par}
+\vspace{0.5cm}
+{\fontsize{16}{20}\selectfont Menú Digital Interactivo\par para Restaurantes\par}
+\vspace{1.2cm}
+{\large Documento de Exposición\par Arquitectura de Software\par}
+\rule{0.6\linewidth}{0.4pt}\\[1cm]
+
+{\large \textbf{Integrantes}}\\[0.5cm]
+\begin{tabular}{rl}
+\textcolor{thomas}{\large\textbullet} & \textcolor{thomas}{\large Thomas Montoya Magon} \\[0.3cm]
+\textcolor{daniel}{\large\textbullet} & \textcolor{daniel}{\large Daniel Rivas Agredo} \\[0.3cm]
+\textcolor{deiby}{\large\textbullet}  & \textcolor{deiby}{\large Deiby Alejandro Ramirez} \\[0.3cm]
+\textcolor{david}{\large\textbullet}  & \textcolor{david}{\large David Urrutia Ceron} \\[0.3cm]
+\textcolor{luisa}{\large\textbullet}  & \textcolor{luisa}{\large Luisa Juliet Juaqui} \\[0.3cm]
+\textcolor{mateo}{\large\textbullet}  & \textcolor{mateo}{\large Mateo Rivera}
+\end{tabular}
+
+\vspace{1.2cm}
+{\large \textbf{Docente:} JOSE GUERLLY LARA ANAYA}\\[1.2cm]
+{\large Arquitectura de Software — Séptimo Semestre}\\
+{\large 21 de mayo de 2026}
+\end{center}
+\vspace*{1.5cm}
+\end{titlepage}
+\nopagecolor
+
+% =================================
+\tableofcontents
+\newpage
+
+% ======================================================================
+% THOMAS — AZUL
+% ======================================================================
+\renewcommand{\headrule}{{\color{thomas}\hrule width\headwidth height\headrulewidth}}
+\renewcommand{\footrule}{{\color{thomas}\hrule width\headwidth height\footrulewidth}}
+\titleformat{\section}
+  {\color{thomas}\normalfont\Large\bfseries}
+  {\color{thomas}\rule[-4pt]{4pt}{20pt}\hspace{10pt}}
+  {0em}
+  {}
+  [\vspace{8pt}]
+
+\section[Arquitectura Base y Evaluación]{\badge{thomas}{T} \; Arquitectura Base y Evaluación}
+\expone{thomas}{Expone: Thomas Montoya Magon}
+
+\subsection{¿Por qué construimos E-Kitchen así?}
+
+Cuando arrancamos este proyecto teníamos \textbf{una semana y dos días} para tener algo funcionando. No era un ejercicio de papel: el sistema tenía que andar, recibir pagos reales, sincronizar cocina con meseros y no caerse. Seis personas trabajando al mismo tiempo, sin pisarse, entregando a tiempo.
+
+\subsubsection{La decisión: Monolito Modular + Event-Driven}
+
+Imaginen un restaurante real. No tiene sentido poner una cocina distinta para cada mesa, ni un mesero por cada plato. Todo comparte el mismo espacio, pero cada quien tiene su estación. Eso mismo hicimos con el código.
+
+\begin{table}[H]
+\centering
+\rowcolors{2}{ekitchenLight!95}{white}
+\begin{tabular}{p{3cm} p{5.5cm} p{5.5cm}}
+\toprule
+\rowcolor{thomas!20}\textbf{¿Qué evaluamos?} & \textbf{Monolito Modular} & \textbf{Microservicios} \\
+\midrule
+Tiempo para arrancar & \textbf{1 día} (un solo proyecto) & 4--5 días (orquestación, service discovery) \\
+Tamaño del equipo & \textbf{6 personas} (mismo repo) & 10+ personas (equipos por servicio) \\
+Costo operativo & \$0 (Vercel hobby) & \$50+/mes (múltiples deploys) \\
+Complejidad & \textbf{Baja}: todo en un solo deploy & Alta: comunicación entre servicios \\
+Escalar después & Migrable: cada módulo puede salir a su propio servicio & Ya es escalable, pero overkill ahora \\
+\bottomrule
+\end{tabular}
+\caption{Por qué elegimos monolito modular para este contexto}
+\end{table}
+
+\subsubsection{¿Y por qué ``Event-Driven''?}
+
+Normalmente cuando alguien pide algo en una app, el otro lado tiene que andar preguntando ``¿ya llegó? ¿ya llegó?'' cada cierto tiempo. Eso se llama \textbf{polling} y es ineficiente.
+
+Nosotros lo resolvimos al revés: la base de datos \textbf{avisa} cuando algo cambia. Supabase —nuestro PostgreSQL en la nube— tiene una funcionalidad llamada \textit{Realtime} que, cada vez que alguien inserta o modifica algo, le manda una señal por WebSocket a todos los que están escuchando.
+
+\begin{tipbox}
+\textbf{¿Por qué esto es genial?} Cuando un cliente paga desde su mesa, el pedido aparece \textbf{solo} en el panel de cocina. Nadie tuvo que recargar la página. Nadie tuvo que gritar ``¡Pedido nuevo!''. La base de datos lo gritó por nosotros, en milisegundos.
+\end{tipbox}
+
+\subsection{Los cuatro módulos del sistema}
+
+Pensamos el restaurante como cuatro estaciones de trabajo que comparten el mismo cerebro (la base de datos):
+
+\begin{table}[H]
+\centering
+\rowcolors{2}{ekitchenLight!95}{white}
+\begin{tabular}{p{2.5cm} p{5cm} p{5cm}}
+\toprule
+\rowcolor{thomas!20}\textbf{Módulo} & \textbf{¿Qué hace?} & \textbf{¿Quién lo usa?} \\
+\midrule
+Menú Cliente & Catálogo de platos, carrito, pago con Wompi & Comensales (sin registro) \\
+Cocina & Panel de pedidos entrantes, cambios de estado, CRUD de platos & Chefs \\
+Logística & Pedidos listos para entregar, confirmación de entrega & Meseros \\
+Administración & Gestión de personal, QR de mesas, dashboard, chat con IA & Administrador \\
+\bottomrule
+\end{tabular}
+\caption{Los cuatro módulos del monolito}
+\end{table}
+
+\subsection{Diagrama de arquitectura}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  node distance=10mm and 8mm,
+  caja/.style={rounded corners=3pt, draw, minimum width=28mm, minimum height=9mm, align=center, font=\small},
+]
+% Clientes (fila superior)
+\node[caja, fill=thomas!12, draw=thomas!55] (qr) {Código QR\\por mesa};
+\node[caja, fill=thomas!12, draw=thomas!55, right=of qr] (menu) {Menú Digital\\React + Zustand};
+\node[caja, fill=thomas!12, draw=thomas!55, right=of menu] (cart) {Carrito\\localStorage};
+\node[caja, fill=thomas!12, draw=thomas!55, right=of cart] (wompi) {Wompi\\Widget};
+
+% Módulos (fila media)
+\node[caja, fill=ekitchen!10, draw=ekitchen!55, minimum width=80mm, below=8mm of menu, xshift=12mm] (mods) {Módulos: Cliente · Cocina · Logística · Admin};
+
+% Servicios externos (fila inferior)
+\node[caja, fill=ekitchenAccent!12, draw=ekitchenAccent!65, below=8mm of mods, xshift=-28mm] (supa) {Supabase\\BD + Auth + Realtime};
+\node[caja, fill=ekitchenAccent!12, draw=ekitchenAccent!65, right=of supa] (cloud) {Cloudinary\\Imágenes};
+\node[caja, fill=ekitchenAccent!12, draw=ekitchenAccent!65, right=of cloud] (brevo) {Brevo\\Emails};
+
+% Flechas
+\draw[->, >=Stealth, thick] (qr) -- (menu);
+\draw[->, >=Stealth, thick] (menu) -- (cart);
+\draw[->, >=Stealth, thick] (cart) -- (wompi);
+\draw[->, >=Stealth, thick] (mods.south west) -- (supa.north);
+\draw[->, >=Stealth, thick] (mods.south) -- (cloud.north);
+\draw[->, >=Stealth, thick] (mods.south east) -- (brevo.north);
+
+% Realtime (punteada)
+\draw[dashed, thomas!80] (supa.east) -- ++(2,0) |- (mods.east) node[pos=0.25, right, font=\tiny] {WebSocket};
+
+\node[font=\footnotesize\bfseries, thomas, above=4mm of mods] {Next.js 16 — Monolito Modular};
+\end{tikzpicture}
+\caption{Arquitectura de E-Kitchen: un solo deploy, cuatro módulos, comunicación en tiempo real vía Supabase}
+\end{figure}
+
+\begin{tipbox}
+\textbf{La gran ventaja:} No hay RabbitMQ, no hay Kafka, no hay Redis. Supabase hace de base de datos, de sistema de autenticación \textbf{y} de bus de eventos. Tres pájaros de un tiro. Eso nos ahorró días de configuración.
+\end{tipbox}
+
+\subsection{Evaluación: las seis preguntas clave}
+
+\subsubsection{1. ¿Qué problema resuelve?}
+
+\textbf{El cuello de botella entre el salón y la cocina.} En un restaurante tradicional el mesero anota en papel, camina hasta cocina, deja la comanda, vuelve a preguntar si está listo, y el cliente no sabe nada hasta que le sirven. E-Kitchen elimina todo ese papel: el cliente pide desde su celular escaneando un QR, el pedido aparece solo en cocina, y el mesero solo se mueve cuando el plato está físicamente listo.
+
+\subsubsection{2. ¿Qué riesgo evita?}
+
+\begin{table}[H]
+\centering
+\rowcolors{2}{ekitchenLight!95}{white}
+\small
+\begin{tabular}{p{3.2cm} p{1.2cm} p{1.2cm} p{6cm}}
+\toprule
+\rowcolor{thomas!20}\textbf{Riesgo} & \textbf{Prob.} & \textbf{Imp.} & \textbf{¿Cómo lo evitamos?} \\
+\midrule
+Vender platos agotados & Alta & Medio & El menú se actualiza en tiempo real; si un chef desactiva un plato, desaparece al instante del celular del cliente \\
+Pago duplicado & Media & Alto & Guardamos el ID de transacción de Wompi; si ya existe, no se crea otro pedido \\
+Acceso no autorizado & Baja & Crítico & Cada fila en la BD tiene reglas RLS; un mesero no puede tocar platos, un cliente no puede ver pedidos ajenos \\
+Caída de Wompi & Baja & Alto & Si Wompi no responde, el pedido no se crea; el cliente no pierde plata \\
+\bottomrule
+\end{tabular}
+\caption{Los riesgos más críticos y cómo los mitigamos}
+\end{table}
+
+\subsubsection{3. ¿Qué costo añade?}
+
+\textbf{\$0 mensuales fijos.} Todos los servicios que usamos tienen capa gratuita generosa:
+
+\begin{table}[H]
+\centering
+\rowcolors{2}{ekitchenLight!95}{white}
+\begin{tabular}{p{3cm} p{4cm} p{5.5cm}}
+\toprule
+\rowcolor{thomas!20}\textbf{Servicio} & \textbf{Costo} & \textbf{¿Hasta cuándo aguanta gratis?} \\
+\midrule
+Supabase & \$0 & 500 MB de base de datos, 50 mil usuarios \\
+Cloudinary & \$0 & 25 GB de imágenes \\
+Brevo & \$0 & 300 correos al día \\
+Vercel & \$0 & Plan Hobby, suficiente para una sucursal \\
+Wompi & Solo comisión & 3.5\% + \$1,000 COP por cada pago \\
+\bottomrule
+\end{tabular}
+\caption{Costos operativos — el proyecto empieza en \$0/mes}
+\end{table}
+
+\subsubsection{4. ¿Cómo se probará?}
+
+Tenemos \textbf{140 pruebas automatizadas} que cubren tres frentes:
+\begin{itemize}[itemsep=2pt]
+  \item \textbf{Unitarias (90):} Cada función por separado — ¿el carrito suma bien? ¿la fábrica de platos crea lo correcto? ¿una transición inválida es bloqueada?
+  \item \textbf{Integración (19):} Flujos reales — crear plato y ver que aparezca en el menú; cambiar estado y que el mesero lo vea.
+  \item \textbf{Componentes (31):} Que los modales se abran, los botones funcionen, el checkout no se rompa.
+\end{itemize}
+
+\subsubsection{5. ¿Cómo crecerá después?}
+
+\begin{itemize}[itemsep=2pt]
+  \item \textbf{¿Más sucursales?} Cada una tiene su propia base de datos Supabase. El módulo de administración se extrae a un servicio aparte.
+  \item \textbf{¿Nuevo tipo de plato?} Agregamos una clase nueva al Factory, sin tocar lo demás.
+  \item \textbf{¿Otra pasarela de pago?} Creamos una fachada nueva y la intercambiamos.
+  \item \textbf{¿Mucho tráfico?} Las Server Actions migran a Route Handlers con edge runtime; Redis para el catálogo.
+\end{itemize}
+
+\subsubsection{6. ¿En qué es mejor que lo que ya existe?}
+
+\begin{table}[H]
+\centering
+\rowcolors{2}{ekitchenLight!95}{white}
+\small
+\begin{tabular}{p{2.8cm} p{4.8cm} p{5cm}}
+\toprule
+\rowcolor{thomas!20}\textbf{Alternativa} & \textbf{Problema} & \textbf{E-Kitchen lo resuelve} \\
+\midrule
+Menú QR estático (PDF) & No sabe si un plato se agotó & Catálogo en vivo: si cocina lo desactiva, desaparece \\
+Apps de delivery (Rappi) & 20--30\% de comisión + no integran cocina & Sin comisión externa; cocina y mesero en el mismo sistema \\
+TPV tradicional & Solo caja, no habla con cocina & Trazabilidad completa: mesa $\rightarrow$ cocina $\rightarrow$ entrega \\
+WhatsApp & Pedidos se pierden, cero estructura & Cada pedido tiene ID, estado, ítems y auditoría \\
+\bottomrule
+\end{tabular}
+\caption{Comparativa con soluciones que ya hay en el mercado}
+\end{table}
+
+\newpage
+
+% ======================================================================
+% DANIEL — MORADO
+% ======================================================================
+\renewcommand{\headrule}{{\color{daniel}\hrule width\headwidth height\headrulewidth}}
+\renewcommand{\footrule}{{\color{daniel}\hrule width\headwidth height\footrulewidth}}
+\titleformat{\section}
+  {\color{daniel}\normalfont\Large\bfseries}
+  {\color{daniel}\rule[-4pt]{4pt}{20pt}\hspace{10pt}}
+  {0em}
+  {}
+  [\vspace{8pt}]
+
+\section[Problema, Contexto y Alcance Funcional]{\badge{daniel}{D} \; Problema, Contexto y Alcance Funcional}
+\expone{daniel}{Expone: Daniel Rivas Agredo}
+
+\subsection{El problema que atacamos}
+
+Imaginen esto: es viernes en la noche, el restaurante está lleno. Un mesero corre entre seis mesas, anotando pedidos en una libreta. Llega a cocina, deja el papel. El chef tiene cinco comandas apiladas y no sabe cuál entró primero. El mesero vuelve cada tres minutos a preguntar ``¿ya salió la hamburguesa?''. Mientras tanto, el cliente en la mesa 4 lleva veinte minutos esperando y no tiene idea de si su pedido se perdió o está en camino.
+
+Ese caos es \textbf{real} y pasa en miles de restaurantes todos los días. La comunicación entre salón y cocina sigue dependiendo de papel, memoria y gritos.
+
+\subsection{Lo que necesita un restaurante moderno}
+
+\begin{itemize}[itemsep=2pt]
+  \item \textbf{Catálogo vivo:} Si la cocina se queda sin aguacate, los platos que lo llevan deben desaparecer del menú \textbf{ya}, no cuando el mesero se acuerde de avisar.
+  \item \textbf{Trazabilidad:} El cliente quiere saber si su plato está pendiente, preparándose o listo. Sin preguntarle a nadie.
+  \item \textbf{Roles claros:} El chef cocina. El mesero entrega. El admin gestiona. Cada quien ve solo lo que necesita.
+  \item \textbf{Cero fricción:} Sin registrarse, sin descargar apps, sin crear cuentas. Llega, escanea, pide, paga.
+\end{itemize}
+
+\subsection{Nuestra respuesta: E-Kitchen}
+
+E-Kitchen es un \textbf{menú digital} al que se accede escaneando un código QR pegado en la mesa. Una vez dentro, el cliente:
+
+\begin{enumerate}[itemsep=2pt]
+  \item Ve el catálogo con fotos, precios e ingredientes — solo lo que está disponible.
+  \item Agrega platos a su carrito (que no se borra si cierra el navegador).
+  \item Paga con Wompi (tarjeta, PSE, Nequi) — sin compartir datos bancarios con el restaurante.
+  \item Recibe un comprobante por correo.
+  \item Puede rastrear su pedido en tiempo real: ``Pendiente $\rightarrow$ Preparando $\rightarrow$ Listo $\rightarrow$ Entregado''.
+\end{enumerate}
+
+Del otro lado, el chef ve los pedidos nuevos en una pantalla, los mueve entre columnas según avanza, y el mesero solo se acerca cuando aparece algo en ``Listo''.
+
+\subsection{¿Qué logramos implementar?}
+
+\begin{table}[H]
+\centering
+\rowcolors{2}{ekitchenLight!95}{white}
+\small
+\begin{tabular}{p{2.2cm} p{4cm} p{6.5cm}}
+\toprule
+\rowcolor{daniel!20}\textbf{Rol} & \textbf{Funcionalidades} & \textbf{¿Cómo se ve en la práctica?} \\
+\midrule
+\multirow{2}{*}{Cliente} & Menú QR, carrito, pago & Escanea el QR de su mesa, arma el pedido, paga y recibe comprobante por correo \\
+& Rastreo en tiempo real & Entra el ID del pedido y ve una barra de progreso que se actualiza sola \\
+Cocinero & Panel Kanban & Pedidos caen en ``Pendiente''. El chef los mueve a ``Preparando'' y ``Listo'' — sin papel \\
+& CRUD de catálogo & Crea platos con foto y precio. Si desactiva uno, desaparece del menú del cliente al instante \\
+Mesero & Panel de entregas & Solo ve platos listos con número de mesa. Toca un botón y confirma la entrega \\
+Administrador & Personal, QR, IA & Crea cuentas para chefs y meseros, genera códigos QR, ve gráficos, y le pregunta a una IA ``¿cuánto vendí hoy?'' \\
+\bottomrule
+\end{tabular}
+\caption{Todo lo que el sistema hace, por cada tipo de usuario}
+\end{table}
+
+\subsection{¿Por qué cumplimos con lo pedido?}
+
+El documento de requisitos pedía mínimo: problema definido, alcance funcional, arquitectura, 3 patrones, pruebas, riesgos. Nosotros entregamos:
+
+\begin{itemize}[itemsep=2pt]
+  \item \textbf{13 historias de usuario} completamente funcionales
+  \item \textbf{4 roles} con paneles independientes
+  \item \textbf{11 patrones de diseño} integrados en el código
+  \item \textbf{140 pruebas} automatizadas
+  \item \textbf{4 servicios externos} integrados (Wompi, Cloudinary, Brevo, n8n+Groq)
+  \item \textbf{1 semana + 2 días} desde cero hasta deploy funcional
+\end{itemize}
+
+\newpage
+
+% ======================================================================
+% DEIBY — VERDE
+% ======================================================================
+\renewcommand{\headrule}{{\color{deiby}\hrule width\headwidth height\headrulewidth}}
+\renewcommand{\footrule}{{\color{deiby}\hrule width\headwidth height\footrulewidth}}
+\titleformat{\section}
+  {\color{deiby}\normalfont\Large\bfseries}
+  {\color{deiby}\rule[-4pt]{4pt}{20pt}\hspace{10pt}}
+  {0em}
+  {}
+  [\vspace{8pt}]
+
+\section[Patrones de Diseño — Nivel Arquitectónico]{\badge{deiby}{D} \; Patrones de Diseño — Nivel Arquitectónico}
+\expone{deiby}{Expone: Deiby Alejandro Ramirez}
+
+\subsection{¿Qué es un patrón arquitectónico?}
+
+Son las decisiones \textbf{grandes}. No definen una clase o un método, definen \textbf{cómo se organiza todo el proyecto}: dónde va el acceso a datos, cómo se comunican las capas, cómo evitamos que un cambio en la base de datos rompa la interfaz. En E-Kitchen usamos tres: Repository, Dependency Injection y AI Agent.
+
+\subsubsection{Repository: una capa que esconde la base de datos}
+
+Imaginen que están armando un mueble y el manual les dice ``atornille el tornillo M4×12 en el agujero A7 del panel B''. Eso es lo que pasa cuando un componente de React escribe SQL directamente.
+
+Lo que hicimos fue poner una \textbf{capa intermedia} que traduce ``muéstrame los platos disponibles'' en la consulta SQL real. Los componentes nunca ven SQL.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  node distance=9mm,
+  capa/.style={rounded corners=3pt, draw, minimum width=58mm, minimum height=8mm, align=center, font=\small},
+]
+\node[capa, fill=deiby!10, draw=deiby!45] (ui) {Componentes React (UI)};
+\node[capa, fill=deiby!20, draw=deiby!55, below=of ui] (hooks) {Hooks (lógica de cliente)};
+\node[capa, fill=deiby!30, draw=deiby!65, below=of hooks] (repo) {Server Actions (Repositorio)};
+\node[capa, fill=deiby!40, draw=deiby!75, below=of repo] (db) {Supabase PostgreSQL};
+
+\draw[->, >=Stealth, thick, deiby!70] (ui) -- node[right, font=\footnotesize] {``necesito platos''} (hooks);
+\draw[->, >=Stealth, thick, deiby!70] (hooks) -- node[right, font=\footnotesize] {obtenerPlatos()} (repo);
+\draw[->, >=Stealth, thick, deiby!70] (repo) -- node[right, font=\footnotesize] {SELECT * FROM platos} (db);
+
+\node[font=\footnotesize, deiby, anchor=north west, right=18mm of ui, text width=3.8cm] {Aquí vive \textbf{todo} el conocimiento sobre la BD. Si cambiamos de Supabase a otra cosa, solo tocamos esta capa de repository.};
+\end{tikzpicture}
+\caption{Las cuatro capas del sistema: la UI nunca habla directamente con la base de datos}
+\end{figure}
+
+\begin{codeblock}
+// src/lib/acciones/platos.ts esto es un Repository
+"use server";
+
+export async function obtenerPlatosDisponibles() {
+  const supabase = await crearCliente();
+  const { data } = await supabase
+    .from("platos")
+    .select("*, categorias(nombre)")
+    .eq("disponible", true);      // ← solo lo que el cliente puede ver
+  return { platos: data };
+}
+\end{codeblock}
+
+\begin{tipbox}
+\textbf{En la práctica:} Tenemos 10 archivos de este tipo, uno por cada dominio (platos, pedidos, personal, pagos...). Si mañana migramos de Supabase a MySQL, reescribimos estos 10 archivos y ya. Los 70+ componentes de la interfaz ni se enteran.
+\end{tipbox}
+
+\subsubsection{Dependency Injection: enchufar y desenchufar servicios}
+
+Este suena complicado pero es simple. Imaginen un televisor: no viene con el cable HDMI soldado, tiene un puerto. Pueden conectarle un Chromecast, un PlayStation o una laptop. El televisor no necesita saber qué es cada cosa, solo necesita que le llegue señal por ese puerto.
+
+En código es igual. Definimos una ``forma de enchufe'' (una \textit{interfaz} en TypeScript) y tanto el servicio real como el de pruebas cumplen con esa misma forma:
+
+\begin{codeblock}
+// Esta es la "forma del enchufe" lo unico que importa
+interface IServicioRealtime {
+  suscribir(tabla, evento, callback): Promise<Suscripcion>;
+  desconectarTodo(): Promise<void>;
+}
+
+// En producción enchufamos Supabase real
+const real = new SupabaseRealtimeService();
+
+// En pruebas enchufamos un simulacro
+const fake = { suscribir: vi.fn(), desconectarTodo: vi.fn() };
+\end{codeblock}
+
+\begin{tipbox}
+\textbf{¿Para qué sirve esto?} Para probar el sistema sin base de datos. Los 6 tests de integración del Observer corren sin Supabase, sin WebSocket, sin internet. Solo validan que el ``enchufe'' funcione. Rápido, predecible, sin depender de nada externo.
+\end{tipbox}
+
+\subsubsection{AI Agent: una IA que consulta tu base de datos}
+
+El administrador del restaurante, en vez de navegar por cinco pantallas del dashboard, simplemente escribe en un chat: ``¿cuál fue el plato más vendido esta semana?''.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  node distance=7mm,
+  paso/.style={rounded corners=3pt, draw, minimum width=34mm, minimum height=8mm, align=center, font=\footnotesize},
+]
+\node[paso, fill=deiby!10, draw=deiby!45] (user) {Admin escribe\\una pregunta};
+\node[paso, fill=deiby!18, draw=deiby!55, below=of user] (next) {Next.js envía\\a n8n (SSE)};
+\node[paso, fill=deiby!28, draw=deiby!65, below=of next] (agent) {AI Agent (Groq)\\decide qué consultar};
+\node[paso, fill=deiby!40, draw=deiby!75, below=of agent] (tool) {Herramienta:\\Consultar Supabase};
+\node[paso, fill=deiby!55, draw=deiby!90, below=of tool] (reply) {IA formula respuesta\\y la transmite letra por letra};
+
+\draw[->, >=Stealth, thick, deiby!70] (user) -- (next);
+\draw[->, >=Stealth, thick, deiby!70] (next) -- (agent);
+\draw[->, >=Stealth, thick, deiby!70] (agent) -- (tool);
+\draw[->, >=Stealth, thick, deiby!70] (tool) -- (reply);
+\draw[->, >=Stealth, thick, dashed, deiby!50] (reply.east) -- ++(2.5,0) coordinate (tmp) -- (tmp |- next.east) -- (next.east) node[pos=0.5, right=2mm, font=\tiny] {streaming};
+\end{tikzpicture}
+\caption{Cómo Arianna AI convierte una pregunta en español en una consulta real a la base de datos}
+\end{figure}
+
+\begin{tipbox}
+\textbf{Lo increíble:} La IA no ``alucina'' datos. No inventa números. El agente tiene acceso real a las tablas del restaurante vía una herramienta que ejecuta SQL de verdad. Si el admin pregunta ``¿cuánto vendí hoy?'', la respuesta viene de sumar la columna \texttt{total} de los pedidos del día. Dato real, respuesta en español natural.
+\end{tipbox}
+
+\newpage
+
+% ======================================================================
+% DAVID — NARANJA
+% ======================================================================
+\renewcommand{\headrule}{{\color{david}\hrule width\headwidth height\headrulewidth}}
+\renewcommand{\footrule}{{\color{david}\hrule width\headwidth height\footrulewidth}}
+\titleformat{\section}
+  {\color{david}\normalfont\Large\bfseries}
+  {\color{david}\rule[-4pt]{4pt}{20pt}\hspace{10pt}}
+  {0em}
+  {}
+  [\vspace{8pt}]
+
+\section[Patrones de Diseño — Nivel de Comportamiento]{\badge{david}{D} \; Patrones de Diseño — Nivel de Comportamiento}
+\expone{david}{Expone: David Urrutia Ceron}
+
+\subsection{¿Qué resuelven estos patrones?}
+
+Si los patrones arquitectónicos definen \textbf{dónde} van las cosas, los de comportamiento definen \textbf{cómo se mueven}. Son las reglas del juego: qué puede pasar, en qué orden y quién tiene permiso de hacer cada cosa.
+
+\subsubsection{State Machine: el ciclo de vida de un pedido}
+
+Un pedido no puede estar en cualquier estado. Tiene un camino fijo, como las etapas de un semáforo: verde $\rightarrow$ amarillo $\rightarrow$ rojo. No puedes saltar de verde a rojo.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  node distance=15mm,
+  estado/.style={rounded corners=4pt, draw, minimum width=28mm, minimum height=10mm, align=center, font=\small},
+]
+\node[estado, fill=ekitchen!15, draw=ekitchen!70] (pendiente) {Pendiente};
+\node[estado, fill=david!15, draw=david!70, right=of pendiente] (preparando) {Preparando};
+\node[estado, fill=ekitchenSuccess!15, draw=ekitchenSuccess!70, right=of preparando] (listo) {Listo};
+\node[estado, fill=ekitchenAccent!15, draw=ekitchenAccent!70, right=of listo] (entregado) {Entregado};
+
+% Transiciones válidas
+\draw[->, >=Stealth, thick, david!70] (pendiente) -- node[above, font=\footnotesize] {Chef inicia} (preparando);
+\draw[->, >=Stealth, thick, david!70] (preparando) -- node[above, font=\footnotesize] {Chef termina} (listo);
+\draw[->, >=Stealth, thick, david!70] (listo) -- node[above, font=\footnotesize] {Mesero entrega} (entregado);
+
+% Transiciones inválidas
+\draw[->, >=Stealth, red!60, bend left=35] (pendiente.north) to node[pos=0.5, above=4mm, font=\footnotesize, red!60] {Saltar: NO} (listo.north);
+\end{tikzpicture}
+\caption{Máquina de estados del pedido: 4 estados y solo 3 transiciones permitidas}
+\end{figure}
+
+En vez de llenar el código de ``ifs'' y ``switches'', definimos las reglas en una \textbf{tabla}:
+
+\begin{codeblock}
+// Una tabla define todo. Agregar un estado nuevo es agregar una linea.
+const TRANSICIONES_VALIDAS = {
+  pendiente:  ["preparando"],
+  preparando: ["listo"],
+  listo:      ["entregado"],
+  entregado:  [],               // Estado final: no sale de aquí
+};
+
+// Validar es O(1): buscar en el diccionario
+if (!TRANSICIONES_VALIDAS[estadoActual].includes(nuevoEstado)) {
+  return { exito: false, error: "Transición inválida" };
+}
+\end{codeblock}
+
+\begin{tipbox}
+\textbf{¿Por qué así y no con ifs?} Porque si mañana el restaurante agrega un estado ``cancelado'', solo hay que tocar esta tabla. La lógica de validación no cambia. Probamos esto con 14 tests: cada transición válida funciona, cada intento inválido es bloqueado.
+\end{tipbox}
+
+\subsubsection{Guard: permisos en fila, como un portero}
+
+Imaginen la entrada a un concierto. No hay un solo guardia que decide todo. Hay una fila: el primero revisa tu entrada, el segundo tu cédula, el tercero que no lleves botellas. Si fallas en cualquiera, no pasas.
+
+En código, cada ``guardia'' es una validación que, si falla, corta el flujo y devuelve el error. Sin anidar ifs:
+
+\begin{codeblock}
+// 5 guardias en fila para cambiar el estado de un pedido
+export async function cambiarEstadoPedido(pedidoId, nuevoEstado) {
+  // Guardia 1: ¿Hay alguien logueado?
+  if (!user) return { error: "No autenticado" };
+
+  // Guardia 2: ¿Es cocinero o mesero?
+  if (rol !== "cocinero" && rol !== "mesero") return { error: "No autorizado" };
+
+  // Guardia 3: ¿El pedido existe?
+  if (!pedido) return { error: "Pedido no encontrado" };
+
+  // Guardia 4: ¿La transición es válida?
+  if (!TRANSICIONES_VALIDAS[estadoActual].includes(nuevoEstado))
+    return { error: "Transición inválida" };
+
+  // Guardia 5: ¿Es "entregado"? Solo mesero puede
+  if (nuevoEstado === "entregado" && rol !== "mesero")
+    return { error: "Solo el mesero puede entregar" };
+
+  // Si pasó las 5 → actualizar
+  await supabase.from("pedidos").update({ estado: nuevoEstado }).eq("id", pedidoId);
+}
+\end{codeblock}
+
+\subsubsection{Pub/Sub: la base de datos avisa, nadie pregunta}
+
+Este es el patrón que hace que todo se sienta ``en vivo''. Funciona como un grupo de WhatsApp: alguien escribe y todos los que están en el grupo lo ven al instante. Nadie tiene que andar preguntando ``¿alguien escribió algo?''.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  node distance=10mm and 10mm,
+  caja/.style={rounded corners=3pt, draw, minimum width=30mm, minimum height=8mm, align=center, font=\footnotesize},
+]
+\node[caja, fill=david!10, draw=david!45] (db) {PostgreSQL\\(publicador)};
+\node[caja, fill=david!22, draw=david!60, below=of db] (rt) {Supabase Realtime\\(broker de eventos)};
+\node[caja, fill=david!35, draw=david!75, below left=of rt, xshift=-4mm] (cocina) {Panel Cocina\\(nuevo pedido)};
+\node[caja, fill=david!35, draw=david!75, below=of rt] (mesero) {Panel Mesero\\(listo)};
+\node[caja, fill=david!35, draw=david!75, below right=of rt, xshift=4mm] (cliente) {Menú Cliente\\(catálogo)};
+
+\draw[->, >=Stealth, thick, david!60] (db) -- (rt);
+\draw[->, >=Stealth, thick, dashed, david!60] (rt.south west) -- (cocina.north);
+\draw[->, >=Stealth, thick, dashed, david!60] (rt.south) -- (mesero.north);
+\draw[->, >=Stealth, thick, dashed, david!60] (rt.south east) -- (cliente.north);
+
+\node[font=\footnotesize, david, text width=5cm, right=2.5cm of rt] {La BD no sabe quién está escuchando. Solo emite ``¡cambié!'' y el broker reparte el mensaje.};
+\end{tikzpicture}
+\caption{La base de datos publica eventos. Los paneles se suscriben. Nadie hace polling.}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\rowcolors{2}{ekitchenLight!95}{white}
+\small
+\begin{tabular}{p{3cm} p{2cm} p{2.2cm} p{5cm}}
+\toprule
+\rowcolor{david!20}\textbf{¿Quién escucha?} & \textbf{Tabla} & \textbf{Evento} & \textbf{¿Qué pasa?} \\
+\midrule
+Panel cocina & pedidos & INSERT & El pedido nuevo aparece en ``Pendiente'' \\
+Panel mesero & pedidos & UPDATE & Si el chef lo pasó a ``Listo'', aparece en entregas \\
+Menú cliente & platos & * & Si el chef desactiva un plato, desaparece del celular \\
+Cliente (rastreo) & pedidos & UPDATE & La barra de progreso del pedido se mueve sola \\
+\bottomrule
+\end{tabular}
+\caption{Quién escucha qué — cada panel se suscribe solo a lo que le importa}
+\end{table}
+
+\begin{tipbox}
+\textbf{Un problema real que resolvimos:} Cuando un cliente paga, el sistema hace dos INSERT: primero el pedido, luego sus ítems. Pero Realtime manda el evento en el primer INSERT, cuando los ítems todavía no existen. Nuestro hook \texttt{usePedidosRealtime} lo resuelve reintentando hasta 3 veces con pausas de 200ms y 400ms. Para cuando llega al panel de cocina, los ítems ya están allí.
+\end{tipbox}
+
+\newpage
+
+% ======================================================================
+% LUISA — ROSA
+% ======================================================================
+\renewcommand{\headrule}{{\color{luisa}\hrule width\headwidth height\headrulewidth}}
+\renewcommand{\footrule}{{\color{luisa}\hrule width\headwidth height\footrulewidth}}
+\titleformat{\section}
+  {\color{luisa}\normalfont\Large\bfseries}
+  {\color{luisa}\rule[-4pt]{4pt}{20pt}\hspace{10pt}}
+  {0em}
+  {}
+  [\vspace{8pt}]
+
+\section[Patrones de Diseño — Nivel Estructural]{\badge{luisa}{L} \; Patrones de Diseño — Nivel Estructural}
+\expone{luisa}{Expone: Luisa Juliet Juaqui}
+
+\subsection{¿Qué hacen los patrones estructurales?}
+
+Se encargan de \textbf{cómo encajan las piezas}. Cómo conectamos nuestro código con servicios externos, cómo traducimos interfaces incompatibles y cómo protegemos las rutas para que nadie entre donde no debe.
+
+\subsubsection{Facade (Fachada): un mostrador único para cada servicio}
+
+El proyecto usa tres servicios externos: Wompi para pagos, Cloudinary para imágenes y Brevo para correos. Cada uno tiene su propia forma de autenticarse, sus propios errores, sus propias versiones de API.
+
+Si cada Server Action hablara directamente con estos servicios, tendríamos claves API regadas por todo el código y un caos si toca cambiar de proveedor. Lo que hicimos fue poner un \textbf{mostrador único} por cada servicio:
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  node distance=9mm and 8mm,
+  caja/.style={rounded corners=3pt, draw, minimum width=28mm, minimum height=8mm, align=center, font=\footnotesize},
+]
+\node[caja, fill=ekitchenLight, draw=ekitchen!30] (sa) {Server Action\\\texttt{crearPedidoWompi()}};
+
+\node[caja, fill=luisa!12, draw=luisa!65, below left=of sa, xshift=-10mm] (pf) {\textbf{PagoFacade}\\(Wompi)};
+\node[caja, fill=luisa!12, draw=luisa!65, below=of sa] (mf) {\textbf{MediaFacade}\\(Cloudinary)};
+\node[caja, fill=luisa!12, draw=luisa!65, below right=of sa, xshift=10mm] (nf) {\textbf{NotificacionFacade}\\(Brevo)};
+
+\node[caja, fill=luisa!5, draw=luisa!35, below=of pf] (wompi) {API Wompi};
+\node[caja, fill=luisa!5, draw=luisa!35, below=of mf] (cloud) {API Cloudinary};
+\node[caja, fill=luisa!5, draw=luisa!35, below=of nf] (brevo) {API Brevo};
+
+\draw[->, >=Stealth, thick, luisa!50] (sa.south west) -- (pf.north);
+\draw[->, >=Stealth, thick, luisa!50] (sa.south) -- (mf.north);
+\draw[->, >=Stealth, thick, luisa!50] (sa.south east) -- (nf.north);
+\draw[->, >=Stealth, thick, luisa!30] (pf.south) -- (wompi.north);
+\draw[->, >=Stealth, thick, luisa!30] (mf.south) -- (cloud.north);
+\draw[->, >=Stealth, thick, luisa!30] (nf.south) -- (brevo.north);
+
+\node[font=\footnotesize, luisa, anchor=north west, right=0.6cm of nf, text width=4cm] {El código solo habla con las fachadas. Si cambia Wompi, solo se toca PagoFacade.};
+\end{tikzpicture}
+\caption{Las tres fachadas: cada una esconde toda la complejidad de su servicio externo}
+\end{figure}
+
+\begin{codeblock}
+// La fachada de pagos esconde TODO: keys, firmas SHA256, HTTP a Wompi
+class PagoFacade {
+  static generarFirma(referencia, monto) {
+    // SHA256 de la referencia + monto + clave secreta
+    return createHash("sha256").update(cadena).digest("hex");
+  }
+  static async obtenerTransaccion(id) {
+    // GET a https://sandbox.wompi.co/v1/transactions/{id}
+    // Extrae el email del cliente para enviarle el comprobante
+  }
+}
+\end{codeblock}
+
+\begin{tipbox}
+\textbf{En plata:} Si mañana Wompi duplica sus comisiones y nos pasamos a MercadoPago, solo escribimos \texttt{MercadoPagoFacade} con los mismos métodos. El resto del código sigue funcionando igual.
+\end{tipbox}
+
+\subsubsection{Adapter: traductor de WebSocket a React}
+
+Supabase Realtime tiene una API potente pero \textbf{incómoda} de usar desde React. Toca crear canales manualmente, ponerles nombres únicos, destruirlos al desmontar el componente, manejar reconexiones... Nosotros no queremos que cada componente tenga que lidiar con eso. Queremos algo simple:
+
+\begin{codeblock}
+// Asi de simple queremos que sea:
+useRealtime("pedidos", "INSERT", miCallback);
+\end{codeblock}
+
+El hook \texttt{useRealtime} es nuestro \textbf{adaptador}. Por dentro hace magia con Supabase; por fuera expone una interfaz limpia de 4 parámetros:
+
+\begin{itemize}[itemsep=2pt]
+  \item El callback que cambia en cada render $\rightarrow$ lo guarda en un \texttt{useRef} para no re-suscribirse
+  \item El canal que debe destruirse al salir $\rightarrow$ lo limpia en el \texttt{useEffect}
+  \item La autenticación que debe estar lista antes del canal $\rightarrow$ la resuelve el servicio concreto
+  \item La race condition de desmontar antes de suscribir $\rightarrow$ un flag \texttt{activo} lo controla
+\end{itemize}
+
+\begin{tipbox}
+\textbf{Resultado:} Los 5 hooks de negocio no saben nada de canales, ni de \texttt{setAuth}, ni de nombres únicos. Solo llaman a \texttt{useRealtime} con sus 4 parámetros y ya.
+\end{tipbox}
+
+\subsubsection{Proxy: el guardia de seguridad de las rutas}
+
+En Next.js 16, el archivo \texttt{proxy.ts} reemplaza al antiguo \texttt{middleware.ts}. Es la primera línea de defensa: \textbf{toda} petición pasa por aquí antes de llegar a cualquier página.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  node distance=9mm,
+  caja/.style={rounded corners=3pt, draw, minimum width=28mm, minimum height=7mm, align=center, font=\footnotesize},
+]
+\node[caja, fill=luisa!10, draw=luisa!45] (req) {Petición\\\texttt{/cocina}};
+\node[caja, fill=luisa!18, draw=luisa!55, below=of req] (q1) {¿Hay sesión?};
+\node[caja, fill=red!10, draw=red!40, below left=of q1, xshift=-10mm] (no1) {Redirige a \texttt{/}};
+\node[caja, fill=luisa!18, draw=luisa!55, below=of q1, yshift=-12mm] (q2) {¿Su rol tiene acceso?};
+\node[caja, fill=red!10, draw=red!40, below left=of q2, xshift=-10mm] (no2) {Redirige a su panel};
+\node[caja, fill=ekitchenSuccess!12, draw=ekitchenSuccess!50, below right=of q2, xshift=10mm] (ok) {Entra};
+
+\draw[->, >=Stealth, thick, luisa!50] (req) -- (q1);
+\draw[->, >=Stealth, thick, luisa!50] (q1) -- node[right, font=\tiny] {Sí} (q2);
+\draw[->, >=Stealth, thick, red!50] (q1) -- node[left, font=\tiny] {No} (no1);
+\draw[->, >=Stealth, thick, luisa!50] (q2) -- node[right, font=\tiny] {Sí} (ok);
+\draw[->, >=Stealth, thick, red!50] (q2) -- node[left, font=\tiny] {No} (no2);
+\end{tikzpicture}
+\caption{El proxy decide en dos pasos: ¿está autenticado? ¿tiene el rol correcto para esta ruta?}
+\end{figure}
+
+Las reglas son simples y están en un solo archivo:
+
+\begin{codeblock}
+// src/lib/redirecciones.ts control de acceso en 10 líneas
+const RUTAS_POR_ROL = {
+  admin:    ["/cocina", "/logistica", "/admin"],  // ve todo
+  cocinero: ["/cocina"],                           // solo su panel
+  mesero:   ["/logistica"],                        // solo entregas
+};
+\end{codeblock}
+
+\begin{tipbox}
+\textbf{Esto es poderoso:} Ninguna página individual verifica permisos. El proxy ya lo hizo. Si se agrega un rol nuevo —digamos ``gerente''— solo se modifica este archivo. Las 13 páginas no se tocan.
+\end{tipbox}
+
+\newpage
+
+% ======================================================================
+% MATEO — ROJO
+% ======================================================================
+\renewcommand{\headrule}{{\color{mateo}\hrule width\headwidth height\headrulewidth}}
+\renewcommand{\footrule}{{\color{mateo}\hrule width\headwidth height\footrulewidth}}
+\titleformat{\section}
+  {\color{mateo}\normalfont\Large\bfseries}
+  {\color{mateo}\rule[-4pt]{4pt}{20pt}\hspace{10pt}}
+  {0em}
+  {}
+  [\vspace{8pt}]
+
+\section[Patrones Creacionales, Pruebas, Riesgos y Conclusión]{\badge{mateo}{M} \; Patrones Creacionales, Pruebas, Riesgos y Conclusión}
+\expone{mateo}{Expone: Mateo Rivera}
+
+\subsection{Patrones Creacionales: cómo fabricamos objetos}
+
+Estos patrones responden a una pregunta simple: \textbf{¿quién crea las cosas y cómo?}. No queremos que cualquier parte del código esté haciendo \texttt{new} por todos lados.
+
+\subsubsection{Singleton: uno y solo uno}
+
+Hay cosas que \textbf{no pueden existir dos veces}. Si tienes dos carritos de compras, ¿en cuál está tu pedido? Si abres dos conexiones WebSocket a Supabase, estás duplicando tráfico.
+
+\begin{codeblock}
+// Singleton clásico: la primera vez que se pide, se crea.
+// Todas las siguientes devuelven la misma instancia.
+let instanciaGlobal = null;
+
+export function crearRealtimeService() {
+  if (!instanciaGlobal) {
+    instanciaGlobal = new SupabaseRealtimeService();
+  }
+  return instanciaGlobal;
+}
+\end{codeblock}
+
+En E-Kitchen tenemos dos singletons:
+\begin{itemize}[itemsep=2pt]
+  \item \textbf{El servicio de tiempo real:} una sola conexión WebSocket para todos los hooks. Se crea bajo demanda.
+  \item \textbf{El carrito de compras:} Zustand garantiza que \texttt{usarCarrito} siempre devuelve el mismo store. El middleware \texttt{persist} lo guarda en localStorage: si el cliente cierra el navegador y vuelve, su carrito sigue ahí.
+\end{itemize}
+
+\subsubsection{Simple Factory: una fábrica de platos}
+
+En el menú hay tres tipos de producto: plato fuerte, bebida y combo. Cada uno tiene reglas distintas: un plato fuerte necesita ingredientes, una bebida no, un combo puede tener precio especial. En vez de llenar el código de ifs, creamos una \textbf{fábrica}:
+
+\begin{codeblock}
+// Un mapa con los 3 creadores, pre-instanciados
+const CREADORES = {
+  plato_fuerte: new CreadorPlatoFuerte(),
+  bebida:        new CreadorBebida(),
+  combo:         new CreadorCombo(),
+};
+
+// El factory solo busca en el mapa y devuelve el que corresponde
+export function crearPlatoFactory(tipo) {
+  return CREADORES[tipo];
+}
+\end{codeblock}
+
+Cada creador sabe validar sus propias reglas y transformar los datos del formulario al formato de la base de datos. El código que crea platos no sabe si está creando una bebida o un combo: solo llama a \texttt{factory.validar()} y \texttt{factory.transformar()}.
+
+\begin{tipbox}
+\textbf{Si mañana agregan ``postre'' como nuevo tipo:} crean la clase \texttt{CreadorPostre}, la agregan al mapa \texttt{CREADORES} y al enum. Ni el factory ni los hooks se tocan. 11 tests unitarios lo respaldan.
+\end{tipbox}
+
+\subsection{Pruebas: 140 tests que respaldan el sistema}
+
+No hicimos pruebas ``por cumplir''. Cada test valida un comportamiento real del usuario o una regla de negocio.
+
+\begin{table}[H]
+\centering
+\rowcolors{2}{ekitchenLight!95}{white}
+\small
+\begin{tabular}{p{2cm} p{3cm} p{1.4cm} p{6cm}}
+\toprule
+\rowcolor{mateo!20}\textbf{Tipo} & \textbf{Herramienta} & \textbf{Casos} & \textbf{¿Qué validan?} \\
+\midrule
+Unitarias & Vitest & 90 & Carrito, State Machine, Factory, Facades, Realtime \\
+Integración & Vitest + mocks & 19 & Flujo de compra, Observer con mock, RLS, búsqueda por prefijo \\
+Componentes & Vitest + jsdom & 31 & Modales, catálogo, 6 estados del rastreador, callbacks \\
+\bottomrule
+\end{tabular}
+\caption{Distribución de los 140 tests}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\node[font=\small\bfseries, mateo] at (0, 3.2) {Distribución de pruebas};
+
+% Unitarias
+\fill[mateo!85] (0,2.5) rectangle ++(6.4,0.5);
+\fill[mateo!25] (6.4,2.5) rectangle ++(3.6,0.5);
+\node[font=\tiny, right] at (10.2, 2.75) {90 unitarias (64\%)};
+
+% Componentes
+\fill[mateo!75] (0,1.6) rectangle ++(2.2,0.5);
+\fill[mateo!25] (2.2,1.6) rectangle ++(7.8,0.5);
+\node[font=\tiny, right] at (10.2, 1.85) {31 componentes (22\%)};
+
+% Integración
+\fill[mateo!65] (0,0.7) rectangle ++(1.36,0.5);
+\fill[mateo!25] (1.36,0.7) rectangle ++(8.64,0.5);
+\node[font=\tiny, right] at (10.2, 0.95) {19 integración (14\%)};
+
+\node[font=\large\bfseries, mateo] at (5, -0.1) {= 140 pruebas en 20 archivos};
+\end{tikzpicture}
+\caption{Composición de la suite de pruebas}
+\end{figure}
+
+\begin{tipbox}
+\textbf{Dato importante:} Las pruebas de integración del Observer (6 casos) corren \textbf{sin Supabase, sin WebSocket, sin internet}. Usan un mock inyectado vía Dependency Injection. Validan que el contrato entre el hook y el servicio se cumpla, sin depender de nada externo.
+\end{tipbox}
+
+\subsection{Riesgos: lo que podría salir mal (y cómo lo evitamos)}
+
+\begin{table}[H]
+\centering
+\rowcolors{2}{ekitchenLight!95}{white}
+\small
+\begin{tabular}{p{0.5cm} p{3.5cm} p{1.1cm} p{1.1cm} p{5.5cm}}
+\toprule
+\rowcolor{mateo!20}\textbf{\#} & \textbf{Riesgo} & \textbf{Prob.} & \textbf{Imp.} & \textbf{Mitigación} \\
+\midrule
+1 & Red inestable durante el pago & Media & Alto & El frontend asume éxito, pero el servidor valida todo antes de escribir \\
+2 & Doble clic en ``Pagar'' & Media & Alto & Guardamos el ID de Wompi; si ya existe, rechazamos el duplicado \\
+3 & Chef desactiva plato en un carrito activo & Alta & Medio & El carrito no se toca. Al pagar, el servidor revisa disponibilidad \\
+4 & Realtime se desconecta & Baja & Alto & Reconexión automática + polling de respaldo cada 30s \\
+5 & Acceso no autorizado a datos & Baja & Crítico & Row Level Security en PostgreSQL + Proxy por rol \\
+6 & Imagen pesada ralentiza menú & Alta & Bajo & Cloudinary comprime a WebP automáticamente + lazy loading \\
+7 & Caída de servicio externo & Baja & Alto & Wompi: pedido no se crea. Cloudinary: placeholder. Brevo: el pedido se crea igual \\
+\bottomrule
+\end{tabular}
+\caption{Los 7 riesgos principales con su plan de contención}
+\end{table}
+
+\subsection{Conclusión final}
+
+E-Kitchen no fue un ejercicio de arquitectura en papel. Fue un sistema real, construido en \textbf{9 días} por 6 personas, que acepta pagos, sincroniza cocina con meseros en tiempo real y hasta tiene un chat con inteligencia artificial.
+
+Lo que hizo posible ese tiempo récord fueron \textbf{las decisiones correctas desde el diseño}:
+
+\begin{itemize}[itemsep=3pt]
+  \item \textbf{Monolito modular:} nos permitió trabajar todos en paralelo sin la sobrecarga de manejar servicios separados.
+  \item \textbf{Event-Driven con Supabase:} eliminó la necesidad de implementar polling, colas de mensajes o sistemas de notificaciones desde cero.
+  \item \textbf{11 patrones de diseño:} no como adorno académico, sino como herramientas reales. La State Machine evitó estados inválidos. Las Fachadas aislaron servicios externos. El Proxy protegió rutas sin repetir código.
+  \item \textbf{140 pruebas:} que nos dieron la confianza de desplegar sabiendo que si algo se rompía, las pruebas nos lo gritaban.
+\end{itemize}
+
+\begin{tipbox}
+\textbf{La lección más importante:} La mejor arquitectura no es la más compleja ni la que usa más tecnologías. Es la que te deja \textbf{terminar a tiempo} con un producto que funciona, y que está lista para crecer cuando llegue el momento.
+\end{tipbox}
+
+\end{document}
