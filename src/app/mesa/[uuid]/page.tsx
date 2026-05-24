@@ -20,10 +20,7 @@ export default async function PaginaMesa({
   params: Promise<{ uuid: string }>;
 }) {
   const { uuid } = await params;
-  const [datosCatalogo, mesa] = await Promise.all([
-    obtenerPlatosDisponibles(),
-    obtenerMesaPorUuid(uuid),
-  ]);
+  const mesa = await obtenerMesaPorUuid(uuid);
 
   if (!mesa) {
     notFound();
@@ -37,10 +34,7 @@ export default async function PaginaMesa({
             <MesaLayout carritoSidebar={<CarritoSidebar mesaUuid={uuid} />}>
               <BarraMesa numeroMesa={mesa.numero} />
               <Suspense fallback={<SkeletonCatalogo />}>
-                <CatalogoPlatos
-                  platos={datosCatalogo.platos}
-                  categorias={datosCatalogo.categorias}
-                />
+                <ContenidoCatalogo />
               </Suspense>
               <CarritoSheet mesaUuid={uuid} />
             </MesaLayout>
@@ -50,5 +44,15 @@ export default async function PaginaMesa({
         </RastrearPedidoProvider>
       </WompiModalProvider>
     </WompiProvider>
+  );
+}
+
+async function ContenidoCatalogo() {
+  const datosCatalogo = await obtenerPlatosDisponibles();
+  return (
+    <CatalogoPlatos
+      platos={datosCatalogo.platos}
+      categorias={datosCatalogo.categorias}
+    />
   );
 }
