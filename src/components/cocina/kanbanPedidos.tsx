@@ -123,7 +123,7 @@ export function KanbanPedidos({ pedidosIniciales }: KanbanPedidosProps) {
           <div
             key={estado}
             ref={(el) => { columnRefs.current[index] = el; }}
-            className="snap-start shrink-0 w-[85vw] md:w-auto md:flex-1 md:shrink h-full"
+            className="snap-center shrink-0 w-[85vw] md:w-auto md:flex-1 md:shrink h-full"
           >
             <KanbanColumna
               estado={estado}
