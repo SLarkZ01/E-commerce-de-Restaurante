@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { MensajeToast } from "@/components/compartidos/MensajeToast";
 import { KanbanColumna } from "./KanbanColumna";
 import { ESTADOS, CONFIG_ESTADO } from "./configEstados";
@@ -17,6 +17,9 @@ interface KanbanPedidosProps {
 export function KanbanPedidos({ pedidosIniciales }: KanbanPedidosProps) {
   const [pedidos, setPedidos] = useState(pedidosIniciales);
   const [mensaje, setMensaje] = useState("");
+  const [columnaActiva, setColumnaActiva] = useState(0);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const columnRefs = useRef<(HTMLDivElement | null)[]>([]);
   const { cambiarEstado } = usePedidos();
 
   useEffect(() => {
@@ -51,6 +54,34 @@ export function KanbanPedidos({ pedidosIniciales }: KanbanPedidosProps) {
     }, []),
   });
 
+  useEffect(() => {
+    const container = scrollRef.current;
+    if (!container) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = columnRefs.current.indexOf(entry.target as HTMLDivElement);
+            if (index !== -1) {
+              setColumnaActiva(index);
+            }
+          }
+        });
+      },
+      {
+        root: container,
+        threshold: 0.6,
+      }
+    );
+
+    columnRefs.current.forEach((ref) => {
+      if (ref) observer.observe(ref);
+    });
+
+    return () => observer.disconnect();
+  }, [pedidos]);
+
   const handleCambiarEstado = async (pedidoId: string, nuevoEstado: string) => {
     setMensaje("");
     const resultado = await cambiarEstado(
@@ -79,18 +110,48 @@ export function KanbanPedidos({ pedidosIniciales }: KanbanPedidosProps) {
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       {mensaje && (
-        <div className="mx-6 mt-4">
+        <div className="mx-3 sm:mx-6 mt-2 sm:mt-4">
           <MensajeToast mensaje={mensaje} variante="error" onClose={() => setMensaje("")} />
         </div>
       )}
-      <div className="flex-1 flex flex-col md:flex-row gap-2 sm:gap-3 p-2 sm:p-4 min-h-0">
-        {ESTADOS.map((estado) => (
-          <KanbanColumna
+
+      <div
+        ref={scrollRef}
+        className="flex-1 flex md:flex-row gap-3 md:gap-4 px-3 md:px-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide scroll-smooth"
+      >
+        {ESTADOS.map((estado, index) => (
+          <div
             key={estado}
-            estado={estado}
-            config={CONFIG_ESTADO[estado]}
-            pedidos={pedidosPorEstado(estado)}
-            onCambiarEstado={handleCambiarEstado}
+            ref={(el) => { columnRefs.current[index] = el; }}
+            className="snap-start shrink-0 w-[85vw] md:w-auto md:flex-1 md:shrink h-full"
+          >
+            <KanbanColumna
+              estado={estado}
+              config={CONFIG_ESTADO[estado]}
+              pedidos={pedidosPorEstado(estado)}
+              onCambiarEstado={handleCambiarEstado}
+            />
+          </div>
+        ))}
+      </div>
+
+      <div className="flex md:hidden justify-center gap-2 py-3 bg-fondo/95 backdrop-blur-sm border-t border-borde/40">
+        {ESTADOS.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => {
+              columnRefs.current[index]?.scrollIntoView({
+                behavior: "smooth",
+                block: "nearest",
+                inline: "start",
+              });
+            }}
+            className={`h-2 rounded-full transition-all duration-300 ${
+              columnaActiva === index
+                ? "w-6 bg-primario"
+                : "w-2 bg-borde"
+            }`}
+            aria-label={`Ir a columna ${ESTADOS[index]}`}
           />
         ))}
       </div>
