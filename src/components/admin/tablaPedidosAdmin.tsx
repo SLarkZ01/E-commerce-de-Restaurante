@@ -30,14 +30,11 @@ const TiempoHace = memo(function TiempoHace({ creadoEn }: { creadoEn: string }) 
     return () => clearInterval(id);
   }, [creadoEn]);
 
-  const horaExacta = useMemo(() => {
-    const fecha = new Date(creadoEn);
-    return fecha.toLocaleTimeString("es-CO", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    }).replace(/\./g, "");
-  }, [creadoEn]);
+  const horaExacta = new Date(creadoEn).toLocaleTimeString("es-CO", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  }).replace(/\./g, "");
 
   return (
     <Tooltip>

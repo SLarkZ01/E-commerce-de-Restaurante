@@ -10,10 +10,7 @@ export function useFiltrosPlatos(platos: Plato[]) {
 
   const busquedaDiferida = useDeferredValue(busqueda);
 
-  const platosDisponibles = useMemo(
-    () => platos.filter((p) => p.disponible).length,
-    [platos]
-  );
+  const platosDisponibles = platos.filter((p) => p.disponible).length;
 
   const platosFiltrados = useMemo(() => {
     let resultado = [...platos];

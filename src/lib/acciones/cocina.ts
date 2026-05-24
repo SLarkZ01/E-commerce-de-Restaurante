@@ -224,6 +224,36 @@ export async function obtenerStatsCocina(): Promise<StatsCocina> {
   };
 }
 
+function mapearPedidoADetalles(pedido: Record<string, unknown>): PedidoConDetalles {
+  const mesaData = (pedido.mesas as Record<string, unknown> | null) ?? null;
+  const itemsRaw = (pedido.items_pedido as Record<string, unknown>[]) ?? [];
+  const items: ItemPedidoConImagen[] = itemsRaw.map((item) => {
+    const plato = (item.platos as Record<string, unknown>) ?? {};
+    return {
+      plato_nombre: (plato.nombre as string) ?? "Plato",
+      plato_imagen_url: (plato.imagen_url as string) ?? null,
+      plato_tipo: (plato.tipo_plato as TipoPlato) ?? "plato_fuerte",
+      cantidad: (item.cantidad as number) ?? 1,
+      precio_unitario: Number(item.precio_unitario ?? 0),
+    };
+  });
+
+  return {
+    id: pedido.id as string,
+    mesa_id: (pedido.mesa_id as string) ?? null,
+    mesa_numero: mesaData ? (mesaData.numero as number | null) : null,
+    tipo_despacho: (pedido.tipo_despacho as "mesa" | "para_llevar") ?? "mesa",
+    estado: pedido.estado as EstadoPedido,
+    correo_cliente: (pedido.correo_cliente as string) ?? null,
+    total: Number(pedido.total ?? 0),
+    wompi_transaccion_id: (pedido.wompi_transaccion_id as string) ?? null,
+    cocinero_id: (pedido.cocinero_id as string) ?? null,
+    creado_en: pedido.creado_en as string,
+    actualizado_en: pedido.actualizado_en as string,
+    items,
+  };
+}
+
 export async function obtenerPedidoConDetalles(pedidoId: string): Promise<PedidoConDetalles | null> {
   const supabase = await crearCliente();
   const { data } = await supabase
@@ -247,34 +277,7 @@ export async function obtenerPedidoConDetalles(pedidoId: string): Promise<Pedido
     .single();
 
   if (!data) return null;
-
-  const mesaData = (data.mesas as Record<string, unknown> | null) ?? null;
-  const itemsRaw = (data.items_pedido as Record<string, unknown>[]) ?? [];
-  const items = itemsRaw.map((item) => {
-    const plato = (item.platos as Record<string, unknown>) ?? {};
-    return {
-      plato_nombre: (plato.nombre as string) ?? "Plato",
-      plato_imagen_url: (plato.imagen_url as string) ?? null,
-      plato_tipo: (plato.tipo_plato as TipoPlato) ?? "plato_fuerte",
-      cantidad: (item.cantidad as number) ?? 1,
-      precio_unitario: Number(item.precio_unitario ?? 0),
-    };
-  });
-
-  return {
-    id: data.id as string,
-    mesa_id: (data.mesa_id as string) ?? null,
-    mesa_numero: mesaData ? (mesaData.numero as number | null) : null,
-    tipo_despacho: (data.tipo_despacho as "mesa" | "para_llevar") ?? "mesa",
-    estado: data.estado as EstadoPedido,
-    correo_cliente: (data.correo_cliente as string) ?? null,
-    total: Number(data.total ?? 0),
-    wompi_transaccion_id: (data.wompi_transaccion_id as string) ?? null,
-    cocinero_id: (data.cocinero_id as string) ?? null,
-    creado_en: data.creado_en as string,
-    actualizado_en: data.actualizado_en as string,
-    items,
-  };
+  return mapearPedidoADetalles(data);
 }
 
 export async function obtenerTodosPedidosConImagenes(): Promise<PedidoConDetalles[]> {
@@ -299,36 +302,7 @@ export async function obtenerTodosPedidosConImagenes(): Promise<PedidoConDetalle
     .order("creado_en", { ascending: false });
 
   if (!data) return [];
-
-  return data.map((pedido: Record<string, unknown>) => {
-    const mesaData = (pedido.mesas as Record<string, unknown> | null) ?? null;
-    const itemsRaw = (pedido.items_pedido as Record<string, unknown>[]) ?? [];
-    const items = itemsRaw.map((item) => {
-      const plato = (item.platos as Record<string, unknown>) ?? {};
-      return {
-        plato_nombre: (plato.nombre as string) ?? "Plato",
-        plato_imagen_url: (plato.imagen_url as string) ?? null,
-        plato_tipo: (plato.tipo_plato as TipoPlato) ?? "plato_fuerte",
-        cantidad: (item.cantidad as number) ?? 1,
-        precio_unitario: Number(item.precio_unitario ?? 0),
-      };
-    });
-
-    return {
-      id: pedido.id as string,
-      mesa_id: (pedido.mesa_id as string) ?? null,
-      mesa_numero: mesaData ? (mesaData.numero as number | null) : null,
-      tipo_despacho: (pedido.tipo_despacho as "mesa" | "para_llevar") ?? "mesa",
-      estado: pedido.estado as EstadoPedido,
-      correo_cliente: (pedido.correo_cliente as string) ?? null,
-      total: Number(pedido.total ?? 0),
-      wompi_transaccion_id: (pedido.wompi_transaccion_id as string) ?? null,
-      cocinero_id: (pedido.cocinero_id as string) ?? null,
-      creado_en: pedido.creado_en as string,
-      actualizado_en: pedido.actualizado_en as string,
-      items,
-    };
-  });
+  return data.map((pedido) => mapearPedidoADetalles(pedido as Record<string, unknown>));
 }
 
 export async function obtenerPedidosListosConDetalles(): Promise<PedidoConDetalles[]> {
@@ -354,34 +328,5 @@ export async function obtenerPedidosListosConDetalles(): Promise<PedidoConDetall
     .order("creado_en", { ascending: true });
 
   if (!data) return [];
-
-  return data.map((pedido: Record<string, unknown>) => {
-    const mesaData = (pedido.mesas as Record<string, unknown> | null) ?? null;
-    const itemsRaw = (pedido.items_pedido as Record<string, unknown>[]) ?? [];
-    const items = itemsRaw.map((item) => {
-      const plato = (item.platos as Record<string, unknown>) ?? {};
-      return {
-        plato_nombre: (plato.nombre as string) ?? "Plato",
-        plato_imagen_url: (plato.imagen_url as string) ?? null,
-        plato_tipo: (plato.tipo_plato as TipoPlato) ?? "plato_fuerte",
-        cantidad: (item.cantidad as number) ?? 1,
-        precio_unitario: Number(item.precio_unitario ?? 0),
-      };
-    });
-
-    return {
-      id: pedido.id as string,
-      mesa_id: (pedido.mesa_id as string) ?? null,
-      mesa_numero: mesaData ? (mesaData.numero as number | null) : null,
-      tipo_despacho: (pedido.tipo_despacho as "mesa" | "para_llevar") ?? "mesa",
-      estado: pedido.estado as EstadoPedido,
-      correo_cliente: (pedido.correo_cliente as string) ?? null,
-      total: Number(pedido.total ?? 0),
-      wompi_transaccion_id: (pedido.wompi_transaccion_id as string) ?? null,
-      cocinero_id: (pedido.cocinero_id as string) ?? null,
-      creado_en: pedido.creado_en as string,
-      actualizado_en: pedido.actualizado_en as string,
-      items,
-    };
-  });
+  return data.map((pedido) => mapearPedidoADetalles(pedido as Record<string, unknown>));
 }

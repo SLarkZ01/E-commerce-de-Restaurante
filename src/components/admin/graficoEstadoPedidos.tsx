@@ -13,7 +13,7 @@ interface GraficoEstadoPedidosProps {
 }
 
 export function GraficoEstadoPedidos({ datos }: GraficoEstadoPedidosProps) {
-  const total = useMemo(() => datos.reduce((sum, d) => sum + d.cantidad, 0), [datos]);
+  const total = datos.reduce((sum, d) => sum + d.cantidad, 0);
 
   const chartData = useMemo(() => ({
     labels: datos.map((d) => d.estado.charAt(0).toUpperCase() + d.estado.slice(1)),

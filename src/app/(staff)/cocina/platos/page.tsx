@@ -3,15 +3,18 @@ import { obtenerCategorias } from "@/lib/acciones/categorias";
 import { TablaPlatos, SkeletonTablaPlatos } from "@/components/cocina/tablaPlatos";
 import { Suspense } from "react";
 
-export default async function PaginaPlatos() {
+export default function PaginaPlatos() {
+  return (
+    <Suspense fallback={<SkeletonTablaPlatos />}>
+      <ContenidoTablaPlatos />
+    </Suspense>
+  );
+}
+
+async function ContenidoTablaPlatos() {
   const [platos, categorias] = await Promise.all([
     obtenerTodosPlatos(),
     obtenerCategorias(),
   ]);
-
-  return (
-    <Suspense fallback={<SkeletonTablaPlatos />}>
-      <TablaPlatos platosIniciales={platos} categorias={categorias} />
-    </Suspense>
-  );
+  return <TablaPlatos platosIniciales={platos} categorias={categorias} />;
 }

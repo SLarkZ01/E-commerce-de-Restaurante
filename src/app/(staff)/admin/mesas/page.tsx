@@ -2,12 +2,15 @@ import { obtenerMesas } from "@/lib/acciones/admin";
 import { GestionMesas, SkeletonGestionMesas } from "@/components/admin/gestionMesas";
 import { Suspense } from "react";
 
-export default async function PaginaMesas() {
-  const mesas = await obtenerMesas();
-
+export default function PaginaMesas() {
   return (
     <Suspense fallback={<SkeletonGestionMesas />}>
-      <GestionMesas mesasIniciales={mesas} />
+      <ContenidoMesas />
     </Suspense>
   );
+}
+
+async function ContenidoMesas() {
+  const mesas = await obtenerMesas();
+  return <GestionMesas mesasIniciales={mesas} />;
 }
