@@ -299,7 +299,8 @@ export async function obtenerTodosPedidosConImagenes(): Promise<PedidoConDetalle
         )
       )
     `)
-    .order("creado_en", { ascending: false });
+    .order("creado_en", { ascending: false })
+    .limit(200);
 
   if (!data) return [];
   return data.map((pedido) => mapearPedidoADetalles(pedido as Record<string, unknown>));
@@ -325,7 +326,8 @@ export async function obtenerPedidosListosConDetalles(): Promise<PedidoConDetall
       )
     `)
     .eq("estado", "listo")
-    .order("creado_en", { ascending: true });
+    .order("creado_en", { ascending: true })
+    .limit(100);
 
   if (!data) return [];
   return data.map((pedido) => mapearPedidoADetalles(pedido as Record<string, unknown>));

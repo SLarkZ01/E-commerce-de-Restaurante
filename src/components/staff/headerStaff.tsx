@@ -36,19 +36,18 @@ const SECCIONES: Record<string, { titulo: string; descripcion: string }> = {
 
 export function HeaderStaff({ userEmail, userName, rol, collapsed, onToggle }: HeaderStaffProps) {
   const pathname = usePathname();
-  const [mounted, setMounted] = useState(false);
-  const [hora, setHora] = useState(() => new Date());
+  const [hora, setHora] = useState<Date | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
 
   const cerrarSheet = useCallback(() => setSheetOpen(false), []);
 
   useEffect(() => {
-    setMounted(true);
+    setHora(new Date());
     const intervalo = setInterval(() => setHora(new Date()), 1000);
     return () => clearInterval(intervalo);
   }, []);
 
-  const horaFormateada = mounted
+  const horaFormateada = hora
     ? hora.toLocaleTimeString("es-CO", {
         hour: "2-digit",
         minute: "2-digit",

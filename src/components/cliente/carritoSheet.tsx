@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ShoppingBag } from "lucide-react";
 import { formatearPrecio } from "@/lib/formato";
 import { usarCarrito } from "@/stores/cart";
@@ -13,16 +13,11 @@ interface CarritoSheetProps {
 
 export function CarritoSheet({ mesaUuid }: CarritoSheetProps) {
   const [abierto, setAbierto] = useState(false);
-  const [mounted, setMounted] = useState(false);
 
   const items = usarCarrito((s) => s.items);
 
-  useEffect(() => setMounted(true), []);
-
-  const cantidadTotal = mounted ? items.reduce((sum, i) => sum + i.cantidad, 0) : 0;
-  const totalMostrado = mounted
-    ? items.reduce((sum, i) => sum + Number(i.precio) * i.cantidad, 0)
-    : 0;
+  const cantidadTotal = items.reduce((sum, i) => sum + i.cantidad, 0);
+  const totalMostrado = items.reduce((sum, i) => sum + Number(i.precio) * i.cantidad, 0);
 
   return (
     <>

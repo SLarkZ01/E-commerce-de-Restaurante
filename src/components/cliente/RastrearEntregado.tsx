@@ -1,6 +1,5 @@
 "use client";
 
-import { CircleCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface RastrearEntregadoProps {

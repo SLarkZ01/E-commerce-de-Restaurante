@@ -118,11 +118,6 @@ export class MediaFacade {
   }
 
   static firmarParametros(params: Record<string, string>): string {
-    const sortedParams = Object.keys(params)
-      .sort()
-      .map((key) => `${key}=${params[key]}`)
-      .join("&");
-
     const signature = cloudinary.v2.utils.api_sign_request(
       params,
       process.env.CLOUDINARY_API_SECRET!

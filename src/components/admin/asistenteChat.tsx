@@ -1,7 +1,6 @@
 "use client";
 
 import { PanelLeft } from "lucide-react";
-import { useEffect, useState } from "react";
 import { useAsistente } from "./AsistenteProvider";
 import { useAsistenteChat } from "@/hooks/useAsistenteChat";
 import { AsistenteSidebar } from "./AsistenteSidebar";
@@ -11,7 +10,6 @@ import { AsistenteInput } from "./AsistenteInput";
 import { AlertCircle } from "lucide-react";
 
 export function AsistenteChat() {
-  const [mounted, setMounted] = useState(false);
   const { sidebarAbierto, toggleSidebar } = useAsistente();
   const {
     estado,
@@ -23,10 +21,8 @@ export function AsistenteChat() {
     manejarEditar,
   } = useAsistenteChat();
 
-  useEffect(() => { setMounted(true); }, []);
-
   const cargando = estado === "recibiendo" || estado === "enviando";
-  const hayMensajes = mounted && mensajes.length > 0;
+  const hayMensajes = mensajes.length > 0;
 
   return (
     <div className="flex h-[calc(100dvh-4rem)] bg-fondo overflow-hidden">
