@@ -1,36 +1,83 @@
 {
   "id": "I8MxejyfwoExh0O8",
   "name": "Limpiar historial Arianna",
-  "description": "Borra toda la memoria de chat de Arianna cada 5 minutos para mantener el uso de tokens bajo control.",
+  "description": "Borra mensajes de chat de Arianna cada 24 horas para evitar saturar la memoria y los tokens.",
   "active": true,
-  "schedule": "Cada 5 minutos",
+  "createdAt": "2026-05-20T04:12:00.857Z",
+  "updatedAt": "2026-05-28T20:03:39.926Z",
+  "versionId": "d1863ea6-070e-4f94-b8d2-be7b955d4d28",
+  "activeVersionId": "d1863ea6-070e-4f94-b8d2-be7b955d4d28",
+  "triggerCount": 1,
+  "schedule": "Cada 24 horas",
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
   "connections": {
-    "Cada 5 minutos": { "main": [[{ "node": "Limpiar TODO el historial", "type": "main", "index": 0 }]] }
+    "Cada 24 horas": {
+      "main": [[{ "node": "Limpiar TODO el historial", "type": "main", "index": 0 }]]
+    }
   },
   "nodes": [
     {
-      "id": "3482f9bc-bd37-47c0-9d4f-850634827034",
-      "name": "Cada 5 minutos",
+      "id": "9a826b50-ccaf-41da-9f26-ef7cc21e5ff2",
+      "name": "Cada 24 horas",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.3,
-      "position": [240, 300],
+      "position": [0, 0],
       "parameters": {
         "rule": {
-          "interval": [{ "field": "minutes", "minutesInterval": 5 }]
+          "interval": [{ "field": "days", "daysInterval": 1 }]
         }
       }
     },
     {
-      "id": "53c2f87d-d963-40b4-b90b-dd8c9b49afb3",
+      "id": "589aaace-b708-47c6-9185-ae6705ea8934",
       "name": "Limpiar TODO el historial",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
-      "position": [540, 300],
+      "position": [224, 0],
       "parameters": {
         "operation": "deleteTable",
         "table": "n8n_chat_histories_arianna"
-      },
-      "credentials": { "type": "postgres", "name": "Railway PostgreSQL" }
+      }
     }
-  ]
+  ],
+  "activeVersion": {
+    "nodes": [
+      {
+        "id": "9a826b50-ccaf-41da-9f26-ef7cc21e5ff2",
+        "name": "Cada 24 horas",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.3,
+        "position": [0, 0],
+        "parameters": {
+          "rule": {
+            "interval": [{ "field": "days", "daysInterval": 1 }]
+          }
+        }
+      },
+      {
+        "id": "589aaace-b708-47c6-9185-ae6705ea8934",
+        "name": "Limpiar TODO el historial",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [224, 0],
+        "parameters": {
+          "operation": "deleteTable",
+          "table": "n8n_chat_histories_arianna"
+        }
+      }
+    ],
+    "connections": {
+      "Cada 24 horas": {
+        "main": [[{ "node": "Limpiar TODO el historial", "type": "main", "index": 0 }]]
+      }
+    }
+  },
+  "tags": [],
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  }
 }
