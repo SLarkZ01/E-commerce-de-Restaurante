@@ -1,12 +1,12 @@
 {
   "id": "RU5K23pv3Fjwv0EF",
   "name": "Arianna AI",
-  "description": "Chat con IA para E-Kitchen. Recibe preguntas en lenguaje natural, consulta Supabase vía herramientas y responde con streaming SSE.",
+  "description": "Chat con IA para E-Kitchen. Recibe preguntas en lenguaje natural, consulta Supabase vía herramientas y responde con streaming SSE. Sin memoria de chat.",
   "active": true,
   "createdAt": "2026-05-19T15:17:44.823Z",
-  "updatedAt": "2026-05-28T20:08:18.154Z",
-  "versionId": "5e2b74bc-0488-4d56-9bd9-fef083b3a033",
-  "activeVersionId": "86d5cb3c-e6bc-4d6b-998a-099e78185cc1",
+  "updatedAt": "2026-05-28T20:53:08.767Z",
+  "versionId": "130e410b-0459-4f63-a198-9d04a2e7ab17",
+  "activeVersionId": "130e410b-0459-4f63-a198-9d04a2e7ab17",
   "triggerCount": 1,
   "webhookUrl": "https://n8n-production-ac7dc.up.railway.app/webhook/ari",
   "webhookTestUrl": "https://n8n-production-ac7dc.up.railway.app/webhook-test/ari",
@@ -21,9 +21,6 @@
     },
     "Gemini (AI Studio)": {
       "ai_languageModel": [[{ "node": "Arianna AI", "type": "ai_languageModel", "index": 0 }]]
-    },
-    "Memoria de chat": {
-      "ai_memory": [[{ "node": "Arianna AI", "type": "ai_memory", "index": 0 }]]
     },
     "Think": {
       "ai_tool": [[{ "node": "Arianna AI", "type": "ai_tool", "index": 0 }]]
@@ -44,8 +41,8 @@
       "name": "Recibir mensaje",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
-      "position": [80, 64],
-      "webhookId": "ee4bf0e7-8274-4980-a6e2-82e4b745d5a1",
+      "position": [0, 112],
+      "webhookId": "fac26bf8-8b40-48be-8b9b-c0c8eeddd814",
       "parameters": {
         "httpMethod": "POST",
         "path": "ari",
@@ -58,7 +55,7 @@
       "name": "Arianna AI",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
-      "position": [480, 112],
+      "position": [416, 112],
       "parameters": {
         "promptType": "define",
         "text": "={{ $json.body.mensaje }}",
@@ -66,6 +63,10 @@
           "systemMessage": "Eres Arianna, la asistente virtual de E-Kitchen, un restaurante colombiano. Eres cálida, cercana y profesional.\n\nResponde siempre en Markdown para que el contenido se vea organizado:\n- Usa **negritas** para nombres de platos, personas y cifras importantes.\n- Usa listas con guiones para enumerar elementos.\n- Usa `código` para IDs o referencias técnicas.\n- Separa temas con líneas en blanco.\n\nReglas:\n- NUNCA muestres UUIDs ni IDs internos.\n- Siempre usa nombres reales de platos, personas y mesas.\n- Precios en COP con formato $X.XXX (ej: $32.000).\n- Si no hay datos: \"No hay nada registrado aún.\"\n- No inventes información.\n- Adáptate al tono del usuario.",
           "maxIterations": 8,
           "enableStreaming": true
+        },
+        "subnodes": {
+          "model": "Gemini (AI Studio)",
+          "tools": ["Think", "Consultar pedidos", "Consultar platos", "Consultar personal"]
         }
       }
     },
@@ -74,26 +75,10 @@
       "name": "Gemini (AI Studio)",
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1.1,
-      "position": [208, 288],
+      "position": [224, 336],
       "parameters": {
         "modelName": "models/gemini-2.5-flash",
-        "options": {
-          "maxOutputTokens": 2048,
-          "temperature": 0.3
-        }
-      }
-    },
-    {
-      "id": "56fdbd8f-54fc-4593-be98-f925a2b994c1",
-      "name": "Memoria de chat",
-      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
-      "typeVersion": 1.4,
-      "position": [368, 320],
-      "parameters": {
-        "sessionIdType": "customKey",
-        "sessionKey": "conversationId",
-        "tableName": "n8n_chat_histories_arianna",
-        "contextWindowLength": 3
+        "options": { "maxOutputTokens": 2048, "temperature": 0.3 }
       }
     },
     {
@@ -101,20 +86,19 @@
       "name": "Think",
       "type": "@n8n/n8n-nodes-langchain.toolThink",
       "typeVersion": 1.1,
-      "position": [480, 336],
-      "parameters": {
-        "description": "Planifica tu respuesta antes de escribirla."
-      }
+      "position": [352, 336],
+      "parameters": { "description": "Planifica tu respuesta antes de escribirla." }
     },
     {
       "id": "bc5f6442-1971-4e01-92f8-b31f0638592b",
       "name": "Consultar pedidos",
       "type": "n8n-nodes-base.supabaseTool",
       "typeVersion": 1,
-      "position": [608, 320],
+      "position": [480, 336],
       "parameters": {
         "operation": "getAll",
         "tableId": "pedidos",
+        "returnAll": false,
         "limit": 30,
         "filterType": "string",
         "filterString": "select=*,mesas(numero),items_pedido(cantidad,precio_unitario,platos(nombre))&order=creado_en.desc"
@@ -125,7 +109,7 @@
       "name": "Consultar platos",
       "type": "n8n-nodes-base.supabaseTool",
       "typeVersion": 1,
-      "position": [752, 320],
+      "position": [608, 336],
       "parameters": {
         "operation": "getAll",
         "tableId": "platos",
@@ -139,7 +123,7 @@
       "name": "Consultar personal",
       "type": "n8n-nodes-base.supabaseTool",
       "typeVersion": 1,
-      "position": [880, 304],
+      "position": [736, 336],
       "parameters": {
         "operation": "getAll",
         "tableId": "perfiles",
@@ -157,7 +141,7 @@
         "type": "n8n-nodes-base.webhook",
         "typeVersion": 2.1,
         "position": [0, 112],
-        "webhookId": "ee4bf0e7-8274-4980-a6e2-82e4b745d5a1",
+        "webhookId": "fac26bf8-8b40-48be-8b9b-c0c8eeddd814",
         "parameters": {
           "httpMethod": "POST",
           "path": "ari",
@@ -170,7 +154,7 @@
         "name": "Arianna AI",
         "type": "@n8n/n8n-nodes-langchain.agent",
         "typeVersion": 3.1,
-        "position": [480, 112],
+        "position": [416, 112],
         "parameters": {
           "promptType": "define",
           "text": "={{ $json.body.mensaje }}",
@@ -178,6 +162,10 @@
             "systemMessage": "Eres Arianna, la asistente virtual de E-Kitchen, un restaurante colombiano. Eres cálida, cercana y profesional.\n\nResponde siempre en Markdown para que el contenido se vea organizado:\n- Usa **negritas** para nombres de platos, personas y cifras importantes.\n- Usa listas con guiones para enumerar elementos.\n- Usa `código` para IDs o referencias técnicas.\n- Separa temas con líneas en blanco.\n\nReglas:\n- NUNCA muestres UUIDs ni IDs internos.\n- Siempre usa nombres reales de platos, personas y mesas.\n- Precios en COP con formato $X.XXX (ej: $32.000).\n- Si no hay datos: \"No hay nada registrado aún.\"\n- No inventes información.\n- Adáptate al tono del usuario.",
             "maxIterations": 8,
             "enableStreaming": true
+          },
+          "subnodes": {
+            "model": "Gemini (AI Studio)",
+            "tools": ["Think", "Consultar pedidos", "Consultar platos", "Consultar personal"]
           }
         }
       },
@@ -189,23 +177,7 @@
         "position": [224, 336],
         "parameters": {
           "modelName": "models/gemini-2.5-flash",
-          "options": {
-            "maxOutputTokens": 2048,
-            "temperature": 0.3
-          }
-        }
-      },
-      {
-        "id": "56fdbd8f-54fc-4593-be98-f925a2b994c1",
-        "name": "Memoria de chat",
-        "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
-        "typeVersion": 1.4,
-        "position": [352, 336],
-        "parameters": {
-          "sessionIdType": "customKey",
-          "sessionKey": "conversationId",
-          "tableName": "n8n_chat_histories_arianna",
-          "contextWindowLength": 3
+          "options": { "maxOutputTokens": 2048, "temperature": 0.3 }
         }
       },
       {
@@ -213,17 +185,15 @@
         "name": "Think",
         "type": "@n8n/n8n-nodes-langchain.toolThink",
         "typeVersion": 1.1,
-        "position": [480, 336],
-        "parameters": {
-          "description": "Planifica tu respuesta antes de escribirla."
-        }
+        "position": [352, 336],
+        "parameters": { "description": "Planifica tu respuesta antes de escribirla." }
       },
       {
         "id": "bc5f6442-1971-4e01-92f8-b31f0638592b",
         "name": "Consultar pedidos",
         "type": "n8n-nodes-base.supabaseTool",
         "typeVersion": 1,
-        "position": [608, 336],
+        "position": [480, 336],
         "parameters": {
           "operation": "getAll",
           "tableId": "pedidos",
@@ -238,7 +208,7 @@
         "name": "Consultar platos",
         "type": "n8n-nodes-base.supabaseTool",
         "typeVersion": 1,
-        "position": [736, 336],
+        "position": [608, 336],
         "parameters": {
           "operation": "getAll",
           "tableId": "platos",
@@ -252,7 +222,7 @@
         "name": "Consultar personal",
         "type": "n8n-nodes-base.supabaseTool",
         "typeVersion": 1,
-        "position": [864, 336],
+        "position": [736, 336],
         "parameters": {
           "operation": "getAll",
           "tableId": "perfiles",
@@ -269,9 +239,6 @@
       "Gemini (AI Studio)": {
         "ai_languageModel": [[{ "node": "Arianna AI", "type": "ai_languageModel", "index": 0 }]]
       },
-      "Memoria de chat": {
-        "ai_memory": [[{ "node": "Arianna AI", "type": "ai_memory", "index": 0 }]]
-      },
       "Think": {
         "ai_tool": [[{ "node": "Arianna AI", "type": "ai_tool", "index": 0 }]]
       },
@@ -287,8 +254,5 @@
     }
   },
   "tags": [],
-  "meta": {
-    "aiBuilderAssisted": true,
-    "builderVariant": "mcp"
-  }
+  "meta": { "aiBuilderAssisted": true, "builderVariant": "mcp" }
 }
