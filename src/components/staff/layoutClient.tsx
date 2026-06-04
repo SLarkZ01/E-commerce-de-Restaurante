@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { SidebarStaff } from "@/components/staff/sidebarStaff";
 import { HeaderStaff } from "@/components/staff/headerStaff";
-import { ShellSkeleton } from "@/components/staff/shellSkeleton";
 import type { Rol } from "@/types";
 
 const STORAGE_KEY = "ekitchen-sidebar-collapsed";
@@ -25,16 +24,12 @@ export function StaffLayoutClient({
   children: React.ReactNode;
 }) {
   const [collapsed, setCollapsed] = useState(() => esMovil());
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved !== null) {
       setCollapsed(saved === "true");
-    } else if (esMovil()) {
-      setCollapsed(true);
     }
-    setMounted(true);
   }, []);
 
   const toggle = () => {
@@ -42,10 +37,6 @@ export function StaffLayoutClient({
     setCollapsed(next);
     localStorage.setItem(STORAGE_KEY, String(next));
   };
-
-  if (!mounted) {
-    return <ShellSkeleton>{children}</ShellSkeleton>;
-  }
 
   return (
     <div className="flex min-h-dvh bg-fondo">
