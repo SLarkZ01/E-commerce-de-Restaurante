@@ -18,14 +18,14 @@ export default async function AuthResolver({
   const { data: perfil } = await supabase
     .from("perfiles")
     .select("rol, nombre")
-    .eq("id", user.id)
+    .eq("id", user!.id)
     .single();
 
   const rol = (perfil?.rol as Rol) ?? "mesero";
 
   return (
     <StaffLayoutClient
-      userEmail={user.email ?? ""}
+      userEmail={user!.email ?? ""}
       userName={perfil?.nombre ?? ""}
       rol={rol}
     >

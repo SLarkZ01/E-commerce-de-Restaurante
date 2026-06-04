@@ -10,19 +10,19 @@ import type { StatsAdmin } from "@/types";
 
 const GraficoIngresosHora = dynamic(
   () => import("./graficoIngresosHora").then((m) => ({ default: m.GraficoIngresosHora })),
-  { ssr: true }
+  { ssr: false }
 );
 const GraficoTendenciaSemanal = dynamic(
   () => import("./graficoTendenciaSemanal").then((m) => ({ default: m.GraficoTendenciaSemanal })),
-  { ssr: true }
+  { ssr: false }
 );
 const GraficoEstadoPedidos = dynamic(
   () => import("./graficoEstadoPedidos").then((m) => ({ default: m.GraficoEstadoPedidos })),
-  { ssr: true }
+  { ssr: false }
 );
 const GraficoPlatosPopulares = dynamic(
   () => import("./graficoPlatosPopulares").then((m) => ({ default: m.GraficoPlatosPopulares })),
-  { ssr: true }
+  { ssr: false }
 );
 
 interface DashboardAdminProps {

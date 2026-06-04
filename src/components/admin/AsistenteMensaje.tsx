@@ -1,9 +1,14 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import dynamic from "next/dynamic";
 import { User, MessageSquare, Pencil, Trash2, Check, X } from "lucide-react";
-import ReactMarkdown from "react-markdown";
 import type { MensajeAsistente } from "@/stores/asistente";
+
+const ReactMarkdown = dynamic(() => import("react-markdown"), {
+  ssr: false,
+  loading: () => <div className="animate-pulse h-4 w-3/4 bg-fondo-oscuro/30 rounded" />,
+});
 
 interface AsistenteMensajeProps {
   mensaje: MensajeAsistente;

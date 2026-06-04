@@ -7,12 +7,19 @@ import { CarritoSidebar } from "@/components/cliente/CarritoSidebar";
 import { WompiProvider } from "@/components/cliente/WompiProvider";
 import { WompiModalProvider } from "@/components/cliente/WompiModalContext";
 import { RastrearPedidoProvider } from "@/components/cliente/RastrearPedidoProvider";
-import { RastrearPedidoModal } from "@/components/cliente/rastrearPedidoModal";
 import { PagoExitoProvider } from "@/components/cliente/PagoExitoProvider";
-import { PagoExitoModal } from "@/components/cliente/PagoExitoModal";
 import { notFound } from "next/navigation";
+import dynamic from "next/dynamic";
 import { Suspense } from "react";
 import { MesaLayout } from "@/components/cliente/MesaLayout";
+
+const RastrearPedidoModal = dynamic(
+  () => import("@/components/cliente/rastrearPedidoModal").then((m) => ({ default: m.RastrearPedidoModal }))
+);
+
+const PagoExitoModal = dynamic(
+  () => import("@/components/cliente/PagoExitoModal").then((m) => ({ default: m.PagoExitoModal }))
+);
 
 export default async function PaginaMesa({
   params,

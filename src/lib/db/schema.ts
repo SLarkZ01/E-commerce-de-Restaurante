@@ -7,7 +7,9 @@ import {
   decimal,
   integer,
   boolean,
+  index,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 export const rolEnum = pgEnum("rol", ["cocinero", "mesero", "admin"]);
 
@@ -54,7 +56,11 @@ export const platos = pgTable("platos", {
   creadoPor: uuid("creado_por").references(() => perfiles.id),
   creadoEn: timestamp("creado_en").defaultNow().notNull(),
   actualizadoEn: timestamp("actualizado_en").defaultNow().notNull(),
-});
+}, (table) => [
+  index("idx_platos_categoria").on(table.categoriaId),
+  index("idx_platos_disponible").on(table.disponible)
+    .where(sql`${table.disponible} = true`),
+]);
 
 export const mesas = pgTable("mesas", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -74,7 +80,12 @@ export const pedidos = pgTable("pedidos", {
   cocineroId: uuid("cocinero_id").references(() => perfiles.id),
   creadoEn: timestamp("creado_en").defaultNow().notNull(),
   actualizadoEn: timestamp("actualizado_en").defaultNow().notNull(),
-});
+}, (table) => [
+  index("idx_pedidos_estado").on(table.estado),
+  index("idx_pedidos_mesa").on(table.mesaId),
+  index("idx_pedidos_creado_en").on(table.creadoEn),
+  index("idx_pedidos_cocinero_id").on(table.cocineroId),
+]);
 
 export const itemsPedido = pgTable("items_pedido", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -86,4 +97,7 @@ export const itemsPedido = pgTable("items_pedido", {
     .notNull(),
   cantidad: integer("cantidad").notNull().default(1),
   precioUnitario: decimal("precio_unitario", { precision: 10, scale: 0 }).notNull(),
-});
+}, (table) => [
+  index("idx_items_pedido_pedido").on(table.pedidoId),
+  index("idx_items_pedido_plato").on(table.platoId),
+]);

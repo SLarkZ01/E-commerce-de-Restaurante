@@ -1,6 +1,7 @@
 "use client";
 
 import { memo } from "react";
+import Image from "next/image";
 import { Utensils, Coffee, Package } from "lucide-react";
 import type { ItemPedidoConImagen, TipoPlato } from "@/types";
 
@@ -24,13 +25,14 @@ export const DishThumbnails = memo(function DishThumbnails({
           key={i}
           className="flex items-center gap-2 sm:gap-2.5 rounded-lg bg-fondo/60 border border-borde/20 px-1.5 sm:px-2 py-1.5 sm:py-2"
         >
-          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-lg overflow-hidden bg-fondo-oscuro flex-shrink-0">
+          <div className="relative w-9 h-9 sm:w-11 sm:h-11 rounded-lg overflow-hidden bg-fondo-oscuro flex-shrink-0">
             {item.plato_imagen_url ? (
-              <img
+              <Image
                 src={item.plato_imagen_url}
                 alt={item.plato_nombre}
-                className="w-full h-full object-cover"
-                loading="lazy"
+                fill
+                sizes="40px"
+                className="object-cover"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-texto-terciario/50">

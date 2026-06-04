@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Plus, Utensils } from "lucide-react";
 import { formatearPrecio } from "@/lib/formato";
 import type { Plato } from "@/types";
@@ -21,11 +22,12 @@ export function TarjetaPlatoCliente({ plato, alAgregar }: TarjetaPlatoClientePro
     <div className="group relative bg-fondo-card rounded-xl border border-borde/40 overflow-hidden shadow-sm hover:shadow-md hover:border-primario/30 transition-all duration-200 hover:-translate-y-1">
       <div className="relative aspect-[3/2] bg-fondo-oscuro overflow-hidden">
         {plato.imagen_url ? (
-          <img
+          <Image
             src={plato.imagen_url}
             alt={plato.nombre}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
-            loading="lazy"
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+            className="object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-texto-terciario/40">

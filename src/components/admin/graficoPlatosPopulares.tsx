@@ -2,20 +2,11 @@
 
 import { useMemo, useState } from "react";
 import { Bar } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  Tooltip,
-  Legend,
-} from "chart.js";
+import "@/lib/chart-setup";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatearPrecio } from "@/lib/formato";
 import type { PlatoPopular } from "@/types";
-
-ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 interface GraficoPlatosPopularesProps {
   datos: PlatoPopular[];

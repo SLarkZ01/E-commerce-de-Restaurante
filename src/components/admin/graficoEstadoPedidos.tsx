@@ -2,11 +2,9 @@
 
 import { useMemo } from "react";
 import { Doughnut } from "react-chartjs-2";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import "@/lib/chart-setup";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import type { DistribucionEstado } from "@/types";
-
-ChartJS.register(ArcElement, Tooltip, Legend);
 
 interface GraficoEstadoPedidosProps {
   datos: DistribucionEstado[];

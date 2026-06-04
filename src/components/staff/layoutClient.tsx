@@ -23,12 +23,14 @@ export function StaffLayoutClient({
   rol: Rol;
   children: React.ReactNode;
 }) {
-  const [collapsed, setCollapsed] = useState(() => esMovil());
+  const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved !== null) {
       setCollapsed(saved === "true");
+    } else if (esMovil()) {
+      setCollapsed(true);
     }
   }, []);
 
