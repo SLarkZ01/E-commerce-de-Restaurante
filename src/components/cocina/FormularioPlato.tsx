@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { Loader2, AlertCircle, Sparkles, ImagePlus, DollarSign, Pencil } from "lucide-react";
 import type { Categoria, Plato } from "@/types";
 import { Input } from "@/components/ui/input";
@@ -201,11 +202,13 @@ export function FormularioPlato({
           </div>
           {tieneImagenActual ? (
             <div className="space-y-2">
-              <div className="rounded-xl border border-borde/40 overflow-hidden bg-white">
-                <img
+              <div className="relative rounded-xl border border-borde/40 overflow-hidden bg-white h-40">
+                <Image
                   src={platoInicial!.imagen_url!}
                   alt={platoInicial!.nombre}
-                  className="w-full h-40 object-contain p-2"
+                  fill
+                  sizes="400px"
+                  className="object-contain p-2"
                 />
               </div>
               <div className="flex justify-center">

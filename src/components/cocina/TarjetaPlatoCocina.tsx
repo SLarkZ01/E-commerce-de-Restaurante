@@ -1,6 +1,7 @@
 "use client";
 
 import { memo } from "react";
+import Image from "next/image";
 import { Trash2, Pencil, Utensils, Coffee, Package, EyeOff } from "lucide-react";
 import { formatearPrecio } from "@/lib/formato";
 import { Switch } from "@/components/ui/switch";
@@ -77,13 +78,12 @@ export const TarjetaPlatoCocina = memo(function TarjetaPlatoCocina({
     >
       <div className="relative aspect-[16/10] bg-white overflow-hidden">
         {plato.imagen_url ? (
-          <img
+          <Image
             src={plato.imagen_url}
             alt={plato.nombre}
-            className="w-full h-full object-contain p-4 transition-transform duration-500 group-hover:scale-[1.02]"
-            loading="lazy"
-            width="320"
-            height="200"
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className="object-contain p-4 transition-transform duration-500 group-hover:scale-[1.02]"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-texto-terciario/30">

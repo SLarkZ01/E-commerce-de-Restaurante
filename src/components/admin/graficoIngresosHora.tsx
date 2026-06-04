@@ -2,19 +2,10 @@
 
 import { useMemo } from "react";
 import { Bar } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  Tooltip,
-  Legend,
-} from "chart.js";
+import "@/lib/chart-setup";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { formatearPrecio } from "@/lib/formato";
 import type { IngresoPorHora } from "@/types";
-
-ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 interface GraficoIngresosHoraProps {
   datos: IngresoPorHora[];

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 
 interface RastrearEntregadoProps {
@@ -9,10 +10,13 @@ interface RastrearEntregadoProps {
 export function RastrearEntregado({ onCerrar }: RastrearEntregadoProps) {
   return (
     <div className="flex flex-col items-center gap-3 py-2">
-      <img
+      <Image
         src="/gifs/chefsito.gif"
         alt="Chef despidiéndose"
-        className="w-28 h-28 object-contain"
+        width={112}
+        height={112}
+        className="object-contain"
+        unoptimized
       />
       <div className="text-center">
         <p className="font-playfair text-lg font-bold text-green-700">

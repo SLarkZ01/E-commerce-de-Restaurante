@@ -102,6 +102,8 @@ export async function crearPedidoWompi(
   }
 
   revalidatePath("/cocina");
+  revalidatePath("/admin");
+  revalidatePath("/logistica");
   return { pedidoId };
 }
 

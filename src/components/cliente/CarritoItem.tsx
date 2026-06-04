@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
 import { formatearPrecio } from "@/lib/formato";
 import type { ItemCarrito } from "@/types";
@@ -15,12 +16,14 @@ export function CarritoItem({
 }: CarritoItemProps) {
   return (
     <div className="flex items-center gap-3 bg-fondo-oscuro/50 rounded-xl p-3 border border-borde/30">
-      <div className="w-14 h-14 rounded-lg bg-fondo-card flex items-center justify-center text-texto-terciario shrink-0 overflow-hidden">
+      <div className="relative w-14 h-14 rounded-lg bg-fondo-card flex items-center justify-center text-texto-terciario shrink-0 overflow-hidden">
         {item.imagenUrl ? (
-          <img
+          <Image
             src={item.imagenUrl}
             alt={item.nombre}
-            className="w-full h-full object-cover"
+            fill
+            sizes="56px"
+            className="object-cover"
           />
         ) : (
           <ShoppingBag className="w-5 h-5" />
