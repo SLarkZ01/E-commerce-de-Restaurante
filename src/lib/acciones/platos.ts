@@ -10,8 +10,8 @@ export async function obtenerPlatosDisponibles(): Promise<{
   const supabase = await crearCliente();
 
   const [platosRes, catRes] = await Promise.all([
-    supabase.from("platos").select("*").eq("disponible", true),
-    supabase.from("categorias").select("*"),
+    supabase.from("platos").select("*").eq("disponible", true).order("nombre", { ascending: true }),
+    supabase.from("categorias").select("id, nombre, slug").order("nombre", { ascending: true }),
   ]);
 
   return {

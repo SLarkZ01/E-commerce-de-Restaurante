@@ -1,13 +1,13 @@
 "use client";
 
-import { Plus, Trash2, MessageSquare, PanelLeftClose } from "lucide-react";
+import { Plus, Trash2, MessageSquare, PanelLeftClose, X } from "lucide-react";
 import { usarAsistenteStore } from "@/stores/asistente";
 import { useAsistente } from "./AsistenteProvider";
 import { eliminarConversacionRemota } from "@/lib/acciones/asistente";
 
 export function AsistenteSidebar() {
   const store = usarAsistenteStore();
-  const { sidebarAbierto, cerrarSidebar } = useAsistente();
+  const { sidebarAbierto, esMovil, cerrarSidebar } = useAsistente();
 
   const conversaciones = store.conversaciones;
   const activaId = store.conversacionActivaId;
@@ -22,17 +22,15 @@ export function AsistenteSidebar() {
     eliminarConversacionRemota(id);
   };
 
-  if (!sidebarAbierto) return null;
-
-  return (
-    <aside className="w-64 xl:w-72 border-r border-borde/40 bg-fondo-card flex flex-col h-full shrink-0">
+  const contenido = (
+    <>
       <div className="px-3 py-3 border-b border-borde/40 flex items-center justify-between">
         <h2 className="font-playfair text-sm font-bold text-texto">Conversaciones</h2>
         <button
           onClick={cerrarSidebar}
           className="p-1.5 rounded-lg hover:bg-fondo-oscuro/30 text-texto-terciario hover:text-texto transition-colors"
         >
-          <PanelLeftClose className="w-4 h-4" />
+          {esMovil ? <X className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
         </button>
       </div>
 
@@ -48,7 +46,7 @@ export function AsistenteSidebar() {
         {conversaciones.map((c) => (
           <button
             key={c.id}
-            onClick={() => store.activarConversacion(c.id)}
+            onClick={() => { store.activarConversacion(c.id); if (esMovil) cerrarSidebar(); }}
             className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-left text-xs transition-colors group ${
               c.id === activaId
                 ? "bg-primario/10 text-primario font-medium"
@@ -68,6 +66,35 @@ export function AsistenteSidebar() {
             </span>
           </button>
         ))}
+      </div>
+    </>
+  );
+
+  if (esMovil) {
+    return (
+      <>
+        {sidebarAbierto && (
+          <div className="fixed inset-0 z-30 bg-black/20 backdrop-blur-sm" onClick={cerrarSidebar} />
+        )}
+        <aside
+          className={`fixed left-0 top-0 bottom-0 z-40 w-72 bg-fondo-card border-r border-borde/40 flex flex-col shadow-xl transition-transform duration-300 ease-in-out ${
+            sidebarAbierto ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
+          {contenido}
+        </aside>
+      </>
+    );
+  }
+
+  return (
+    <aside
+      className={`border-r border-borde/40 bg-fondo-card flex flex-col h-full shrink-0 overflow-hidden transition-all duration-300 ease-in-out ${
+        sidebarAbierto ? "w-64 xl:w-72" : "w-0"
+      }`}
+    >
+      <div className="w-64 xl:w-72 flex flex-col h-full">
+        {contenido}
       </div>
     </aside>
   );

@@ -2,6 +2,7 @@
 
 import { crearCliente } from "@/lib/supabase/server";
 import { crearEstrategiaDespacho } from "@/lib/servicios/estrategiaDespacho";
+import { mapearPedidoADetalles } from "@/lib/mapeo";
 import type { EstadoPedido, Pedido, TipoDespacho, TipoPlato, PedidoConDetalles, ItemPedidoConImagen } from "@/types";
 
 const TRANSICIONES_VALIDAS: Record<EstadoPedido, EstadoPedido[]> = {
@@ -42,13 +43,8 @@ export async function cambiarEstadoPedido(
     return { exito: false, error: "No autenticado" };
   }
 
-  const { data: perfil } = await supabase
-    .from("perfiles")
-    .select("rol")
-    .eq("id", user.id)
-    .single();
-
-  const rolUsuario = perfil?.rol as string | undefined;
+  const rolUsuario = (user.user_metadata?.rol as string | undefined) ??
+    ((await supabase.from("perfiles").select("rol").eq("id", user.id).single()).data?.rol as string | undefined);
 
   if (rolUsuario !== "cocinero" && rolUsuario !== "mesero") {
     return { exito: false, error: "No tienes permiso para cambiar el estado" };
@@ -186,71 +182,41 @@ export async function obtenerItemsPorPedido(
 export async function obtenerStatsCocina(): Promise<StatsCocina> {
   const supabase = await crearCliente();
 
-  const { data: pendientes } = await supabase
+  const { data } = await supabase
     .from("pedidos")
-    .select("id")
-    .eq("estado", "pendiente");
+    .select("estado, creado_en")
+    .in("estado", ["pendiente", "preparando", "listo"]);
 
-  const { data: preparando } = await supabase
-    .from("pedidos")
-    .select("creado_en")
-    .eq("estado", "preparando");
-
-  const { data: listos } = await supabase
-    .from("pedidos")
-    .select("id")
-    .eq("estado", "listo");
-
-  const ahora = Date.now();
+  let pendientes = 0;
+  let preparando = 0;
+  let listos = 0;
   let tiempoTotal = 0;
   let countConTiempo = 0;
 
-  if (preparando) {
-    for (const p of preparando) {
-      const creado = new Date(p.creado_en as string).getTime();
-      const diffMin = (ahora - creado) / 60000;
-      if (diffMin > 0) {
-        tiempoTotal += diffMin;
-        countConTiempo++;
+  if (data) {
+    const ahora = Date.now();
+
+    for (const p of data) {
+      const estado = p.estado as string;
+      if (estado === "pendiente") pendientes++;
+      else if (estado === "listo") listos++;
+      else if (estado === "preparando") {
+        preparando++;
+        const creado = new Date(p.creado_en as string).getTime();
+        const diffMin = (ahora - creado) / 60000;
+        if (diffMin > 0) {
+          tiempoTotal += diffMin;
+          countConTiempo++;
+        }
       }
     }
   }
 
   return {
-    pendientes: pendientes?.length ?? 0,
-    preparando: preparando?.length ?? 0,
-    listos: listos?.length ?? 0,
+    pendientes,
+    preparando,
+    listos,
     tiempoPromedioMin: countConTiempo > 0 ? Math.round(tiempoTotal / countConTiempo) : 0,
-  };
-}
-
-function mapearPedidoADetalles(pedido: Record<string, unknown>): PedidoConDetalles {
-  const mesaData = (pedido.mesas as Record<string, unknown> | null) ?? null;
-  const itemsRaw = (pedido.items_pedido as Record<string, unknown>[]) ?? [];
-  const items: ItemPedidoConImagen[] = itemsRaw.map((item) => {
-    const plato = (item.platos as Record<string, unknown>) ?? {};
-    return {
-      plato_nombre: (plato.nombre as string) ?? "Plato",
-      plato_imagen_url: (plato.imagen_url as string) ?? null,
-      plato_tipo: (plato.tipo_plato as TipoPlato) ?? "plato_fuerte",
-      cantidad: (item.cantidad as number) ?? 1,
-      precio_unitario: Number(item.precio_unitario ?? 0),
-    };
-  });
-
-  return {
-    id: pedido.id as string,
-    mesa_id: (pedido.mesa_id as string) ?? null,
-    mesa_numero: mesaData ? (mesaData.numero as number | null) : null,
-    tipo_despacho: (pedido.tipo_despacho as "mesa" | "para_llevar") ?? "mesa",
-    estado: pedido.estado as EstadoPedido,
-    correo_cliente: (pedido.correo_cliente as string) ?? null,
-    total: Number(pedido.total ?? 0),
-    wompi_transaccion_id: (pedido.wompi_transaccion_id as string) ?? null,
-    cocinero_id: (pedido.cocinero_id as string) ?? null,
-    creado_en: pedido.creado_en as string,
-    actualizado_en: pedido.actualizado_en as string,
-    items,
   };
 }
 
@@ -299,6 +265,7 @@ export async function obtenerTodosPedidosConImagenes(): Promise<PedidoConDetalle
         )
       )
     `)
+    .in("estado", ["pendiente", "preparando", "listo"])
     .order("creado_en", { ascending: false })
     .limit(200);
 

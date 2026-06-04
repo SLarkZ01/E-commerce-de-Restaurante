@@ -10,7 +10,7 @@ import { AsistenteInput } from "./AsistenteInput";
 import { AlertCircle } from "lucide-react";
 
 export function AsistenteChat() {
-  const { sidebarAbierto, toggleSidebar } = useAsistente();
+  const { sidebarAbierto, esMovil, toggleSidebar } = useAsistente();
   const {
     estado,
     error,
@@ -24,6 +24,8 @@ export function AsistenteChat() {
   const cargando = estado === "recibiendo" || estado === "enviando";
   const hayMensajes = mensajes.length > 0;
 
+  const mostrarBotonSidebar = esMovil || !sidebarAbierto;
+
   return (
     <div className="flex h-[calc(100dvh-4rem)] bg-fondo overflow-hidden">
       <AsistenteSidebar />
@@ -31,7 +33,7 @@ export function AsistenteChat() {
       <div className="flex-1 flex flex-col min-w-0 bg-fondo-oscuro/20">
         {/* Header */}
         <div className="px-4 py-3 border-b border-borde/40 bg-fondo-card flex items-center gap-3">
-          {!sidebarAbierto && (
+          {mostrarBotonSidebar && (
             <button
               onClick={toggleSidebar}
               className="p-1.5 rounded-lg hover:bg-fondo-oscuro/30 text-texto-terciario hover:text-texto transition-colors"

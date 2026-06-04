@@ -1,35 +1,15 @@
-import { crearCliente } from "@/lib/supabase/server";
-import { StaffLayoutClient } from "@/components/staff/layoutClient";
-import { redirect } from "next/navigation";
-import type { Rol } from "@/types";
+import { Suspense } from "react";
+import AuthResolver from "@/components/staff/authResolver";
+import { ShellSkeleton } from "@/components/staff/shellSkeleton";
 
-export default async function LayoutStaff({
+export default function LayoutStaff({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await crearCliente();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) redirect("/");
-
-  const { data: perfil } = await supabase
-    .from("perfiles")
-    .select("rol, nombre")
-    .eq("id", user.id)
-    .single();
-
-  const rol = (perfil?.rol as Rol) ?? "mesero";
-
   return (
-    <StaffLayoutClient
-      userEmail={user.email ?? ""}
-      userName={perfil?.nombre ?? ""}
-      rol={rol}
-    >
-      {children}
-    </StaffLayoutClient>
+    <Suspense fallback={<ShellSkeleton>{children}</ShellSkeleton>}>
+      <AuthResolver>{children}</AuthResolver>
+    </Suspense>
   );
 }

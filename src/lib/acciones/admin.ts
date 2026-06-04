@@ -3,6 +3,7 @@
 import { crearCliente } from "@/lib/supabase/server";
 import { crearClienteAdmin } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
+import { mapearPedidoADetalles } from "@/lib/mapeo";
 import type {
   Perfil,
   Mesa,
@@ -13,9 +14,6 @@ import type {
   DistribucionEstado,
   PlatoPopular,
   PedidoConDetalles,
-  ItemPedidoConImagen,
-  TipoPlato,
-  EstadoPedido,
 } from "@/types";
 
 export async function obtenerPerfiles(): Promise<Perfil[]> {
@@ -162,49 +160,17 @@ export async function obtenerStatsAdmin(): Promise<StatsAdmin> {
   const hoy = new Date();
   const inicioHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate()).toISOString();
   const finHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + 1).toISOString();
+  const ultimos30Dias = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() - 30).toISOString();
 
-  const [pedidosResult, itemsResult] = await Promise.all([
-    supabase
-      .from("pedidos")
-      .select(`*, mesas(numero), items_pedido(cantidad, precio_unitario, platos(nombre, imagen_url, tipo_plato))`)
-      .order("creado_en", { ascending: false }),
-    supabase
-      .from("items_pedido")
-      .select("cantidad, precio_unitario, pedidos(creado_en), platos(nombre)")
-      .order("cantidad", { ascending: false }),
-  ]);
+  const { data: pedidosRaw } = await supabase
+    .from("pedidos")
+    .select(`*, mesas(numero), items_pedido(cantidad, precio_unitario, platos(nombre, imagen_url, tipo_plato))`)
+    .gte("creado_en", ultimos30Dias)
+    .order("creado_en", { ascending: false })
+    .limit(500);
 
-  const pedidosRaw = (pedidosResult.data ?? []) as Array<Record<string, unknown>>;
-  const itemsRaw = (itemsResult.data ?? []) as Array<Record<string, unknown>>;
-
-  const pedidos: PedidoConDetalles[] = pedidosRaw.map((pedido) => {
-    const mesaData = pedido.mesas as Record<string, unknown> | null;
-    const itemsData = (pedido.items_pedido as Array<Record<string, unknown>>) ?? [];
-    const items: ItemPedidoConImagen[] = itemsData.map((item) => {
-      const plato = item.platos as Record<string, unknown> ?? {};
-      return {
-        plato_nombre: (plato.nombre as string) ?? "Plato",
-        plato_imagen_url: (plato.imagen_url as string) ?? null,
-        plato_tipo: (plato.tipo_plato as TipoPlato) ?? "plato_fuerte",
-        cantidad: (item.cantidad as number) ?? 1,
-        precio_unitario: Number(item.precio_unitario ?? 0),
-      };
-    });
-    return {
-      id: pedido.id as string,
-      mesa_id: (pedido.mesa_id as string) ?? null,
-      mesa_numero: mesaData ? (mesaData.numero as number) : null,
-      tipo_despacho: (pedido.tipo_despacho as "mesa" | "para_llevar") ?? "mesa",
-      estado: pedido.estado as EstadoPedido,
-      correo_cliente: (pedido.correo_cliente as string) ?? null,
-      total: Number(pedido.total ?? 0),
-      wompi_transaccion_id: (pedido.wompi_transaccion_id as string) ?? null,
-      cocinero_id: (pedido.cocinero_id as string) ?? null,
-      creado_en: pedido.creado_en as string,
-      actualizado_en: pedido.actualizado_en as string,
-      items,
-    };
-  });
+  const pedidos: PedidoConDetalles[] = ((pedidosRaw ?? []) as Array<Record<string, unknown>>)
+    .map((p) => mapearPedidoADetalles(p));
 
   // --- estadisticas ---
   const ventasTotales = pedidos
@@ -290,18 +256,17 @@ export async function obtenerStatsAdmin(): Promise<StatsAdmin> {
     })
   );
 
-  // --- platos populares ---
+  // --- platos populares (derivados del join, sin query extra) ---
   const mapaPlato = new Map<string, { cantidad: number; total: number }>();
-  for (const item of itemsRaw) {
-    const platoData = item.platos as Record<string, unknown> | null;
-    const nombre = platoData?.nombre as string;
-    if (!nombre) continue;
-    const cant = (item.cantidad as number) ?? 0;
-    const precio = Number(item.precio_unitario ?? 0);
-    const existente = mapaPlato.get(nombre) ?? { cantidad: 0, total: 0 };
-    existente.cantidad += cant;
-    existente.total += cant * precio;
-    mapaPlato.set(nombre, existente);
+  for (const p of pedidos) {
+    for (const item of p.items) {
+      const nombre = item.plato_nombre;
+      if (!nombre) continue;
+      const existente = mapaPlato.get(nombre) ?? { cantidad: 0, total: 0 };
+      existente.cantidad += item.cantidad;
+      existente.total += item.cantidad * item.precio_unitario;
+      mapaPlato.set(nombre, existente);
+    }
   }
   const platosPopulares: PlatoPopular[] = Array.from(mapaPlato.entries())
     .map(([nombre, val]) => ({ nombre, cantidad: val.cantidad, total: val.total }))
