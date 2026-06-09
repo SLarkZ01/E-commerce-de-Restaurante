@@ -3,9 +3,10 @@
   "name": "Arianna AI",
   "description": "Chat con IA para E-Kitchen. Recibe preguntas en lenguaje natural, consulta Supabase vía herramientas y responde con streaming SSE. Sin memoria de chat.",
   "active": true,
+  "isArchived": false,
   "createdAt": "2026-05-19T15:17:44.823Z",
-  "updatedAt": "2026-05-28T20:53:08.767Z",
-  "versionId": "130e410b-0459-4f63-a198-9d04a2e7ab17",
+  "updatedAt": "2026-06-04T05:35:20.176Z",
+  "versionId": "13eaecbf-4607-404d-b7ee-b50120a2b7b0",
   "activeVersionId": "130e410b-0459-4f63-a198-9d04a2e7ab17",
   "triggerCount": 1,
   "webhookUrl": "https://n8n-production-ac7dc.up.railway.app/webhook/ari",
@@ -41,7 +42,7 @@
       "name": "Recibir mensaje",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
-      "position": [0, 112],
+      "position": [96, 32],
       "webhookId": "fac26bf8-8b40-48be-8b9b-c0c8eeddd814",
       "parameters": {
         "httpMethod": "POST",
@@ -55,7 +56,7 @@
       "name": "Arianna AI",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
-      "position": [416, 112],
+      "position": [400, 64],
       "parameters": {
         "promptType": "define",
         "text": "={{ $json.body.mensaje }}",
@@ -63,10 +64,6 @@
           "systemMessage": "Eres Arianna, la asistente virtual de E-Kitchen, un restaurante colombiano. Eres cálida, cercana y profesional.\n\nResponde siempre en Markdown para que el contenido se vea organizado:\n- Usa **negritas** para nombres de platos, personas y cifras importantes.\n- Usa listas con guiones para enumerar elementos.\n- Usa `código` para IDs o referencias técnicas.\n- Separa temas con líneas en blanco.\n\nReglas:\n- NUNCA muestres UUIDs ni IDs internos.\n- Siempre usa nombres reales de platos, personas y mesas.\n- Precios en COP con formato $X.XXX (ej: $32.000).\n- Si no hay datos: \"No hay nada registrado aún.\"\n- No inventes información.\n- Adáptate al tono del usuario.",
           "maxIterations": 8,
           "enableStreaming": true
-        },
-        "subnodes": {
-          "model": "Gemini (AI Studio)",
-          "tools": ["Think", "Consultar pedidos", "Consultar platos", "Consultar personal"]
         }
       }
     },
@@ -75,7 +72,7 @@
       "name": "Gemini (AI Studio)",
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1.1,
-      "position": [224, 336],
+      "position": [160, 336],
       "parameters": {
         "modelName": "models/gemini-2.5-flash",
         "options": { "maxOutputTokens": 2048, "temperature": 0.3 }
@@ -86,7 +83,7 @@
       "name": "Think",
       "type": "@n8n/n8n-nodes-langchain.toolThink",
       "typeVersion": 1.1,
-      "position": [352, 336],
+      "position": [304, 352],
       "parameters": { "description": "Planifica tu respuesta antes de escribirla." }
     },
     {
@@ -94,7 +91,7 @@
       "name": "Consultar pedidos",
       "type": "n8n-nodes-base.supabaseTool",
       "typeVersion": 1,
-      "position": [480, 336],
+      "position": [448, 368],
       "parameters": {
         "operation": "getAll",
         "tableId": "pedidos",
@@ -109,7 +106,7 @@
       "name": "Consultar platos",
       "type": "n8n-nodes-base.supabaseTool",
       "typeVersion": 1,
-      "position": [608, 336],
+      "position": [624, 352],
       "parameters": {
         "operation": "getAll",
         "tableId": "platos",
@@ -162,10 +159,6 @@
             "systemMessage": "Eres Arianna, la asistente virtual de E-Kitchen, un restaurante colombiano. Eres cálida, cercana y profesional.\n\nResponde siempre en Markdown para que el contenido se vea organizado:\n- Usa **negritas** para nombres de platos, personas y cifras importantes.\n- Usa listas con guiones para enumerar elementos.\n- Usa `código` para IDs o referencias técnicas.\n- Separa temas con líneas en blanco.\n\nReglas:\n- NUNCA muestres UUIDs ni IDs internos.\n- Siempre usa nombres reales de platos, personas y mesas.\n- Precios en COP con formato $X.XXX (ej: $32.000).\n- Si no hay datos: \"No hay nada registrado aún.\"\n- No inventes información.\n- Adáptate al tono del usuario.",
             "maxIterations": 8,
             "enableStreaming": true
-          },
-          "subnodes": {
-            "model": "Gemini (AI Studio)",
-            "tools": ["Think", "Consultar pedidos", "Consultar platos", "Consultar personal"]
           }
         }
       },

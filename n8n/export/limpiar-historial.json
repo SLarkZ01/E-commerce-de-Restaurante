@@ -1,0 +1,49 @@
+{
+  "name": "Limpiar historial Arianna",
+  "nodes": [
+    {
+      "id": "9a826b50-ccaf-41da-9f26-ef7cc21e5ff2",
+      "name": "Cada 24 horas",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [0, 0],
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "days", "daysInterval": 1 }]
+        }
+      }
+    },
+    {
+      "id": "589aaace-b708-47c6-9185-ae6705ea8934",
+      "name": "Limpiar TODO el historial",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [224, 0],
+      "parameters": {
+        "operation": "deleteTable",
+        "table": "n8n_chat_histories_arianna"
+      }
+    }
+  ],
+  "connections": {
+    "Cada 24 horas": {
+      "main": [[{ "node": "Limpiar TODO el historial", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateId": "limpiar-historial-arianna",
+    "nota": "ELIMINADO de n8n. Solo existe como backup local. Requiere credencial PostgreSQL configurada.",
+    "templateCredsSetup": {
+      "credentials": [
+        {
+          "nodeName": "Limpiar TODO el historial",
+          "credentialType": "postgres",
+          "displayName": "PostgreSQL (n8n storage)"
+        }
+      ]
+    }
+  }
+}
