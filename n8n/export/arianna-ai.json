@@ -1,0 +1,147 @@
+{
+  "name": "Arianna AI",
+  "nodes": [
+    {
+      "id": "88cba872-7925-4088-a7d1-c34cf2c71dcc",
+      "name": "Recibir mensaje",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [0, 112],
+      "webhookId": "fac26bf8-8b40-48be-8b9b-c0c8eeddd814",
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ari",
+        "responseMode": "streaming",
+        "options": {}
+      }
+    },
+    {
+      "id": "d1d23117-bdc1-4d79-960e-a7eb2323c013",
+      "name": "Arianna AI",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [416, 112],
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.mensaje }}",
+        "options": {
+          "systemMessage": "Eres Arianna, la asistente virtual de E-Kitchen, un restaurante colombiano. Eres cálida, cercana y profesional.\n\nResponde siempre en Markdown para que el contenido se vea organizado:\n- Usa **negritas** para nombres de platos, personas y cifras importantes.\n- Usa listas con guiones para enumerar elementos.\n- Usa `código` para IDs o referencias técnicas.\n- Separa temas con líneas en blanco.\n\nReglas:\n- NUNCA muestres UUIDs ni IDs internos.\n- Siempre usa nombres reales de platos, personas y mesas.\n- Precios en COP con formato $X.XXX (ej: $32.000).\n- Si no hay datos: \"No hay nada registrado aún.\"\n- No inventes información.\n- Adáptate al tono del usuario.",
+          "maxIterations": 8,
+          "enableStreaming": true
+        }
+      }
+    },
+    {
+      "id": "0356e42c-1c5f-451b-ac61-c9575e0b3fbb",
+      "name": "Gemini (AI Studio)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [224, 336],
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
+        "options": { "maxOutputTokens": 2048, "temperature": 0.3 }
+      }
+    },
+    {
+      "id": "da35f98d-73d0-43b1-876a-2ae852276b6f",
+      "name": "Think",
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1.1,
+      "position": [352, 336],
+      "parameters": { "description": "Planifica tu respuesta antes de escribirla." }
+    },
+    {
+      "id": "bc5f6442-1971-4e01-92f8-b31f0638592b",
+      "name": "Consultar pedidos",
+      "type": "n8n-nodes-base.supabaseTool",
+      "typeVersion": 1,
+      "position": [480, 336],
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "pedidos",
+        "returnAll": false,
+        "limit": 30,
+        "filterType": "string",
+        "filterString": "select=*,mesas(numero),items_pedido(cantidad,precio_unitario,platos(nombre))&order=creado_en.desc"
+      }
+    },
+    {
+      "id": "a8397ea7-cb40-4f68-bb4a-860d57f0d81e",
+      "name": "Consultar platos",
+      "type": "n8n-nodes-base.supabaseTool",
+      "typeVersion": 1,
+      "position": [608, 336],
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "platos",
+        "returnAll": true,
+        "filterType": "string",
+        "filterString": "select=*,categorias(nombre)&order=nombre.asc"
+      }
+    },
+    {
+      "id": "c0aae2ec-9787-43c8-b6f0-6b574410326a",
+      "name": "Consultar personal",
+      "type": "n8n-nodes-base.supabaseTool",
+      "typeVersion": 1,
+      "position": [736, 336],
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "perfiles",
+        "returnAll": true,
+        "filterType": "string",
+        "filterString": "select=nombre,rol&order=rol.asc,nombre.asc"
+      }
+    }
+  ],
+  "connections": {
+    "Recibir mensaje": {
+      "main": [[{ "node": "Arianna AI", "type": "main", "index": 0 }]]
+    },
+    "Gemini (AI Studio)": {
+      "ai_languageModel": [[{ "node": "Arianna AI", "type": "ai_languageModel", "index": 0 }]]
+    },
+    "Think": {
+      "ai_tool": [[{ "node": "Arianna AI", "type": "ai_tool", "index": 0 }]]
+    },
+    "Consultar pedidos": {
+      "ai_tool": [[{ "node": "Arianna AI", "type": "ai_tool", "index": 0 }]]
+    },
+    "Consultar platos": {
+      "ai_tool": [[{ "node": "Arianna AI", "type": "ai_tool", "index": 0 }]]
+    },
+    "Consultar personal": {
+      "ai_tool": [[{ "node": "Arianna AI", "type": "ai_tool", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateId": "arianna-ai",
+    "templateCredsSetup": {
+      "credentials": [
+        {
+          "nodeName": "Gemini (AI Studio)",
+          "credentialType": "googleGeminiApi",
+          "displayName": "Google Gemini (AI Studio) API Key"
+        },
+        {
+          "nodeName": "Consultar pedidos",
+          "credentialType": "supabaseApi",
+          "displayName": "Supabase API (E-Kitchen)"
+        },
+        {
+          "nodeName": "Consultar platos",
+          "credentialType": "supabaseApi",
+          "displayName": "Supabase API (E-Kitchen)"
+        },
+        {
+          "nodeName": "Consultar personal",
+          "credentialType": "supabaseApi",
+          "displayName": "Supabase API (E-Kitchen)"
+        }
+      ]
+    }
+  }
+}
