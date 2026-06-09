@@ -33,6 +33,7 @@ export function GestionMesas({
   const [mostrandoQR, setMostrandoQR] = useState<Mesa | null>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMesas(mesasIniciales);
   }, [mesasIniciales]);
   const [mensaje, setMensaje] = useState("");

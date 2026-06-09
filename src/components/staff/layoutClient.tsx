@@ -28,6 +28,7 @@ export function StaffLayoutClient({
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved !== null) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCollapsed(saved === "true");
     } else if (esMovil()) {
       setCollapsed(true);

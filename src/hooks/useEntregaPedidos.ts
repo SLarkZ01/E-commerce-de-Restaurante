@@ -15,6 +15,7 @@ export function useEntregaPedidos(pedidosIniciales: PedidoConDetalles[]) {
   const { cambiarEstado } = usePedidos();
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPedidos(pedidosIniciales);
   }, [pedidosIniciales]);
   const { esUrgente } = useTiempoTranscurrido();

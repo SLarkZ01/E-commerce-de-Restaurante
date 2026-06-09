@@ -7,8 +7,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { RastrearPedidoModal } from "@/components/cliente/rastrearPedidoModal";
 
 // Mock del provider
-let mockMostrar: (id: string) => void = vi.fn();
-let mockCerrar = vi.fn();
+const mockCerrar = vi.fn();
 let mockAbierto = false;
 
 vi.mock("@/components/cliente/RastrearPedidoProvider", () => ({

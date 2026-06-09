@@ -72,6 +72,7 @@ export function FormularioPlato({
   const [errorFormulario, setErrorFormulario] = useState("");
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setNombre(platoInicial?.nombre ?? "");
     setDescripcion(platoInicial?.descripcion ?? "");
     setPrecio(platoInicial ? String(platoInicial.precio) : "");

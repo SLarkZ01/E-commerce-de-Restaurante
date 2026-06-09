@@ -24,6 +24,7 @@ export function GestionPersonal({ perfilesIniciales }: { perfilesIniciales: Perf
   const [mostrandoFormulario, setMostrandoFormulario] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPerfiles(perfilesIniciales);
   }, [perfilesIniciales]);
   const [mensaje, setMensaje] = useState("");

@@ -42,6 +42,7 @@ export function HeaderStaff({ userEmail, userName, rol, collapsed, onToggle }: H
   const cerrarSheet = useCallback(() => setSheetOpen(false), []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setHora(new Date());
     const intervalo = setInterval(() => setHora(new Date()), 1000);
     return () => clearInterval(intervalo);

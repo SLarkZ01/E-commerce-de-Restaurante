@@ -6,6 +6,7 @@ export function useTiempoTranscurrido(intervaloMs = 30000) {
   const [ahora, setAhora] = useState<number | null>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setAhora(Date.now());
     const id = setInterval(() => setAhora(Date.now()), intervaloMs);
     return () => clearInterval(id);

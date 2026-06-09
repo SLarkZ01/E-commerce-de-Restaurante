@@ -28,6 +28,7 @@ export function AsistenteProvider({ children }: { children: ReactNode }) {
   const resizeRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMobil(esMovil());
     setSidebarAbierto(!esMovil());
 

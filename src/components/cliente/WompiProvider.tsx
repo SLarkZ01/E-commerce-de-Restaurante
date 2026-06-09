@@ -26,6 +26,7 @@ export function WompiProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Si el script ya está cargado de una sesión anterior
     if (window.WidgetCheckout) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setListo(true);
     }
   }, []);

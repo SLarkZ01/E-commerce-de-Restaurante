@@ -51,10 +51,12 @@ export function TablaPlatos({
 
   // Sincronizar cuando el Server Component revalida los datos
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPlatos(platosIniciales);
   }, [platosIniciales]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCategorias(categoriasIniciales);
   }, [categoriasIniciales]);
 

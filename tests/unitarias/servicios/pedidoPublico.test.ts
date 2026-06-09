@@ -110,7 +110,7 @@ describe("obtenerEstadoPedidoPublico", () => {
   it("elimina solo el primer # del ID", async () => {
     mockRpc.mockResolvedValue({ data: [pedidoMock], error: null });
 
-    const result = await obtenerEstadoPedidoPublico("##956AB2A5");
+    await obtenerEstadoPedidoPublico("##956AB2A5");
 
     expect(mockRpc).toHaveBeenCalledWith("buscar_pedido_por_prefijo", {
       prefijo: "#956AB2A5",

@@ -23,6 +23,7 @@ export function KanbanPedidos({ pedidosIniciales }: KanbanPedidosProps) {
   const { cambiarEstado } = usePedidos();
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPedidos(pedidosIniciales);
   }, [pedidosIniciales]);
 

@@ -14,6 +14,7 @@ export function StatsBar({ stats: statsIniciales }: StatsBarProps) {
   const [stats, setStats] = useState(statsIniciales);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setStats(statsIniciales);
   }, [statsIniciales]);
 

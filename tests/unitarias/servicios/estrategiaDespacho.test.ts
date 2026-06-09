@@ -5,7 +5,7 @@
  * Valida que cada estrategia de despacho ejecute la lógica correcta.
  */
 
-import { crearEstrategiaDespacho, EstrategiaDespacho, DespachoMesa, DespachoParaLlevar } from "@/lib/servicios/estrategiaDespacho";
+import { crearEstrategiaDespacho, DespachoMesa, DespachoParaLlevar } from "@/lib/servicios/estrategiaDespacho";
 import type { Pedido } from "@/types";
 
 const pedidoBase: Pedido = {

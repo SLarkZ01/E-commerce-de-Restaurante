@@ -35,6 +35,7 @@ export function useCheckoutWompi(
   useEffect(() => {
     // Solo limpiar datos si el carrito está vacío
     if (itemsLength === 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDatosWompi(null);
       return;
     }
@@ -81,7 +82,7 @@ export function useCheckoutWompi(
     setMensaje(`Pedido #${resultado.pedidoId?.slice(0, 8).toUpperCase()} creado correctamente`);
     setEsExito(true);
     onPagoExitoso?.(resultado.pedidoId ?? "");
-  }, [tieneMesa, mesaUuid, items, total, confirmarPedido, vaciarCarrito, onPagoExitoso]);
+  }, [tieneMesa, mesaUuid, items, total, confirmarPedido, vaciarCarrito, onPagoExitoso, setEstado, setMensaje, setEsExito]);
 
   const manejarError = useCallback((msg: string) => {
     setEstado("error");
@@ -91,7 +92,7 @@ export function useCheckoutWompi(
       setEstado("idle");
       setMensaje("");
     }, 5000);
-  }, []);
+  }, [setEstado, setMensaje, setEsExito]);
 
   return {
     estado,
