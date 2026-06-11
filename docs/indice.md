@@ -34,4 +34,4 @@
 - **Arquitectura:** Monolito Modular + Event-Driven
 - **Stack:** Next.js 16, Supabase, Drizzle ORM, Zustand, Vitest
 
-Se tiene que cambiar la documentacion ya que se va a hacer una reesctructuracion del proyecto por completo. Tanto en sus carpetas como en la forma de guardar y separar las cosas, incluyendo las queries de base de datos etc.
+Se tiene que cambiar la documentacion ya que se va a hacer una reesctructuracion del proyecto por completo. Tanto en sus carpetas como en la forma de guardar y separar las cosas, incluyendo las queries de base de datos etc. (Pendiente a modificar.)
