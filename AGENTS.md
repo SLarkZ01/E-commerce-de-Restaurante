@@ -31,6 +31,8 @@ Toda la documentación está en `docs/`. El punto de entrada es `docs/indice.md`
 - **Inglés** solo para nombres de paquetes npm, APIs externas y configuraciones de framework
 
 ### Estructura
+
+desactualiza
 ```
 src/
 ├── app/            → App Router (páginas y layouts)
