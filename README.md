@@ -306,8 +306,4 @@ bun run test
 | Integrantes |
 |---|
 | Daniel Rivas Agredo |
-| Luisa Juliet Juaqui |
-| Mateo Rivera |
-| Deiby Alejandro Ramirez |
-| David Urrutia Ceron |
 | Thomas Montoya Magon |
